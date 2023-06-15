@@ -62,7 +62,7 @@ function DiceMenu:createChildren()
 
     -- TODO Add frame for each mini section
 
-    local frameHeight = 50
+    local frameHeight = 40
     local yOffsetFrame = frameHeight/4
 
     --* Occupation *--
@@ -162,7 +162,6 @@ function DiceMenu:createChildren()
     self:addChild(self.labelMovement)
 
     --LEFT MINUS BUTTON
-
     self.btnMinusMovement = ISButton:new(2, yOffset, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
     self.btnMinusMovement.internal = "MINUS_HEALTH"
     self.btnMinusMovement:initialise()
@@ -171,13 +170,35 @@ function DiceMenu:createChildren()
     self:addChild(self.btnMinusMovement)
 
     --RIGHT PLUS BUTTON
-
     self.btnPlusMovement = ISButton:new(self.width/1.333 - 2, yOffset, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
     self.btnPlusMovement.internal = "PLUS_HEALTH"
     self.btnPlusMovement:initialise()
     self.btnPlusMovement:instantiate()
     self.btnPlusMovement:setEnable(true)
     self:addChild(self.btnPlusMovement)
+
+    yOffset = yOffset + frameHeight
+
+    --* Skill points *--
+
+    -- TODO This is gonna be a different check to get if a player has already set up his page or not.
+
+    local arePointsAllocated = false
+    if not arePointsAllocated then
+        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated")
+        self.labelSkillPointsAllocated = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Small, pointsAllocatedString)) / 2, yOffset + frameHeight/4, 25, pointsAllocatedString, 1, 1, 1, 1, UIFont.Small, true)
+        self.labelSkillPointsAllocated:initialise()
+        self.labelSkillPointsAllocated:instantiate()
+        self:addChild(self.labelSkillPointsAllocated)
+    end
+
+    yOffset = yOffset + frameHeight
+
+    local panelSkillsHeight = frameHeight * 7
+
+
+    self.panelSkills = ISPanel:new(0, yOffset, self.width, panelSkillsHeight)
+    self:addChild(self.panelSkills)
 
     --------
 
@@ -220,7 +241,7 @@ end
 function DiceMenu.OpenPanel()
 	--local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
 
-    local pnl = DiceMenu:new(50, 200, 400, 600)
+    local pnl = DiceMenu:new(50, 200, 400, 700)
     pnl:initialise()
     pnl:addToUIManager()
     pnl:bringToTop()

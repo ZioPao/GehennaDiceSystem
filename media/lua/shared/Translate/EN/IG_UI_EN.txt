@@ -18,7 +18,8 @@ IG_UI_EN = {
 
     IGUI_Health = "Health",
     IGUI_Movement = "Movement",
-    
+
+    IGUI_SkillPointsAllocated = "Skill Points Allocated",
 
     IGUI_Close = "Close",
 
