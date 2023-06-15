@@ -41,7 +41,7 @@ function DiceMenu:new(x, y, width, height)
 
     o.variableColor={r=0.9, g=0.55, b=0.1, a=1}
     o.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
-    o.backgroundColor = {r=0, g=0, b=0, a=0.8}
+    o.backgroundColor = {r=0, g=0, b=0, a=1.0}
     o.buttonBorderColor = {r=0.7, g=0.7, b=0.7, a=0.5}
     o.moveWithMouse = true
 
@@ -121,14 +121,72 @@ function DiceMenu:createChildren()
     self.labelMovementBonus:initialise()
     self.labelMovementBonus:instantiate()
     self.panelMovementBonus:addChild(self.labelMovementBonus)
+
+    yOffset = yOffset + frameHeight
+
+
+    --* Health Line *--
+    local healthString = getText("IGUI_Health")
+    self.labelHealth = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Small, healthString)) / 2, yOffset + frameHeight/4, 25, healthString, 1, 1, 1, 1, UIFont.Small, true)
+    self.labelHealth:initialise()
+    self.labelHealth:instantiate()
+    self:addChild(self.labelHealth)
+
+    --LEFT MINUS BUTTON
+
+    self.btnMinusHealth = ISButton:new(2, yOffset, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
+    self.btnMinusHealth.internal = "MINUS_HEALTH"
+    self.btnMinusHealth:initialise()
+    self.btnMinusHealth:instantiate()
+    self.btnMinusHealth:setEnable(true)
+    self:addChild(self.btnMinusHealth)
+
+    --RIGHT PLUS BUTTON
+
+    self.btnPlusHealth = ISButton:new(self.width/1.333 - 2, yOffset, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
+    self.btnPlusHealth.internal = "PLUS_HEALTH"
+    self.btnPlusHealth:initialise()
+    self.btnPlusHealth:instantiate()
+    self.btnPlusHealth:setEnable(true)
+    self:addChild(self.btnPlusHealth)
+
+
+    yOffset = yOffset + frameHeight
+
+
+    --* Movement Line *--
+    local movementString = getText("IGUI_Movement")
+    self.labelMovement = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Small, movementString)) / 2, yOffset + frameHeight/4, 25, movementString, 1, 1, 1, 1, UIFont.Small, true)
+    self.labelMovement:initialise()
+    self.labelMovement:instantiate()
+    self:addChild(self.labelMovement)
+
+    --LEFT MINUS BUTTON
+
+    self.btnMinusMovement = ISButton:new(2, yOffset, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
+    self.btnMinusMovement.internal = "MINUS_HEALTH"
+    self.btnMinusMovement:initialise()
+    self.btnMinusMovement:instantiate()
+    self.btnMinusMovement:setEnable(true)
+    self:addChild(self.btnMinusMovement)
+
+    --RIGHT PLUS BUTTON
+
+    self.btnPlusMovement = ISButton:new(self.width/1.333 - 2, yOffset, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
+    self.btnPlusMovement.internal = "PLUS_HEALTH"
+    self.btnPlusMovement:initialise()
+    self.btnPlusMovement:instantiate()
+    self.btnPlusMovement:setEnable(true)
+    self:addChild(self.btnPlusMovement)
+
     --------
 
-    self.closeBtn = ISButton:new(10, self.height - 35, self.width - 20, 25, getText("IGUI_Close"), self, self.onOptionMouseDown)
-    self.closeBtn.internal = "CLOSE"
-    self.closeBtn:initialise()
-    self.closeBtn:instantiate()
-    self.closeBtn:setEnable(true)
-    self:addChild(self.closeBtn)
+    self.btnClose = ISButton:new(10, self.height - 35, self.width - 20, 25, getText("IGUI_Close"), self, self.onOptionMouseDown)
+    self.btnClose.internal = "CLOSE"
+    self.btnClose:initialise()
+    self.btnClose:instantiate()
+    self.btnClose:setEnable(true)
+    self:addChild(self.btnClose)
 
 end
 
@@ -162,7 +220,7 @@ end
 function DiceMenu.OpenPanel()
 	--local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
 
-    local pnl = DiceMenu:new(50, 200, 500, 600)
+    local pnl = DiceMenu:new(50, 200, 400, 600)
     pnl:initialise()
     pnl:addToUIManager()
     pnl:bringToTop()
