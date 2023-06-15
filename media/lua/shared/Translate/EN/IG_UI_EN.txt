@@ -13,4 +13,9 @@ IG_UI_EN = {
     IGUI_StsEfct_Prone = "Prone",
     IGUI_StsEfct_Unconscious = "Unconscious",
 
+    IGUI_ArmorBonus = "Armor Bonus",
+    IGUI_MovementBonus ="Movement Bonus",
+
+    IGUI_Close = "Close",
+
 }

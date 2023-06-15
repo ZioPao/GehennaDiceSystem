@@ -24,18 +24,20 @@ Admin utilities
     Menu with a list of players, where admins can open a specific player dice menu.
 ]]
 
-local DiceMenu = ISPanel:derive("DiceMenu")
+DiceMenu = ISCollapsableWindow:derive("DiceMenu")
 DiceMenu.instance = nil
 
 
 function DiceMenu:new(x, y, width, height)
     local o = {}
-    o = ISPanel:new(x, y, width, height)
+    o = ISCollapsableWindow:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
 
     o.width = width
     o.height = height
+
+    o.resizable = false
 
     o.variableColor={r=0.9, g=0.55, b=0.1, a=1}
     o.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
@@ -47,56 +49,108 @@ function DiceMenu:new(x, y, width, height)
     return o
 end
 
-function DiceMenu:create()
-	local yOffset = 10
+function DiceMenu:createChildren()
+	local yOffset = 25
 
     local playerName = getPlayer():getUsername()
 
-	self.playerLabel = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset, 25, playerName, 1, 1, 1, 1, UIFont.Large, true)
-    self.playerLabel:initialise()
-    self.playerLabel:instantiate()
-    self:addChild(self.playerLabel)
-    yOffset = yOffset + 20
-
-    --* Occupation *--
+	self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset, 25, playerName, 1, 1, 1, 1, UIFont.Large, true)
+    self.labelPlayer:initialise()
+    self.labelPlayer:instantiate()
+    self:addChild(self.labelPlayer)
+    yOffset = yOffset + 50
 
     -- TODO Add frame for each mini section
 
+    local frameHeight = 50
+    local yOffsetFrame = frameHeight/4
+
+    --* Occupation *--
+    self.panelOccupation = ISPanel:new(0, yOffset, self.width/2, frameHeight)        -- y = 25, test only
+    self:addChild(self.panelOccupation)
+
     local occupationString = getText("IGUI_Occupation")
-    local occupationLabel = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Medium, occupationString)) / 2, yOffset, 25, occupationString, 1, 1, 1, 1, UIFont.Medium, true)
+    self.labelOccupation = ISLabel:new(10, yOffsetFrame, 25, occupationString .. ": ", 1, 1, 1, 1, UIFont.Small, true)
+    self.labelOccupation:initialise()
+    self.labelOccupation:instantiate()
+    self.panelOccupation:addChild(self.labelOccupation)
 
-	local occupationCombo = ISComboBox:new(occupationLabel:getRight() + 6, 0, self.width/2, 25, self, self.OnChangeOccupation)
-	occupationCombo.noSelectionText = ""
-	occupationCombo:setEditable(true)
-	self:addChild(occupationCombo)
+	self.comboOccupation = ISComboBox:new(self.labelOccupation:getRight() + 6, self.labelOccupation:getY(), self.width/4, 25, self, self.onChangeOccupation)
+	self.comboOccupation.noSelectionText = ""
+	self.comboOccupation:setEditable(true)
+    self.comboOccupation:addOptionWithData("Test", nil)
+	self.panelOccupation:addChild(self.comboOccupation)
+
+    --* Status Effects *--
+    self.panelStatusEffects = ISPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
+    self:addChild(self.panelStatusEffects)
+
+    local statusEffectString = getText("IGUI_StatusEffect")
+    self.labelStatusEffects = ISLabel:new(10, yOffsetFrame, 25, statusEffectString .. ": ", 1, 1, 1, 1, UIFont.Small, true)
+    self.labelStatusEffects:initialise()
+    self.labelStatusEffects:instantiate()
+    self.panelStatusEffects:addChild(self.labelStatusEffects)
+
+	self.comboStatusEffects = ISComboBox:new(self.labelStatusEffects:getRight() + 6, self.labelStatusEffects:getY(), self.width/4, 25, self, self.onChangeStatusEffect)
+	self.comboStatusEffects.noSelectionText = ""
+	self.comboStatusEffects:setEditable(true)
+    self.comboStatusEffects:addOptionWithData("Test", nil)
+	self.panelStatusEffects:addChild(self.comboStatusEffects)
+
+    yOffset = yOffset + frameHeight
+
+    --* Armor Bonus *--
+    -- TODO add check onUpdate
+    self.panelArmorBonus = ISPanel:new(0, yOffset, self.width/2, frameHeight)
+    self:addChild(self.panelArmorBonus)
+
+    local armorBonusString = getText("IGUI_ArmorBonus")
+    self.labelArmorBonus = ISLabel:new(10, yOffsetFrame, 25, armorBonusString .. ": ", 1, 1, 1, 1, UIFont.Small, true)
+    self.labelArmorBonus:initialise()
+    self.labelArmorBonus:instantiate()
+    self.panelArmorBonus:addChild(self.labelArmorBonus)
 
 
+    --* Movement Bonus *--
+    -- TODO add check onUpdate
+    self.panelMovementBonus = ISPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
+    self:addChild(self.panelMovementBonus)
+
+    local movementBonusString = getText("IGUI_MovementBonus")
+    self.labelMovementBonus = ISLabel:new(10, yOffsetFrame, 25, movementBonusString .. ": ", 1, 1, 1, 1, UIFont.Small, true)
+    self.labelMovementBonus:initialise()
+    self.labelMovementBonus:instantiate()
+    self.panelMovementBonus:addChild(self.labelMovementBonus)
     --------
 
-    self.closeBtn = ISButton:new(10, self.height - 35, self.width - 20, 25, "Save", self, self.OnOptionMouseDown)
+    self.closeBtn = ISButton:new(10, self.height - 35, self.width - 20, 25, getText("IGUI_Close"), self, self.onOptionMouseDown)
     self.closeBtn.internal = "CLOSE"
     self.closeBtn:initialise()
     self.closeBtn:instantiate()
     self.closeBtn:setEnable(true)
-    self:addChild(self.saveBtn)
+    self:addChild(self.closeBtn)
 
 end
 
-function DiceMenu.OnChangeOccupation()
+function DiceMenu:onChangeOccupation()
 	--local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
 
 end
 
-function DiceMenu.OnOptionMouseDown()
+function DiceMenu:onChangeStatusEffect()
+
+end
+
+function DiceMenu:onOptionMouseDown()
 	--local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
-
+    self.instance:close()
 end
 
 
-function DiceMenu:initialise()
-	ISPanel.initialise(self)
-    self:create()
-end
+-- function DiceMenu:initialise()
+-- 	ISPanel.initialise(self)
+--     self:createChildren()
+-- end
 
 function DiceMenu:setVisible(visible)
     self.javaObject:setVisible(visible)
@@ -106,9 +160,9 @@ end
 
 
 function DiceMenu.OpenPanel()
-	local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
+	--local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
 
-    local pnl = DiceMenu:new(50, 200, 250 * UI_SCALE, 150 * UI_SCALE)
+    local pnl = DiceMenu:new(50, 200, 500, 600)
     pnl:initialise()
     pnl:addToUIManager()
     pnl:bringToTop()
@@ -119,4 +173,4 @@ end
 --****************************--
 
 
-return DiceMenu
+--return DiceMenu
