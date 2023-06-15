@@ -1,0 +1,16 @@
+IG_UI_EN = {
+    IGUI_Occupation = "Occupation",
+    IGUI_Ocptn_Medic = "Medic",
+    IGUI_Ocptn_PeaceOfficer = "Peace Officer",
+    IGUI_Ocptn_Soldier = "Soldier",
+    IGUI_Ocptn_Outlaw = "Outlaw",
+    IGUI_Ocptn_Artisan = "Artisan",
+
+    IGUI_StatusEffect = "Status Effect",
+    IGUI_StsEfct_Stable = "Stable",
+    IGUI_StsEfct_Wounded = "Wounded",
+    IGUI_StsEfct_Bleeding = "Bleeding",
+    IGUI_StsEfct_Prone = "Prone",
+    IGUI_StsEfct_Unconscious = "Unconscious",
+
+}
