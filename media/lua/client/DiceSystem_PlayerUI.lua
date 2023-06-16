@@ -126,7 +126,6 @@ function DiceMenu:fillSkillPanel()
         yOffset = yOffset + frameHeight
     end
 
-    Events.OnTick.Add(self.OnTick)
 
 end
 
@@ -153,6 +152,8 @@ function DiceMenu.OnTick()
         end
     end
 
+
+    DiceMenu.instance.labelMovementBonus:setName(getText("IGUI_MovementBonus") .. ": +" .. PlayerHandler.GetMovementBonus())
 
 end
 
@@ -223,7 +224,7 @@ function DiceMenu:createChildren()
     self.panelMovementBonus = ISPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
     self:addChild(self.panelMovementBonus)
 
-    local movementBonusString = getText("IGUI_MovementBonus")
+    local movementBonusString = getText("IGUI_MovementBonus") .. ": +0"
     self.labelMovementBonus = ISLabel:new(10, yOffsetFrame, 25, movementBonusString .. ": ", 1, 1, 1, 1, UIFont.Small, true)
     self.labelMovementBonus:initialise()
     self.labelMovementBonus:instantiate()
@@ -310,6 +311,8 @@ function DiceMenu:createChildren()
     self:addChild(self.panelSkills)
     self:fillSkillPanel()
 
+    Events.OnTick.Add(self.OnTick)
+
     --------
 
     self.btnClose = ISButton:new(10, self.height - 35, self.width - 20, 25, getText("IGUI_Close"), self, self.onOptionMouseDown)
@@ -331,21 +334,39 @@ function DiceMenu:onChangeStatusEffect()
 end
 
 function DiceMenu:onOptionMouseDown(btn)
+    if btn.internal == 'PLUS_HEALTH' then
+        PlayerHandler.IncrementHealth()
+    end
+
+    if btn.internal == 'MINUS_HEALTH' then
+        PlayerHandler.DecrementHealth()
+
+    end
+
+    if btn.internal == 'PLUS_MOVEMENT' then
+        PlayerHandler.IncrementMovement()
+    end
+
+    if btn.internal == 'MINUS_MOVEMENT' then
+        PlayerHandler.DecrementMovement()
+    end
+
+    if btn.internal == 'PLUS_SKILL' then
+        --print(btn.skill)
+        PlayerHandler.IncrementSkillPoint(btn.skill)
+    end
+    if btn.internal == 'MINUS_SKILL' then
+        --print(btn.skill)
+        PlayerHandler.DecrementSkillPoint(btn.skill)
+    end
+
 
     if btn.internal == 'CLOSE' then
         self:closeMenu()
     end
 
 
-    if btn.internal == 'PLUS_SKILL' then
-        print(btn.skill)
-        PlayerHandler.IncrementSkillPoint(btn.skill)
-    end
-    if btn.internal == 'MINUS_SKILL' then
-        print(btn.skill)
-        PlayerHandler.DecrementSkillPoint(btn.skill)
 
-    end
 
 	--local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
 end
