@@ -57,6 +57,7 @@ end
 
 PlayerStatsHandler.SetMovementBonus = function(deftPoints)
     -- Movement starts at 5
+    --print("Setting bonus")
     local addedBonus = math.floor(deftPoints/2)
     getPlayer():getModData()['DiceSystem'].movementBonus = addedBonus
 end
@@ -64,6 +65,19 @@ end
 PlayerStatsHandler.GetMovementBonus = function()
 
     return getPlayer():getModData()['DiceSystem'].movementBonus
+
+end
+
+PlayerStatsHandler.GetCurrentMovement = function()
+    return getPlayer():getModData()['DiceSystem'].currentMovement
+end
+
+PlayerStatsHandler.SetCurrentMovement = function(movement)
+    getPlayer():getModData()['DiceSystem'].currentMovement = movement
+end
+
+PlayerStatsHandler.GetMaxMovement = function()
+    return getPlayer():getModData()['DiceSystem'].maxMovement
 
 end
 
@@ -137,9 +151,16 @@ PlayerStatsHandler.InitModData = function(force)
             isInitialized = false,
             occupation = "",
             statusEffects = {""},
-            health = 5,
+
+
+            currentHealth = 5,
+            maxHealth = 5,
+
+
             armorBonus = 0,
-            movement = 5,
+
+            currentMovement = 5,
+            maxMovement = 5,
             movementBonus = 0,
 
             allocatedPoints = 0,

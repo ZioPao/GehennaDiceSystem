@@ -172,7 +172,18 @@ function DiceMenu.OnTick()
 
     -- todo armor bonus test only
     DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus",2))
+    DiceMenu.instance.panelArmorBonus.textDirty = true
     DiceMenu.instance.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler:GetMovementBonus()))
+    DiceMenu.instance.panelMovementBonus.textDirty = true
+
+    -- TODO Fill it with the correct values
+    DiceMenu.instance.panelHealth:setText(getText("IGUI_Health",5,5))
+    DiceMenu.instance.panelHealth.textDirty = true
+
+    local totMovement = PlayerHandler.GetMaxMovement() + PlayerHandler.GetMovementBonus()
+    local currMovement = PlayerHandler.GetCurrentMovement()
+    DiceMenu.instance.panelMovement:setText(getText("IGUI_Movement", currMovement, totMovement))
+    DiceMenu.instance.panelMovement.textDirty = true
 end
 
 function DiceMenu:createChildren()
@@ -248,7 +259,7 @@ function DiceMenu:createChildren()
     self.panelMovementBonus = ISRichTextPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
     self.panelMovementBonus:initialise()
     self:addChild(self.panelMovementBonus)
-    
+
     self.panelMovementBonus.marginLeft = 20
     self.panelMovementBonus.autosetheight = false
     self.panelMovementBonus.background = true
@@ -259,58 +270,58 @@ function DiceMenu:createChildren()
 
     yOffset = yOffset + frameHeight
 
-
     --* Health Line *--
-    local healthString = getText("IGUI_Health")
-    self.labelHealth = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Small, healthString)) / 2, yOffset + frameHeight/4, 25, healthString, 1, 1, 1, 1, UIFont.Small, true)
-    self.labelHealth:initialise()
-    self.labelHealth:instantiate()
-    self:addChild(self.labelHealth)
+    self.panelHealth = ISRichTextPanel:new(0, yOffset, self.width, frameHeight)
+    self.panelHealth:initialise()
+    self:addChild(self.panelHealth)
+    self.panelHealth.autosetheight = false
+    self.panelHealth.background = false
+    self.panelHealth:paginate()
+
 
     --LEFT MINUS BUTTON
-
-    self.btnMinusHealth = ISButton:new(2, yOffset, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
+    self.btnMinusHealth = ISButton:new(2, 0, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
     self.btnMinusHealth.internal = "MINUS_HEALTH"
     self.btnMinusHealth:initialise()
     self.btnMinusHealth:instantiate()
     self.btnMinusHealth:setEnable(true)
-    self:addChild(self.btnMinusHealth)
+    self.panelHealth:addChild(self.btnMinusHealth)
 
     --RIGHT PLUS BUTTON
-
-    self.btnPlusHealth = ISButton:new(self.width/1.333 - 2, yOffset, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
+    self.btnPlusHealth = ISButton:new(self.width/1.333 - 2, 0, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
     self.btnPlusHealth.internal = "PLUS_HEALTH"
     self.btnPlusHealth:initialise()
     self.btnPlusHealth:instantiate()
     self.btnPlusHealth:setEnable(true)
-    self:addChild(self.btnPlusHealth)
+    self.panelHealth:addChild(self.btnPlusHealth)
 
 
     yOffset = yOffset + frameHeight
 
 
     --* Movement Line *--
-    local movementString = getText("IGUI_Movement")
-    self.labelMovement = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Small, movementString)) / 2, yOffset + frameHeight/4, 25, movementString, 1, 1, 1, 1, UIFont.Small, true)
-    self.labelMovement:initialise()
-    self.labelMovement:instantiate()
-    self:addChild(self.labelMovement)
+    self.panelMovement = ISRichTextPanel:new(0, yOffset, self.width, frameHeight)
+    self.panelMovement:initialise()
+    self:addChild(self.panelMovement)
+    self.panelMovement.autosetheight = false
+    self.panelMovement.background = false
+    self.panelMovement:paginate()
 
     --LEFT MINUS BUTTON
-    self.btnMinusMovement = ISButton:new(2, yOffset, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
+    self.btnMinusMovement = ISButton:new(2, 0, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
     self.btnMinusMovement.internal = "MINUS_HEALTH"
     self.btnMinusMovement:initialise()
     self.btnMinusMovement:instantiate()
     self.btnMinusMovement:setEnable(true)
-    self:addChild(self.btnMinusMovement)
+    self.panelMovement:addChild(self.btnMinusMovement)
 
     --RIGHT PLUS BUTTON
-    self.btnPlusMovement = ISButton:new(self.width/1.333 - 2, yOffset, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
+    self.btnPlusMovement = ISButton:new(self.width/1.333 - 2, 0, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
     self.btnPlusMovement.internal = "PLUS_HEALTH"
     self.btnPlusMovement:initialise()
     self.btnPlusMovement:instantiate()
     self.btnPlusMovement:setEnable(true)
-    self:addChild(self.btnPlusMovement)
+    self.panelMovement:addChild(self.btnPlusMovement)
 
     yOffset = yOffset + frameHeight
 
@@ -322,8 +333,6 @@ function DiceMenu:createChildren()
     if not arePointsAllocated then
 
         local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
-
-
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
         self.labelSkillPointsAllocated = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Small, pointsAllocatedString)) / 2, yOffset + frameHeight/4, 25, pointsAllocatedString, 1, 1, 1, 1, UIFont.Small, true)
         self.labelSkillPointsAllocated:initialise()
