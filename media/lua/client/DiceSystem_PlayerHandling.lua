@@ -11,10 +11,29 @@ local occupationsBonusData = {
 --------------------------------
 local PlayerStatsHandler = {}
 
----comment
----@param skill any
+
+---Get the amount of points for a specific skill.
+---@param skill string
 ---@return number
 PlayerStatsHandler.GetSkillPoints = function(skill)
+
+    --print("DiceSystem: playerHandler searching for skill " .. skill)
+    local diceData = getPlayer():getModData()['DiceSystem']
+    if diceData == nil then
+        print("DiceSystem: modData is nil, can't return skill point value")
+        return -1
+     end
+
+     local points = diceData.skills[string.lower(skill)]
+     if points ~= nil then
+        return points
+    else
+        return -1
+    end
+
+end
+
+PlayerStatsHandler.GetAllocatedSkillPoints = function()
 
     local diceData = getPlayer():getModData()['DiceSystem']
 
@@ -23,11 +42,52 @@ PlayerStatsHandler.GetSkillPoints = function(skill)
         return -1
      end
 
-     local points = diceData[skill]
-     if points ~= nil then return points else return -1 end
+     local allocatedPoints = diceData.allocatedPoints
+     if allocatedPoints ~= nil then return allocatedPoints else return -1 end
+
 
 end
 
+PlayerStatsHandler.IncrementSkillPoint = function(skill)
+    print("DiceSystem: adding to skill " .. skill)
+    local diceData = getPlayer():getModData()['DiceSystem']
+    local lowerSkill = string.lower(skill)
+
+    if diceData.allocatedPoints < 20 then
+        diceData.skills[lowerSkill] = diceData.skills[lowerSkill] + 1
+        diceData.allocatedPoints = diceData.allocatedPoints + 1
+        return true
+    else
+        return false
+    end
+end
+
+PlayerStatsHandler.DecrementSkillPoint = function(skill)
+    local diceData = getPlayer():getModData()['DiceSystem']
+    local lowerSkill = string.lower(skill)
+
+    if diceData.skills[lowerSkill] > 0 then
+        diceData.skills[lowerSkill] = diceData.skills[lowerSkill] - 1
+        diceData.allocatedPoints = diceData.allocatedPoints - 1
+
+        return true
+    else
+        return false
+    end
+
+end
+
+PlayerStatsHandler.IsPlayerInitialized = function()
+
+    local isInit = getPlayer():getModData()['DiceSystem'].isInitialized
+
+    if isInit == nil then
+        return false
+    end
+
+    return isInit
+
+end
 
 
 PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
@@ -45,19 +105,22 @@ PlayerStatsHandler.InitModData = function(force)
     if modData['DiceSystem'] == nil or force then
         print("DiceSystem: creating mod data")
         modData['DiceSystem'] = {
+            isInitialized = false,
             occupation = "",
             statusEffects = {""},
-            health = -1,
-            movement = -1,
-    
+            health = 0,
+            movement = 0,
+
+            allocatedPoints = 0,
+
             skills = {
-                charm = -1,
-                brutal = -1,
-                resolve = -1,
-                sharp = -1,
-                deft = -1,
-                wit = -1,
-                luck = -1
+                charm = 0,
+                brutal = 0,
+                resolve = 0,
+                sharp = 0,
+                deft = 0,
+                wit = 0,
+                luck = 0
             }
         }
     end

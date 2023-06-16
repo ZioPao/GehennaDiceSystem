@@ -24,7 +24,7 @@ Admin utilities
     Menu with a list of players, where admins can open a specific player dice menu.
 ]]
 
-
+local skills = {"Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck"}
 local PlayerHandler = require("DiceSystem_PlayerHandling")
 
 DiceMenu = ISCollapsableWindow:derive("DiceMenu")
@@ -52,18 +52,14 @@ function DiceMenu:new(x, y, width, height)
 end
 
 
-
-
-
 function DiceMenu:fillSkillPanel()
 
-    local skills = {"Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck"}
-
-    
     local yOffset = 0
     local frameHeight = 40
+    local isInitialized = PlayerHandler.IsPlayerInitialized()
 
     for i=1, #skills do
+        local skill = skills[i]
         local panel = ISPanel:new(0, yOffset, self.width, frameHeight)
 
         if i%2 == 0 then
@@ -78,7 +74,7 @@ function DiceMenu:fillSkillPanel()
         panel.borderColor = {r=0, g=0, b=0, a=1}
         self.panelSkills:addChild(panel)
 
-        local skillString = getText("IGUI_Skill_" .. skills[i])
+        local skillString = getText("IGUI_Skill_" .. skill)
         local label = ISLabel:new(10, frameHeight/4, 25, skillString, 1, 1, 1, 1, UIFont.Small, true)
         label:initialise()
         label:instantiate()
@@ -86,11 +82,14 @@ function DiceMenu:fillSkillPanel()
 
 
         -- Check if skill is initialized
-        local skillPoints = PlayerHandler.GetSkillPoints(skills[i])
+        local skillPoints = PlayerHandler.GetSkillPoints(skill)
         local btnWidth = 100
-        if skillPoints ~= -1 then
+
+
+        -- TODO This check must be related to the allocated skill points, not the skill points themselves
+        if isInitialized then
             -- ROLL
-            local btnRoll = ISButton:new(self.width - btnWidth*2, 0, btnWidth*2, frameHeight - 2, "Roll", self, self.onOptionMouseDown)
+            local btnRoll = ISButton:new(self.width - btnWidth * 2, 0, btnWidth * 2, frameHeight - 2, "Roll", self, self.onOptionMouseDown)
             btnRoll.internal = "SKILL_ROLL"
             btnRoll:initialise()
             btnRoll:instantiate()
@@ -103,6 +102,7 @@ function DiceMenu:fillSkillPanel()
             btnPlus:initialise()
             btnPlus:instantiate()
             btnPlus:setEnable(true)
+            self["btnPlus" .. skills[i]] = btnPlus
             panel:addChild(btnPlus)
 
             local btnMinus = ISButton:new(self.width - btnWidth*2, 0, btnWidth, frameHeight - 2, "-", self, self.onOptionMouseDown)
@@ -111,15 +111,50 @@ function DiceMenu:fillSkillPanel()
             btnMinus:initialise()
             btnMinus:instantiate()
             btnMinus:setEnable(true)
+            self["btnMinus" .. skills[i]] = btnMinus
             panel:addChild(btnMinus)
 
         end
 
+        local skillPointsString = string.format("%d", skillPoints)
+        local skillPointsLabel = ISLabel:new(self.width - btnWidth*2 - 25, frameHeight/4, 25, skillPointsString, 1, 1, 1, 1, UIFont.Small, true)
+        skillPointsLabel:initialise()
+        skillPointsLabel:instantiate()
+        self["labelSkillPoints" .. skill] = skillPointsLabel
+        panel:addChild(skillPointsLabel)
 
         yOffset = yOffset + frameHeight
     end
+
+    Events.OnTick.Add(self.OnTick)
+
 end
 
+function DiceMenu.OnTick()
+    -- TODO Check if skill points are still not allocated
+
+    local isInit = PlayerHandler.IsPlayerInitialized()
+
+
+    if not isInit then
+        local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
+        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
+
+        DiceMenu.instance.labelSkillPointsAllocated:setName(pointsAllocatedString)
+        for i=1, #skills do
+            local skill = skills[i]
+            local skillPoints = PlayerHandler.GetSkillPoints(skill)
+
+            DiceMenu.instance["btnMinus" .. skill]:setEnable(skillPoints ~= 0 )
+            DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 20 and allocatedPoints ~= 20)
+
+            local skillPointsString = string.format("%d", skillPoints)
+            DiceMenu.instance["labelSkillPoints" .. skill]:setName(skillPointsString)
+        end
+    end
+
+
+end
 
 function DiceMenu:createChildren()
 	local yOffset = 40
@@ -257,7 +292,11 @@ function DiceMenu:createChildren()
 
     local arePointsAllocated = false
     if not arePointsAllocated then
-        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated")
+
+        local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
+
+
+        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
         self.labelSkillPointsAllocated = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Small, pointsAllocatedString)) / 2, yOffset + frameHeight/4, 25, pointsAllocatedString, 1, 1, 1, 1, UIFont.Small, true)
         self.labelSkillPointsAllocated:initialise()
         self.labelSkillPointsAllocated:instantiate()
@@ -294,31 +333,31 @@ end
 function DiceMenu:onOptionMouseDown(btn)
 
     if btn.internal == 'CLOSE' then
-        self.instance:close()
+        self:closeMenu()
     end
 
 
     if btn.internal == 'PLUS_SKILL' then
         print(btn.skill)
+        PlayerHandler.IncrementSkillPoint(btn.skill)
     end
     if btn.internal == 'MINUS_SKILL' then
         print(btn.skill)
+        PlayerHandler.DecrementSkillPoint(btn.skill)
+
     end
 
 	--local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
 end
 
-
--- function DiceMenu:initialise()
--- 	ISPanel.initialise(self)
---     self:createChildren()
--- end
-
 function DiceMenu:setVisible(visible)
     self.javaObject:setVisible(visible)
 end
 
-
+function DiceMenu:closeMenu()
+    Events.OnTick.Remove(self.OnTick)
+    self.instance:close()
+end
 
 
 function DiceMenu.OpenPanel()
