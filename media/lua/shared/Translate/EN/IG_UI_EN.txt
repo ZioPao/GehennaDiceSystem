@@ -12,9 +12,9 @@ IG_UI_EN = {
     IGUI_StsEfct_Bleeding = "Bleeding",
     IGUI_StsEfct_Prone = "Prone",
     IGUI_StsEfct_Unconscious = "Unconscious",
-
-    IGUI_ArmorBonus = "Armor Bonus",
-    IGUI_MovementBonus ="Movement Bonus",
+    
+    IGUI_ArmorBonus = " <CENTRE> Armor Bonus: <SPACE> <RED> +%1",
+    IGUI_MovementBonus =" <CENTRE> Movement Bonus: <SPACE> <RGB:0.15,0.67,0.88> +%1",
 
     IGUI_Health = "Health",
     IGUI_Movement = "Movement",

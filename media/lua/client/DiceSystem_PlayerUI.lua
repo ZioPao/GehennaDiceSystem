@@ -24,6 +24,8 @@ Admin utilities
     Menu with a list of players, where admins can open a specific player dice menu.
 ]]
 
+local statusEffects = {"Stable", "Wounded", "Bleeding", "Prone", "Unconscious"}
+local occupations = {"Medic", "PeaceOfficer", "Soldier", "Outlaw", "Artisan"}
 local skills = {"Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck"}
 local PlayerHandler = require("DiceSystem_PlayerHandling")
 
@@ -134,7 +136,6 @@ function DiceMenu.OnTick()
 
     local isInit = PlayerHandler.IsPlayerInitialized()
 
-
     if not isInit then
         local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
@@ -153,11 +154,25 @@ function DiceMenu.OnTick()
 
         -- Players can finish the setup only when they've allocated all their 20 points
         DiceMenu.instance.btnConfirm:setEnable(allocatedPoints == 20)
+
+        local comboOcc = DiceMenu.instance.comboOccupation
+        local selectedOccupation = comboOcc:getOptionData(comboOcc.selected)
+        PlayerHandler.SetOccupation(selectedOccupation)
+
+
+        local comboStatus = DiceMenu.instance.comboStatusEffects
+
+
+    else
+        -- TODO Users won't be able to change their profession once it is init.
+        DiceMenu.instance.comboOccupation.disabled = true
     end
 
 
-    DiceMenu.instance.labelMovementBonus:setName(getText("IGUI_MovementBonus") .. ": +" .. PlayerHandler.GetMovementBonus())
 
+    -- todo armor bonus test only
+    DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus",2))
+    DiceMenu.instance.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler:GetMovementBonus()))
 end
 
 function DiceMenu:createChildren()
@@ -178,6 +193,7 @@ function DiceMenu:createChildren()
 
     --* Occupation *--
     self.panelOccupation = ISPanel:new(0, yOffset, self.width/2, frameHeight)        -- y = 25, test only
+    self.panelOccupation.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
     self:addChild(self.panelOccupation)
 
     local occupationString = getText("IGUI_Occupation")
@@ -189,11 +205,16 @@ function DiceMenu:createChildren()
 	self.comboOccupation = ISComboBox:new(self.labelOccupation:getRight() + 6, self.labelOccupation:getY(), self.width/4, 25, self, self.onChangeOccupation)
 	self.comboOccupation.noSelectionText = ""
 	self.comboOccupation:setEditable(true)
-    self.comboOccupation:addOptionWithData("Test", nil)
+
+    for i=1, #occupations do
+        self.comboOccupation:addOptionWithData(getText("IGUI_Ocptn_" .. occupations[i]), occupations[i])
+    end
+
 	self.panelOccupation:addChild(self.comboOccupation)
 
     --* Status Effects *--
     self.panelStatusEffects = ISPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
+    self.panelStatusEffects.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
     self:addChild(self.panelStatusEffects)
 
     local statusEffectString = getText("IGUI_StatusEffect")
@@ -205,33 +226,36 @@ function DiceMenu:createChildren()
 	self.comboStatusEffects = ISComboBox:new(self.labelStatusEffects:getRight() + 6, self.labelStatusEffects:getY(), self.width/4, 25, self, self.onChangeStatusEffect)
 	self.comboStatusEffects.noSelectionText = ""
 	self.comboStatusEffects:setEditable(true)
-    self.comboStatusEffects:addOptionWithData("Test", nil)
+    for i=1, #statusEffects do
+        self.comboStatusEffects:addOptionWithData(getText("IGUI_StsEfct_" .. statusEffects[i]), statusEffects[i])
+    end
 	self.panelStatusEffects:addChild(self.comboStatusEffects)
 
     yOffset = yOffset + frameHeight
 
     --* Armor Bonus *--
     -- TODO add check onUpdate
-    self.panelArmorBonus = ISPanel:new(0, yOffset, self.width/2, frameHeight)
+    self.panelArmorBonus = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
+    self.panelArmorBonus:initialise()
     self:addChild(self.panelArmorBonus)
-
-    local armorBonusString = getText("IGUI_ArmorBonus")
-    self.labelArmorBonus = ISLabel:new(10, yOffsetFrame, 25, armorBonusString .. ": ", 1, 1, 1, 1, UIFont.Small, true)
-    self.labelArmorBonus:initialise()
-    self.labelArmorBonus:instantiate()
-    self.panelArmorBonus:addChild(self.labelArmorBonus)
-
+    self.panelArmorBonus.autosetheight = false
+    self.panelArmorBonus.background = true
+    self.panelArmorBonus.backgroundColor = {r=0, g=0, b=0, a=0}
+    self.panelArmorBonus.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.panelArmorBonus:paginate()
 
     --* Movement Bonus *--
-    -- TODO add check onUpdate
-    self.panelMovementBonus = ISPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
+    self.panelMovementBonus = ISRichTextPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
+    self.panelMovementBonus:initialise()
     self:addChild(self.panelMovementBonus)
+    
+    self.panelMovementBonus.marginLeft = 20
+    self.panelMovementBonus.autosetheight = false
+    self.panelMovementBonus.background = true
+    self.panelMovementBonus.backgroundColor = {r=0, g=0, b=0, a=0}
+    self.panelMovementBonus.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.panelMovementBonus:paginate()
 
-    local movementBonusString = getText("IGUI_MovementBonus") .. ": +0"
-    self.labelMovementBonus = ISLabel:new(10, yOffsetFrame, 25, movementBonusString .. ": ", 1, 1, 1, 1, UIFont.Small, true)
-    self.labelMovementBonus:initialise()
-    self.labelMovementBonus:instantiate()
-    self.panelMovementBonus:addChild(self.labelMovementBonus)
 
     yOffset = yOffset + frameHeight
 

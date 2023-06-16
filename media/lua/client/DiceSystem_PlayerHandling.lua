@@ -1,11 +1,12 @@
 --This table will describe how much added bonus we should add to each skill.
 
+-- Different naming style 'cause of IGUI crap and I don't wanna manage two naming styles
 local occupationsBonusData = {
-    medic = {},
-    peaceOfficer = {},
-    soldier = {resolve = 1, sharp = 2},
-    outlaw = {},
-    artisan = {}
+    Medic = {},
+    PeaceOfficer = {},
+    Soldier = {resolve = 1, sharp = 2},
+    Outlaw = {},
+    Artisan = {}
 }
 
 --------------------------------
@@ -66,18 +67,21 @@ PlayerStatsHandler.GetMovementBonus = function()
 
 end
 
+PlayerStatsHandler.SetOccupation = function(occupation)
+    getPlayer():getModData()['DiceSystem'].occupation = occupation
+end
+
 PlayerStatsHandler.IncrementSkillPoint = function(skill)
     print("DiceSystem: adding to skill " .. skill)
     local diceData = getPlayer():getModData()['DiceSystem']
-    local lowerSkill = string.lower(skill)
 
-    if diceData.allocatedPoints < 20 and diceData.skills[lowerSkill] < 5 then
-        diceData.skills[lowerSkill] = diceData.skills[lowerSkill] + 1
+    if diceData.allocatedPoints < 20 and diceData.skills[skill] < 5 then
+        diceData.skills[skill] = diceData.skills[skill] + 1
         diceData.allocatedPoints = diceData.allocatedPoints + 1
 
         -- TODO I don't like this
-        if lowerSkill == 'deft' then
-            PlayerStatsHandler.SetMovementBonus(diceData.skills[lowerSkill])
+        if skill == 'Deft' then
+            PlayerStatsHandler.SetMovementBonus(diceData.skills[skill])
         end
 
         return true
@@ -88,13 +92,12 @@ end
 
 PlayerStatsHandler.DecrementSkillPoint = function(skill)
     local diceData = getPlayer():getModData()['DiceSystem']
-    local lowerSkill = string.lower(skill)
 
-    if diceData.skills[lowerSkill] > 0 then
-        diceData.skills[lowerSkill] = diceData.skills[lowerSkill] - 1
+    if diceData.skills[skill] > 0 then
+        diceData.skills[skill] = diceData.skills[skill] - 1
         diceData.allocatedPoints = diceData.allocatedPoints - 1
-        if lowerSkill == 'deft' then
-            PlayerStatsHandler.SetMovementBonus(diceData.skills[lowerSkill])
+        if skill == 'Deft' then
+            PlayerStatsHandler.SetMovementBonus(diceData.skills[skill])
         end
         return true
     else
@@ -142,13 +145,13 @@ PlayerStatsHandler.InitModData = function(force)
             allocatedPoints = 0,
 
             skills = {
-                charm = 0,
-                brutal = 0,
-                resolve = 0,
-                sharp = 0,
-                deft = 0,
-                wit = 0,
-                luck = 0
+                Charm = 0,
+                Brutal = 0,
+                Resolve = 0,
+                Sharp = 0,
+                Deft = 0,
+                Wit = 0,
+                Luck = 0
             }
         }
     end
