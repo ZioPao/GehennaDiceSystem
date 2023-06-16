@@ -1,7 +1,8 @@
 local Dice = {}
 
 --- Do a roll for a specific skill and print the result into chat. If something goes
----@param skill any
+---@param skill string
+---@param point number
 ---@return number
 Dice.Roll = function(skill, point)
     local rolledValue = ZombRand(20) + 1
@@ -28,3 +29,5 @@ Dice.Roll = function(skill, point)
 end
 
 
+
+return Dice

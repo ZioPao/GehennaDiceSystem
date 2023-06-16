@@ -27,7 +27,6 @@ Admin utilities
 DiceMenu = ISCollapsableWindow:derive("DiceMenu")
 DiceMenu.instance = nil
 
-
 function DiceMenu:new(x, y, width, height)
     local o = {}
     o = ISCollapsableWindow:new(x, y, width, height)
@@ -49,8 +48,57 @@ function DiceMenu:new(x, y, width, height)
     return o
 end
 
+function DiceMenu:fillSkillPanel()
+
+    local skills = {"Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck"}
+
+    local yOffset = 0
+    local frameHeight = 40
+
+    for i=1, #skills do
+        local panel = ISPanel:new(0, yOffset, self.width, frameHeight)
+
+        if i%2 == 0 then
+            -- rgb(56, 57, 56)
+            panel.backgroundColor = {r=0.22, g=0.22, b=0.22, a=1}
+        else
+            -- rgb(71, 56, 51)
+            panel.backgroundColor = {r=0.28, g=0.22, b=0.2, a=1}
+
+        end
+
+        panel.borderColor = {r=0, g=0, b=0, a=1}
+        self.panelSkills:addChild(panel)
+
+        local skillString = getText("IGUI_Skill_" .. skills[i])
+        local label = ISLabel:new(10, frameHeight/4, 25, skillString, 1, 1, 1, 1, UIFont.Small, true)
+        label:initialise()
+        label:instantiate()
+        panel:addChild(label)
+
+
+        local btnWidth = 100
+        local btnPlus = ISButton:new(self.width - btnWidth, 0, btnWidth, frameHeight - 2, "+", self, self.onOptionMouseDown)
+        btnPlus.internal = "PLUS_HEALTH"
+        btnPlus:initialise()
+        btnPlus:instantiate()
+        btnPlus:setEnable(true)
+        panel:addChild(btnPlus)
+
+        local btnMinus = ISButton:new(self.width - btnWidth*2, 0, btnWidth, frameHeight - 2, "-", self, self.onOptionMouseDown)
+        btnMinus.internal = "MINUS_HEALTH"
+        btnMinus:initialise()
+        btnMinus:instantiate()
+        btnMinus:setEnable(true)
+        panel:addChild(btnMinus)
+
+        yOffset = yOffset + frameHeight
+    end
+end
+
+
 function DiceMenu:createChildren()
-	local yOffset = 25
+	local yOffset = 40
 
     local playerName = getPlayer():getUsername()
 
@@ -195,10 +243,25 @@ function DiceMenu:createChildren()
     yOffset = yOffset + frameHeight
 
     local panelSkillsHeight = frameHeight * 7
-
-
     self.panelSkills = ISPanel:new(0, yOffset, self.width, panelSkillsHeight)
     self:addChild(self.panelSkills)
+
+    self:fillSkillPanel()
+    -- -- Charm
+    -- self.panelCharmSkill = ISPanel:new(0, 0, self.width, frameHeight)
+    -- self.panelCharmSkill.backgroundColor = {r=0.4, g=0.5, b=0.2, a=1}
+    -- self.panelCharmSkill.borderColor = {r=0.4, g=0.4, b=0.4, a=0}
+    -- self.panelSkills:addChild(self.panelCharmSkill)
+    -- local charmString = getText("IGUI_Skill_Charm")
+    -- self.labelCharm = ISLabel:new(0, 0, 25, charmString, 1, 1, 1, 1, UIFont.Small, true)
+    -- self.labelCharm.backgroundColor = {r=0.5, g=0.5, b=0.5, a=0.1}
+	-- self.labelCharm.borderColor = {r=1, g=0, b=1, a=1}
+    -- self.labelCharm:initialise()
+    -- self.labelCharm:instantiate()
+    -- self.panelCharmSkill:addChild(self.labelCharm)
+
+
+
 
     --------
 

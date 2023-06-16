@@ -20,6 +20,13 @@ IG_UI_EN = {
     IGUI_Movement = "Movement",
 
     IGUI_SkillPointsAllocated = "Skill Points Allocated",
+    IGUI_Skill_Charm = "Charm",
+    IGUI_Skill_Brutal = "Brutal",
+    IGUI_Skill_Resolve = "Resolve",
+    IGUI_Skill_Sharp = "Sharp",
+    IGUI_Skill_Deft = "Deft",
+    IGUI_Skill_Wit = "Wit",
+    IGUI_Skill_Luck = "Luck",
 
     IGUI_Close = "Close",
 
