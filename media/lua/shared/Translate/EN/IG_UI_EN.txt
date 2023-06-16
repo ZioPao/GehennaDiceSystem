@@ -28,6 +28,7 @@ IG_UI_EN = {
     IGUI_Skill_Wit = "Wit",
     IGUI_Skill_Luck = "Luck",
 
+    IGUI_Save = "Save",
     IGUI_Close = "Close",
 
 }

@@ -48,6 +48,12 @@ PlayerStatsHandler.GetAllocatedSkillPoints = function()
 
 end
 
+---comment
+---@param val any
+PlayerStatsHandler.SetIsInitialized = function(val)
+    getPlayer():getModData()['DiceSystem'].isInitialized = val
+end
+
 PlayerStatsHandler.SetMovementBonus = function(deftPoints)
     -- Movement starts at 5
     local addedBonus = math.floor(deftPoints/2)

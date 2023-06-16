@@ -150,6 +150,9 @@ function DiceMenu.OnTick()
             local skillPointsString = string.format("%d", skillPoints)
             DiceMenu.instance["labelSkillPoints" .. skill]:setName(skillPointsString)
         end
+
+        -- Players can finish the setup only when they've allocated all their 20 points
+        DiceMenu.instance.btnConfirm:setEnable(allocatedPoints == 20)
     end
 
 
@@ -315,7 +318,16 @@ function DiceMenu:createChildren()
 
     --------
 
-    self.btnClose = ISButton:new(10, self.height - 35, self.width - 20, 25, getText("IGUI_Close"), self, self.onOptionMouseDown)
+    if not PlayerHandler.IsPlayerInitialized() then
+        self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Save"), self, self.onOptionMouseDown)
+        self.btnConfirm.internal = "SAVE"
+        self.btnConfirm:initialise()
+        self.btnConfirm:instantiate()
+        self.btnConfirm:setEnable(true)
+        self:addChild(self.btnConfirm)
+    end
+
+    self.btnClose = ISButton:new(self.width - 100 - 10, self.height - 35, 100, 25, getText("IGUI_Close"), self, self.onOptionMouseDown)
     self.btnClose.internal = "CLOSE"
     self.btnClose:initialise()
     self.btnClose:instantiate()
@@ -360,6 +372,10 @@ function DiceMenu:onOptionMouseDown(btn)
         PlayerHandler.DecrementSkillPoint(btn.skill)
     end
 
+
+    if btn.internal == 'SAVE' then
+        PlayerHandler.SetIsInitialized(true)
+    end
 
     if btn.internal == 'CLOSE' then
         self:closeMenu()
