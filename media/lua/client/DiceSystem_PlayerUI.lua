@@ -146,7 +146,7 @@ function DiceMenu.OnTick()
             local skillPoints = PlayerHandler.GetSkillPoints(skill)
 
             DiceMenu.instance["btnMinus" .. skill]:setEnable(skillPoints ~= 0 )
-            DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 20 and allocatedPoints ~= 20)
+            DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
 
             local skillPointsString = string.format("%d", skillPoints)
             DiceMenu.instance["labelSkillPoints" .. skill]:setName(skillPointsString)

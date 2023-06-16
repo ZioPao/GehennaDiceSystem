@@ -25,7 +25,7 @@ PlayerStatsHandler.GetSkillPoints = function(skill)
         return -1
      end
 
-     local points = diceData.skills[string.lower(skill)]
+     local points = diceData.skills[skill]
      if points ~= nil then
         return points
     else
