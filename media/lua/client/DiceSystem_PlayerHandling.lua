@@ -11,6 +11,24 @@ local occupationsBonusData = {
 --------------------------------
 local PlayerStatsHandler = {}
 
+---comment
+---@param skill any
+---@return number
+PlayerStatsHandler.GetSkillPoints = function(skill)
+
+    local diceData = getPlayer():getModData()['DiceSystem']
+
+    if diceData == nil then
+        print("DiceSystem: modData is nil, can't return skill point value")
+        return -1
+     end
+
+     local points = diceData[skill]
+     if points ~= nil then return points else return -1 end
+
+end
+
+
 
 PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
     if occupationsBonusData[occupation][skill] ~= nil then

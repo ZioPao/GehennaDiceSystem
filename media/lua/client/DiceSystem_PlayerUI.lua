@@ -24,6 +24,9 @@ Admin utilities
     Menu with a list of players, where admins can open a specific player dice menu.
 ]]
 
+
+local PlayerHandler = require("DiceSystem_PlayerHandling")
+
 DiceMenu = ISCollapsableWindow:derive("DiceMenu")
 DiceMenu.instance = nil
 
@@ -48,10 +51,15 @@ function DiceMenu:new(x, y, width, height)
     return o
 end
 
+
+
+
+
 function DiceMenu:fillSkillPanel()
 
     local skills = {"Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck"}
 
+    
     local yOffset = 0
     local frameHeight = 40
 
@@ -77,20 +85,36 @@ function DiceMenu:fillSkillPanel()
         panel:addChild(label)
 
 
+        -- Check if skill is initialized
+        local skillPoints = PlayerHandler.GetSkillPoints(skills[i])
         local btnWidth = 100
-        local btnPlus = ISButton:new(self.width - btnWidth, 0, btnWidth, frameHeight - 2, "+", self, self.onOptionMouseDown)
-        btnPlus.internal = "PLUS_HEALTH"
-        btnPlus:initialise()
-        btnPlus:instantiate()
-        btnPlus:setEnable(true)
-        panel:addChild(btnPlus)
+        if skillPoints ~= -1 then
+            -- ROLL
+            local btnRoll = ISButton:new(self.width - btnWidth*2, 0, btnWidth*2, frameHeight - 2, "Roll", self, self.onOptionMouseDown)
+            btnRoll.internal = "SKILL_ROLL"
+            btnRoll:initialise()
+            btnRoll:instantiate()
+            btnRoll:setEnable(true)
+            panel:addChild(btnRoll)
+        else
+            local btnPlus = ISButton:new(self.width - btnWidth, 0, btnWidth, frameHeight - 2, "+", self, self.onOptionMouseDown)
+            btnPlus.internal = "PLUS_SKILL"
+            btnPlus.skill = skills[i]
+            btnPlus:initialise()
+            btnPlus:instantiate()
+            btnPlus:setEnable(true)
+            panel:addChild(btnPlus)
 
-        local btnMinus = ISButton:new(self.width - btnWidth*2, 0, btnWidth, frameHeight - 2, "-", self, self.onOptionMouseDown)
-        btnMinus.internal = "MINUS_HEALTH"
-        btnMinus:initialise()
-        btnMinus:instantiate()
-        btnMinus:setEnable(true)
-        panel:addChild(btnMinus)
+            local btnMinus = ISButton:new(self.width - btnWidth*2, 0, btnWidth, frameHeight - 2, "-", self, self.onOptionMouseDown)
+            btnMinus.internal = "MINUS_SKILL"
+            btnMinus.skill = skills[i]
+            btnMinus:initialise()
+            btnMinus:instantiate()
+            btnMinus:setEnable(true)
+            panel:addChild(btnMinus)
+
+        end
+
 
         yOffset = yOffset + frameHeight
     end
@@ -245,23 +269,7 @@ function DiceMenu:createChildren()
     local panelSkillsHeight = frameHeight * 7
     self.panelSkills = ISPanel:new(0, yOffset, self.width, panelSkillsHeight)
     self:addChild(self.panelSkills)
-
     self:fillSkillPanel()
-    -- -- Charm
-    -- self.panelCharmSkill = ISPanel:new(0, 0, self.width, frameHeight)
-    -- self.panelCharmSkill.backgroundColor = {r=0.4, g=0.5, b=0.2, a=1}
-    -- self.panelCharmSkill.borderColor = {r=0.4, g=0.4, b=0.4, a=0}
-    -- self.panelSkills:addChild(self.panelCharmSkill)
-    -- local charmString = getText("IGUI_Skill_Charm")
-    -- self.labelCharm = ISLabel:new(0, 0, 25, charmString, 1, 1, 1, 1, UIFont.Small, true)
-    -- self.labelCharm.backgroundColor = {r=0.5, g=0.5, b=0.5, a=0.1}
-	-- self.labelCharm.borderColor = {r=1, g=0, b=1, a=1}
-    -- self.labelCharm:initialise()
-    -- self.labelCharm:instantiate()
-    -- self.panelCharmSkill:addChild(self.labelCharm)
-
-
-
 
     --------
 
@@ -283,9 +291,21 @@ function DiceMenu:onChangeStatusEffect()
 
 end
 
-function DiceMenu:onOptionMouseDown()
+function DiceMenu:onOptionMouseDown(btn)
+
+    if btn.internal == 'CLOSE' then
+        self.instance:close()
+    end
+
+
+    if btn.internal == 'PLUS_SKILL' then
+        print(btn.skill)
+    end
+    if btn.internal == 'MINUS_SKILL' then
+        print(btn.skill)
+    end
+
 	--local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
-    self.instance:close()
 end
 
 
