@@ -59,7 +59,7 @@ PlayerStatsHandler.IncrementSkillPoint = function(skill)
         if skill == 'Deft' then
             PlayerStatsHandler.SetMovementBonus(diceData.skills[skill])
         end
-
+        ModData.request(DICE_SYSTEM_MOD_STRING)
         return true
     else
         return false
@@ -75,6 +75,8 @@ PlayerStatsHandler.DecrementSkillPoint = function(skill)
         if skill == 'Deft' then
             PlayerStatsHandler.SetMovementBonus(diceData.skills[skill])
         end
+
+        ModData.request(DICE_SYSTEM_MOD_STRING)
         return true
     else
         return false

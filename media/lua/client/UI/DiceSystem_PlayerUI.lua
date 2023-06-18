@@ -54,7 +54,6 @@ function DiceMenu:new(x, y, width, height)
     return o
 end
 
-
 function DiceMenu:fillSkillPanel()
 
     local yOffset = 0
@@ -186,6 +185,7 @@ function DiceMenu.OnTick()
             skillPointsString = string.format(" <RIGHT> %d", skillPoints)
         end
         DiceMenu.instance["labelSkillPoints" .. skill]:setText(skillPointsString)
+        DiceMenu.instance["labelSkillPoints" .. skill].textDirty = true
 
         -- Handles buttons to assign skill points
         if not isInit then
