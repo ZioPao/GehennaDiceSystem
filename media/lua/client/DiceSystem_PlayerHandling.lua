@@ -11,14 +11,25 @@ local occupationsBonusData = {
 
 --------------------------------
 
-local globalModData = ModData.get(DICE_SYSTEM_MOD_STRING)
+
+local statsTable = {}
+
+function OnConnected()
+    ModData.request(DICE_SYSTEM_MOD_STRING)
+    statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
+end
+
+
+Events.OnConnected.Add(OnConnected)
+
+
 local PlayerStatsHandler = {}
 
 
 --*  Skills handling *--
 
 PlayerStatsHandler.GetFullSkillPoints = function(skill)
-    local diceData = globalModData[PlayerStatsHandler.username]
+    local diceData = statsTable[PlayerStatsHandler.username]
     local points = diceData.skills[skill]
     local bonusPoints = diceData.skillsBonus[skill]
 
@@ -32,7 +43,7 @@ end
 PlayerStatsHandler.GetSkillPoints = function(skill)
 
     --print("DiceSystem: playerHandler searching for skill " .. skill)
-    local diceData = globalModData[PlayerStatsHandler.username]
+    local diceData = statsTable[PlayerStatsHandler.username]
     if diceData == nil then
         print("DiceSystem: modData is nil, can't return skill point value")
         return -1
@@ -49,7 +60,7 @@ end
 
 PlayerStatsHandler.IncrementSkillPoint = function(skill)
     print("DiceSystem: adding to skill " .. skill)
-    local diceData = globalModData[PlayerStatsHandler.username]
+    local diceData = statsTable[PlayerStatsHandler.username]
 
     if diceData.allocatedPoints < 20 and diceData.skills[skill] < 5 then
         diceData.skills[skill] = diceData.skills[skill] + 1
@@ -59,7 +70,6 @@ PlayerStatsHandler.IncrementSkillPoint = function(skill)
         if skill == 'Deft' then
             PlayerStatsHandler.SetMovementBonus(diceData.skills[skill])
         end
-        ModData.request(DICE_SYSTEM_MOD_STRING)
         return true
     else
         return false
@@ -67,7 +77,7 @@ PlayerStatsHandler.IncrementSkillPoint = function(skill)
 end
 
 PlayerStatsHandler.DecrementSkillPoint = function(skill)
-    local diceData = globalModData[PlayerStatsHandler.username]
+    local diceData = statsTable[PlayerStatsHandler.username]
 
     if diceData.skills[skill] > 0 then
         diceData.skills[skill] = diceData.skills[skill] - 1
@@ -76,7 +86,6 @@ PlayerStatsHandler.DecrementSkillPoint = function(skill)
             PlayerStatsHandler.SetMovementBonus(diceData.skills[skill])
         end
 
-        ModData.request(DICE_SYSTEM_MOD_STRING)
         return true
     else
         return false
@@ -85,7 +94,7 @@ PlayerStatsHandler.DecrementSkillPoint = function(skill)
 end
 
 PlayerStatsHandler.GetBonusSkillPoints = function(skill)
-    local diceData = globalModData[PlayerStatsHandler.username]
+    local diceData = statsTable[PlayerStatsHandler.username]
     if diceData == nil then
         print("DiceSystem: modData is nil, can't return skill point value")
         return -1
@@ -101,7 +110,7 @@ end
 
 PlayerStatsHandler.GetAllocatedSkillPoints = function()
 
-    local diceData = globalModData[PlayerStatsHandler.username]
+    local diceData = statsTable[PlayerStatsHandler.username]
 
     if diceData == nil then
         print("DiceSystem: modData is nil, can't return skill point value")
@@ -117,11 +126,11 @@ end
 --* Occupations *--
 
 PlayerStatsHandler.GetOccupation = function()
-    return globalModData[PlayerStatsHandler.username].occupation
+    return statsTable[PlayerStatsHandler.username].occupation
 end
 
 PlayerStatsHandler.SetOccupation = function(occupation)
-    local diceData = globalModData[PlayerStatsHandler.username]
+    local diceData = statsTable[PlayerStatsHandler.username]
 
     --print("Setting occupation => " .. occupation)
     diceData.occupation = occupation
@@ -143,16 +152,16 @@ end
 
 --* Health *--
 PlayerStatsHandler.GetCurrentHealth = function()
-    return globalModData[PlayerStatsHandler.username].currentHealth
+    return statsTable[PlayerStatsHandler.username].currentHealth
 end
 
 PlayerStatsHandler.GetMaxHealth = function()
-    return globalModData[PlayerStatsHandler.username].maxHealth
+    return statsTable[PlayerStatsHandler.username].maxHealth
 
 end
 
 PlayerStatsHandler.IncrementCurrentHealth = function()
-    local diceData = globalModData[PlayerStatsHandler.username]
+    local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentHealth < diceData.maxHealth then
         diceData.currentHealth = diceData.currentHealth + 1
         return true
@@ -162,7 +171,7 @@ PlayerStatsHandler.IncrementCurrentHealth = function()
 end
 
 PlayerStatsHandler.DecrementCurrentHealth = function()
-    local diceData = globalModData[PlayerStatsHandler.username]
+    local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentHealth > 0 then
         diceData.currentHealth = diceData.currentHealth - 1
         return true
@@ -173,27 +182,27 @@ end
 
 --* Movement *--
 PlayerStatsHandler.GetCurrentMovement = function()
-    return globalModData[PlayerStatsHandler.username].currentMovement
+    return statsTable[PlayerStatsHandler.username].currentMovement
 end
 
 PlayerStatsHandler.SetCurrentMovement = function(movement)
-    globalModData[PlayerStatsHandler.username].currentMovement = movement
+    statsTable[PlayerStatsHandler.username].currentMovement = movement
 end
 
 PlayerStatsHandler.GetMaxMovement = function()
-    return globalModData[PlayerStatsHandler.username].maxMovement
+    return statsTable[PlayerStatsHandler.username].maxMovement
 end
 
 PlayerStatsHandler.SetMovementBonus = function(deftPoints)
     -- Movement starts at 5
     --print("Setting bonus")
     local addedBonus = math.floor(deftPoints/2)
-    globalModData[PlayerStatsHandler.username].movementBonus = addedBonus
+    statsTable[PlayerStatsHandler.username].movementBonus = addedBonus
 end
 
 PlayerStatsHandler.GetMovementBonus = function()
 
-    return globalModData[PlayerStatsHandler.username].movementBonus
+    return statsTable[PlayerStatsHandler.username].movementBonus
 
 end
 
@@ -202,6 +211,8 @@ end
 
 --- Creates a new ModData for a player
 PlayerStatsHandler.InitModData = function(force)
+
+    -- Fetch data from server
 	ModData.request(DICE_SYSTEM_MOD_STRING)
 
 
@@ -209,13 +220,12 @@ PlayerStatsHandler.InitModData = function(force)
         PlayerStatsHandler.username = getPlayer():getUsername()
     end
 
-    print("Initializing mod data for " .. PlayerStatsHandler.username)
 
-    globalModData = ModData.get(DICE_SYSTEM_MOD_STRING)     -- get it again to be sure that it exists
+    statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
 
-    if globalModData[PlayerStatsHandler.username] == nil or force then
-        print("Global mod data for " .. PlayerStatsHandler.username .. " is nil, creating it")
-        globalModData[PlayerStatsHandler.username] = {
+    if (statsTable ~= nil and statsTable[PlayerStatsHandler.username] == nil) or force then
+        statsTable = {}
+        statsTable[PlayerStatsHandler.username] = {
             isInitialized = false,
             occupation = "",
             statusEffects = {""},
@@ -251,26 +261,23 @@ PlayerStatsHandler.InitModData = function(force)
                 Luck = 0
             }
         }
-        ModData.add(DICE_SYSTEM_MOD_STRING, globalModData)
-        ModData.transmit(DICE_SYSTEM_MOD_STRING)
     end
 
 end
 
 ---Set if player has finished their setup via the UI
----@param val any
+---@param val boolean
 PlayerStatsHandler.SetIsInitialized = function(val)
-    globalModData[PlayerStatsHandler.username].isInitialized = val
+    statsTable[PlayerStatsHandler.username].isInitialized = val
 
     if val then
-        ModData.add(DICE_SYSTEM_MOD_STRING, globalModData)
-        ModData.transmit(DICE_SYSTEM_MOD_STRING)
+        sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", {data = statsTable[PlayerStatsHandler.username]})
     end
 end
 
 PlayerStatsHandler.IsPlayerInitialized = function()
 
-    local isInit = globalModData[PlayerStatsHandler.username].isInitialized
+    local isInit = statsTable[PlayerStatsHandler.username].isInitialized
 
     if isInit == nil then
         return false
@@ -283,12 +290,13 @@ end
 --* Admin functions *--
 
 PlayerStatsHandler.CleanModData = function()
-    globalModData[PlayerStatsHandler.username] = nil
+    statsTable[PlayerStatsHandler.username] = nil
 end
 
 PlayerStatsHandler.SetUser = function(user)
     -- TODO an admin should be able to "ping" another client and ask him to send the data. Or use global mod data and be done with it
     PlayerStatsHandler.username = user
+    statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
 end
 
 ---------------

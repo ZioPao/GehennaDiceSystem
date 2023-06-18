@@ -21,7 +21,7 @@ Dice.Roll = function(skill, points)
     end
 
     local finalValue = rolledValue + points
-    local message = "Rolled " .. skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(point) .. "=" .. tostring(finalValue)
+    local message = "Rolled " .. skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(points) .. "=" .. tostring(finalValue)
     
     -- send to chat
     if isClient() then

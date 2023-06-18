@@ -470,6 +470,7 @@ end
 
 function DiceMenu.OpenPanel()
 	--local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
+    PlayerHandler.InitModData()
 
     if DiceMenu.instance then
         DiceMenu.instance:closeMenu()

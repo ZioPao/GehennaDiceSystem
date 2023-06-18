@@ -197,7 +197,7 @@ function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
     local globalModData = ModData.get(DICE_SYSTEM_MOD_STRING)
 
     local diceData = globalModData[pl:getUsername()]
-
+    
     if diceData then
         print("Found dice data for " ..tostring(pl))
         PlayerHandler.SetUser(pl:getUsername())
