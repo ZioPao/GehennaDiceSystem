@@ -57,6 +57,8 @@ function DiceMenuAdminViewer:initialise()
     self.panel.borderColor = { r = 0, g = 0, b = 0, a = 0}
     self.panel.target = self
     self.panel.equalTabWidth = false
+    self.panel.tabTransparency = 0
+    self.panel.tabHeight = 0
     self:addChild(self.panel)
 
 
@@ -197,7 +199,7 @@ function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
     local globalModData = ModData.get(DICE_SYSTEM_MOD_STRING)
 
     local diceData = globalModData[pl:getUsername()]
-    
+
     if diceData then
         print("Found dice data for " ..tostring(pl))
         PlayerHandler.SetUser(pl:getUsername())

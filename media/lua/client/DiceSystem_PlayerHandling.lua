@@ -10,21 +10,18 @@ local occupationsBonusData = {
 }
 
 --------------------------------
-
+--* Global mod data *--
 
 local statsTable = {}
-
 function OnConnected()
     ModData.request(DICE_SYSTEM_MOD_STRING)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
 end
-
-
 Events.OnConnected.Add(OnConnected)
+--------------------------------
 
 
 local PlayerStatsHandler = {}
-
 
 --*  Skills handling *--
 
@@ -300,6 +297,18 @@ PlayerStatsHandler.SetUser = function(user)
 end
 
 ---------------
+
+
+-- function SetStatusNote()
+
+--     local pl = getPlayer()
+--     getPlayer():setHaloNote("[Status]\n[Injured]", 255,255,255,100)
+--     getPlayer():setHaloNote("\n\n\n[Injured]", 0, 255, 0, 100)
+
+-- end
+
+--Events.OnTick.Add(SetStatusNote)
+
 
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
