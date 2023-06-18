@@ -1,8 +1,12 @@
 -- Admin tools and stuff
 -- TODO Scrolling List
 
+local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
+local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
+local FONT_HGT_LARGE = getTextManager():getFontHeight(UIFont.Large)
+
 AdminDiceScrollingMenu = ISPanel:derive("AdminDiceScrollingMenu")
-AdminMainDiceMenu.instance = nil
+AdminDiceScrollingMenu.instance = nil
 
 function AdminDiceScrollingMenu:new(x, y, width, height, viewer)
     local o = {}
@@ -27,10 +31,6 @@ function AdminDiceScrollingMenu:new(x, y, width, height, viewer)
 end
 
 function AdminDiceScrollingMenu:createChildren()
-    local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
-    local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
-    local FONT_HGT_LARGE = getTextManager():getFontHeight(UIFont.Large)
-
     local HEADER_HGT = FONT_HGT_MEDIUM + 2 * 2
     local ENTRY_HGT = FONT_HGT_MEDIUM + 2 * 2
     local btnWid = 100
@@ -54,8 +54,10 @@ function AdminDiceScrollingMenu:createChildren()
 end
 
 function AdminDiceScrollingMenu:initPlayersData(data)
-    for _,v in ipairs(data) do
-        self.playersData:addItem(v, v)
+    for i=0, data:size()-1 do
+        local pl = data:get(i)
+        print(pl)
+        self.playersData:addItem(pl)
     end
 end
 
@@ -86,24 +88,31 @@ function AdminDiceScrollingMenu:drawPlayersData(y, item, alt)
     local clipY = math.max(0, y + self:getYScroll())
     local clipY2 = math.min(self.height, y + self:getYScroll() + self.itemheight)
 
-    self:drawText(item.item, xoffset, y + 4, 1, 1, 1, a, self.font)
+    self:drawText(item.text:getUsername(), xoffset, y + 4, 1, 1, 1, a, self.font)
     self:clearStencilRect()
     self:repaintStencilRect(0, clipY, self.width, clipY2 - clipY)
     return y + self.itemheight
 end
 
+function AdminDiceScrollingMenu:update()
+    self.playersData.doDrawItem = self.drawPlayersData
+
+end
 ------------------------------------------------------------------------------------------------------
 
-AdminMainDiceMenu = ISCollapsableWindow:derive("AdminMainDiceMenu")
+AdminMainDiceMenu = ISPanel:derive("AdminMainDiceMenu")
+AdminMainDiceMenu.instance = nil
+
 function AdminMainDiceMenu:new(x, y, width, height)
     local o = {}
-    o = ISCollapsableWindow:new(x, y, width, height)
+    o = ISPanel:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
 
     -- x = getCore():getScreenWidth() / 2 - (width / 2)
     -- y = getCore():getScreenHeight() / 2 - (height / 2)
 
+    o.resizable = false
     o.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
     o.backgroundColor = {r=0, g=0, b=0, a=0.8}
     o.width = width
@@ -114,6 +123,7 @@ function AdminMainDiceMenu:new(x, y, width, height)
 end
 
 function AdminMainDiceMenu:createChildren()
+
     local btnWid = 100
     local btnHgt = math.max(25, FONT_HGT_SMALL + 3 * 2)
     local padBottom = 10
@@ -125,6 +135,12 @@ function AdminMainDiceMenu:createChildren()
     self.panel.target = self
     self.panel.equalTabWidth = false
     self:addChild(self.panel)
+
+
+
+
+
+
     ---------------------------------------
     self.btnClose = ISButton:new(self.width - 100 - 10, self.height - 35, 100, 25, getText("IGUI_Close"), self, self.onOptionMouseDown)
     self.btnClose.internal = "CLOSE"
@@ -132,6 +148,23 @@ function AdminMainDiceMenu:createChildren()
     self.btnClose:instantiate()
     self.btnClose:setEnable(true)
     self:addChild(self.btnClose)
+
+
+
+    -- TODO This won't work in SP. Thank you tis.
+    --local players = getOnlinePlayers()
+	local players = ArrayList.new()
+    players:add(getPlayer())
+    players:add(getPlayer())
+    players:add(getPlayer())
+    players:add(getPlayer())
+
+    
+    local mainCategory = AdminDiceScrollingMenu:new(0, 0, self.panel.width, self.panel.height - self.panel.tabHeight, self)
+    mainCategory:initialise()
+    self.panel:addView("Players", mainCategory)
+    self.panel:activateView("Players")
+    mainCategory:initPlayersData(players)
 end
 
 function AdminMainDiceMenu:onOptionMouseDown(btn)
@@ -142,19 +175,25 @@ function AdminMainDiceMenu:onOptionMouseDown(btn)
 end
 
 function AdminMainDiceMenu:prerender()
-    local z = 20
+    -- local z = 20
 
-    self:drawRect(0, 0, self.width, self.height, self.backgroundColor.a, self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b)
-    self:drawRectBorder(0, 0, self.width, self.height, self.borderColor.a, self.borderColor.r, self.borderColor.g, self.borderColor.b)
+    -- self:drawRect(0, 0, self.width, self.height, self.backgroundColor.a, self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b)
+    -- self:drawRectBorder(0, 0, self.width, self.height, self.borderColor.a, self.borderColor.r, self.borderColor.g, self.borderColor.b)
 
-    -- TODO Use getText
-    local title = "Dice System - Admin Panel"
-    self:drawText(title, self.width/2 - (getTextManager():MeasureStringX(UIFont.Medium, title) / 2), z, 1,1,1,1, UIFont.Medium)
+    -- -- TODO Use getText
+    -- local title = "Dice System - Admin Panel"
+    -- self:drawText(title, self.width/2 - (getTextManager():MeasureStringX(UIFont.Medium, title) / 2), z, 1,1,1,1, UIFont.Medium)
 end
 
 function AdminMainDiceMenu:close()
     self:setVisible(false)
     self:removeFromUIManager()
+end
+
+function AdminMainDiceMenu:setKeyboardFocus()
+    local view = self.panel:getActiveView()
+    if not view then return end
+    Core.UnfocusActiveTextEntryBox()
 end
 
 function AdminMainDiceMenu.OnOpenPanel()
