@@ -28,6 +28,7 @@ local statusEffects = {"Stable", "Wounded", "Bleeding", "Prone", "Unconscious"}
 local occupations = {"Medic", "PeaceOfficer", "Soldier", "Outlaw", "Artisan"}
 local skills = {"Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck"}
 local PlayerHandler = require("DiceSystem_PlayerHandling")
+local DiceHandler = require("DiceSystem_Main")
 
 DiceMenu = ISCollapsableWindow:derive("DiceMenu")
 DiceMenu.instance = nil
@@ -95,6 +96,7 @@ function DiceMenu:fillSkillPanel()
             btnRoll.internal = "SKILL_ROLL"
             btnRoll:initialise()
             btnRoll:instantiate()
+            btnRoll.skill = skills[i]
             btnRoll:setEnable(true)
             panel:addChild(btnRoll)
         else
@@ -434,6 +436,12 @@ function DiceMenu:onOptionMouseDown(btn)
     if btn.internal == 'MINUS_SKILL' then
         --print(btn.skill)
         PlayerHandler.DecrementSkillPoint(btn.skill)
+    end
+
+    if btn.internal == 'SKILL_ROLL' then
+        print(btn.skill)
+        local points = PlayerHandler.GetFullSkillPoints(btn.skill)
+        DiceHandler.Roll(btn.skill, points)
     end
 
 

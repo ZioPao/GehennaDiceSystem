@@ -17,6 +17,15 @@ local PlayerStatsHandler = {}
 
 --*  Skills handling *--
 
+PlayerStatsHandler.GetFullSkillPoints = function(skill)
+    local diceData = globalModData[PlayerStatsHandler.username]
+    local points = diceData.skills[skill]
+    local bonusPoints = diceData.skillsBonus[skill]
+
+    return points + bonusPoints
+    
+end
+
 ---Get the amount of points for a specific skill.
 ---@param skill string
 ---@return number

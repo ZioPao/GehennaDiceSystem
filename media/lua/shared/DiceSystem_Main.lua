@@ -14,20 +14,26 @@ Dice.Roll = function(skill, point)
 
     if rolledValue == 1 then
         -- crit fail
-        additionalMsg = "CRITICAL FAILURE!"
+        additionalMsg = "CRITICAL FAILURE! "
     end
 
     if rolledValue == 20 then
         -- crit success
-        additionalMsg = "CRITICAL SUCCESS!"
+        additionalMsg = "CRITICAL SUCCESS! "
     end
 
 
     local finalValue = rolledValue + point
 
     -- send to chat
-    local message = "Rolled " .. skill .. " " .. additionalMsg .. " " .. rolledValue "+" .. point "=" .. finalValue
 
+    local message = "Rolled " .. skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(point) .. "=" .. tostring(finalValue)
+
+    if isClient() then
+        processGeneralMessage(message)
+    end
+
+    print(message)
     return finalValue
 end
 
