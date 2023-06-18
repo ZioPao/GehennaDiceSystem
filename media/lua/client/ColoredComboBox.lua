@@ -2,6 +2,10 @@ require "ISUI/ISPanel"
 require "ISUI/ISScrollingListBox"
 require "ISUI/ISTextEntryBox"
 
+
+-- TODO This has low priority, but still cool nonetheless
+
+
 ColoredComboBoxPopup = ISScrollingListBox:derive("ColoredComboBoxPopup")
 
 

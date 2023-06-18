@@ -118,12 +118,25 @@ function DiceMenu:fillSkillPanel()
 
         end
 
-        local skillPointsString = string.format("%d", skillPoints)
-        local skillPointsLabel = ISLabel:new(self.width - btnWidth*2 - 25, frameHeight/4, 25, skillPointsString, 1, 1, 1, 1, UIFont.Small, true)
-        skillPointsLabel:initialise()
-        skillPointsLabel:instantiate()
-        self["labelSkillPoints" .. skill] = skillPointsLabel
-        panel:addChild(skillPointsLabel)
+
+        local skillPointsPanel = ISRichTextPanel:new(self.width - btnWidth* 2 - 50, 0, 100, 25)
+
+        skillPointsPanel:initialise()
+        panel:addChild(skillPointsPanel)
+        skillPointsPanel.autosetheight = true
+        skillPointsPanel.background = false
+        skillPointsPanel:paginate()
+        self["labelSkillPoints" .. skill] = skillPointsPanel
+
+
+
+
+        -- local skillPointsString = string.format("%d", skillPoints)
+        -- local skillPointsLabel = ISLabel:new(self.width - btnWidth*2 - 25, frameHeight/4, 25, skillPointsString, 1, 1, 1, 1, UIFont.Small, true)
+        -- skillPointsLabel:initialise()
+        -- skillPointsLabel:instantiate()
+        -- self["labelSkillPoints" .. skill] = skillPointsLabel
+        -- panel:addChild(skillPointsLabel)
 
         yOffset = yOffset + frameHeight
     end
@@ -144,12 +157,23 @@ function DiceMenu.OnTick()
         for i=1, #skills do
             local skill = skills[i]
             local skillPoints = PlayerHandler.GetSkillPoints(skill)
+            local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
 
             DiceMenu.instance["btnMinus" .. skill]:setEnable(skillPoints ~= 0 )
             DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
 
-            local skillPointsString = string.format("%d", skillPoints)
-            DiceMenu.instance["labelSkillPoints" .. skill]:setName(skillPointsString)
+            -- TODO To make these colorful we need to use ISRichText
+            local skillPointsString
+            if bonusSkillPoints ~= 0 then
+                skillPointsString = string.format(" <RIGHT> %d <SPACE> <SPACE> <RGB:0.94,0.82,0.09> + %d", skillPoints, bonusSkillPoints)
+
+            else
+                skillPointsString = string.format(" <RIGHT> %d", skillPoints)
+
+            end
+
+
+            DiceMenu.instance["labelSkillPoints" .. skill]:setText(skillPointsString)
         end
 
         -- Players can finish the setup only when they've allocated all their 20 points
@@ -214,11 +238,16 @@ function DiceMenu:createChildren()
     self.panelOccupation:addChild(self.labelOccupation)
 
 	self.comboOccupation = ISComboBox:new(self.labelOccupation:getRight() + 6, self.labelOccupation:getY(), self.width/4, 25, self, self.onChangeOccupation)
-	self.comboOccupation.noSelectionText = ""
+    self.comboOccupation.noSelectionText = ""
 	self.comboOccupation:setEditable(true)
 
     for i=1, #occupations do
         self.comboOccupation:addOptionWithData(getText("IGUI_Ocptn_" .. occupations[i]), occupations[i])
+    end
+    local occupation = PlayerHandler.GetOccupation()
+    if occupation ~= "" then
+        --print(occupation)
+        self.comboOccupation:select(occupation)
     end
 
 	self.panelOccupation:addChild(self.comboOccupation)

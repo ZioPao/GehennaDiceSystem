@@ -4,7 +4,7 @@
 local occupationsBonusData = {
     Medic = {},
     PeaceOfficer = {},
-    Soldier = {resolve = 1, sharp = 2},
+    Soldier = {Resolve = 1, Sharp = 2},
     Outlaw = {},
     Artisan = {}
 }
@@ -32,6 +32,21 @@ PlayerStatsHandler.GetSkillPoints = function(skill)
         return -1
     end
 
+end
+
+PlayerStatsHandler.GetBonusSkillPoints = function(skill)
+    local diceData = getPlayer():getModData()['DiceSystem']
+    if diceData == nil then
+        print("DiceSystem: modData is nil, can't return skill point value")
+        return -1
+     end
+
+     local points = diceData.skillsBonus[skill]
+     if points ~= nil then
+        return points
+    else
+        return -1
+    end
 end
 
 PlayerStatsHandler.GetAllocatedSkillPoints = function()
@@ -81,8 +96,21 @@ PlayerStatsHandler.GetMaxMovement = function()
 
 end
 
+PlayerStatsHandler.GetOccupation = function()
+    return getPlayer():getModData()['DiceSystem'].occupation
+end
+
 PlayerStatsHandler.SetOccupation = function(occupation)
-    getPlayer():getModData()['DiceSystem'].occupation = occupation
+    local diceData = getPlayer():getModData()['DiceSystem']
+
+    --print("Setting occupation => " .. occupation)
+    diceData.occupation = occupation
+    local bonusData = occupationsBonusData[occupation]
+
+
+    for key, bonus in pairs(bonusData) do
+        diceData.skillsBonus[key] = bonus
+    end
 end
 
 PlayerStatsHandler.IncrementSkillPoint = function(skill)
@@ -132,7 +160,6 @@ PlayerStatsHandler.IsPlayerInitialized = function()
 
 end
 
-
 PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
     if occupationsBonusData[occupation][skill] ~= nil then
         return occupationsBonusData[occupation][skill]
@@ -166,6 +193,16 @@ PlayerStatsHandler.InitModData = function(force)
             allocatedPoints = 0,
 
             skills = {
+                Charm = 0,
+                Brutal = 0,
+                Resolve = 0,
+                Sharp = 0,
+                Deft = 0,
+                Wit = 0,
+                Luck = 0
+            },
+
+            skillsBonus = {
                 Charm = 0,
                 Brutal = 0,
                 Resolve = 0,

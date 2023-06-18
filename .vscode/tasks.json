@@ -4,6 +4,13 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "Create Workshop folder",
+            "type": "shell",
+            "command": "python C:/Users/picch/Zomboid/make_workshop_pack.py picch ${workspaceFolderBasename}"
+        },
+
+
+        {
             "label": "Run Zomboid Debug No Steam",
             "type": "shell",
             "command": "\"E:\\Steam\\steamapps\\common\\ProjectZomboid\\ProjectZomboid64 - nosteam-debug.bat\"",
@@ -29,6 +36,13 @@
             "problemMatcher": [
                 "$eslint-stylish"
             ]
+        },
+        {
+            "type": "markdownlint",
+            "problemMatcher": [
+                "$markdownlint"
+            ],
+            "label": "markdownlint: Lint all Markdown files in the workspace with markdownlint"
         }
     ]
 }
