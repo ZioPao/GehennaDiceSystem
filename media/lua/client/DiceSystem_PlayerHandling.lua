@@ -12,9 +12,7 @@ local occupationsBonusData = {
 --------------------------------
 
 local globalModData = ModData.get(DICE_SYSTEM_MOD_STRING)
-local PlayerStatsHandler = {
-    username = getPlayer():getUsername()
-}
+local PlayerStatsHandler = {}
 
 
 --*  Skills handling *--
@@ -167,6 +165,7 @@ end
 --- Creates a new ModData for a player
 PlayerStatsHandler.InitModData = function(force)
 	ModData.request(DICE_SYSTEM_MOD_STRING)
+    PlayerStatsHandler.username = getPlayer():getUsername()
 
     if globalModData[PlayerStatsHandler.username] == nil or force then
         globalModData[PlayerStatsHandler.username] = {
