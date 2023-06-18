@@ -14,13 +14,11 @@ DiceMenuAdminViewer = ISCollapsableWindow:derive("DiceMenuAdminViewer")
 DiceMenuAdminViewer.messages = {}
 
 function DiceMenuAdminViewer.OnOpenPanel()
-
-
     if DiceMenuAdminViewer.instance then
         DiceMenuAdminViewer.instance:close()
     end
 
-    local modal = DiceMenuAdminViewer:new(50, 200, 300, 300)
+    local modal = DiceMenuAdminViewer:new(50, 200, 250, 400)
     modal:initialise()
     modal:addToUIManager()
     modal.instance:setKeyboardFocus()
@@ -140,7 +138,7 @@ function DiceMenuAdminScrollingTable:createChildren()
     local btnHgt = math.max(25, FONT_HGT_SMALL + 3 * 2)
     local bottomHgt = 5 + FONT_HGT_SMALL * 2 + 5 + btnHgt + 20 + FONT_HGT_LARGE + HEADER_HGT + ENTRY_HGT
 
-    self.datas = ISScrollingListBox:new(0, HEADER_HGT, self.width, self.height - bottomHgt)
+    self.datas = ISScrollingListBox:new(0, HEADER_HGT, self.width, self.height - bottomHgt + 10)
     self.datas:initialise()
     self.datas:instantiate()
     self.datas.itemheight = FONT_HGT_SMALL + 4 * 2
@@ -157,8 +155,11 @@ end
 function DiceMenuAdminScrollingTable:initList(module)
     for i=0, module:size() - 1 do
         local pl = module:get(i)
-        self.datas:addItem(pl:getUsername(), pl)
-
+        local username = pl:getUsername()
+        --check if there are dice data for that specific player
+        if PlayerHandler.CheckDataPresence(username) then
+            self.datas:addItem(username, pl)
+        end
     end
 end
 
@@ -192,7 +193,7 @@ function DiceMenuAdminScrollingTable:validateInputs()
 end
 
 function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
-    print("Selected " .. tostring(pl))
+    --print("Selected " .. tostring(pl))
 
     -- TODO Request player for their data
     ModData.request(DICE_SYSTEM_MOD_STRING)
@@ -201,7 +202,7 @@ function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
     local diceData = globalModData[pl:getUsername()]
 
     if diceData then
-        print("Found dice data for " ..tostring(pl))
+        --print("Found dice data for " ..tostring(pl))
         PlayerHandler.SetUser(pl:getUsername())
         DiceMenu.OpenPanel()
     end

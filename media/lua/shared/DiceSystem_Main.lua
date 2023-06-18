@@ -28,7 +28,7 @@ Dice.Roll = function(skill, points)
         processGeneralMessage(message)
     end
 
-    print(message)
+    --print(message)
     return finalValue
 end
 

@@ -42,7 +42,7 @@ PlayerStatsHandler.GetSkillPoints = function(skill)
     --print("DiceSystem: playerHandler searching for skill " .. skill)
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData == nil then
-        print("DiceSystem: modData is nil, can't return skill point value")
+        --print("DiceSystem: modData is nil, can't return skill point value")
         return -1
      end
 
@@ -56,7 +56,7 @@ PlayerStatsHandler.GetSkillPoints = function(skill)
 end
 
 PlayerStatsHandler.IncrementSkillPoint = function(skill)
-    print("DiceSystem: adding to skill " .. skill)
+    --print("DiceSystem: adding to skill " .. skill)
     local diceData = statsTable[PlayerStatsHandler.username]
 
     if diceData.allocatedPoints < 20 and diceData.skills[skill] < 5 then
@@ -93,7 +93,7 @@ end
 PlayerStatsHandler.GetBonusSkillPoints = function(skill)
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData == nil then
-        print("DiceSystem: modData is nil, can't return skill point value")
+        --print("DiceSystem: modData is nil, can't return skill point value")
         return -1
      end
 
@@ -110,7 +110,7 @@ PlayerStatsHandler.GetAllocatedSkillPoints = function()
     local diceData = statsTable[PlayerStatsHandler.username]
 
     if diceData == nil then
-        print("DiceSystem: modData is nil, can't return skill point value")
+        --print("DiceSystem: modData is nil, can't return skill point value")
         return -1
      end
 
@@ -178,6 +178,25 @@ PlayerStatsHandler.DecrementCurrentHealth = function()
 end
 
 --* Movement *--
+PlayerStatsHandler.IncrementCurrentMovement = function()
+    local diceData = statsTable[PlayerStatsHandler.username]
+    if diceData.currentMovement < diceData.maxMovement + diceData.movementBonus then
+        diceData.currentMovement = diceData.currentMovement + 1
+        return true
+    end
+
+    return false
+end
+
+PlayerStatsHandler.DecrementCurrentMovement = function()
+    local diceData = statsTable[PlayerStatsHandler.username]
+    if diceData.currentMovement > 0 then
+        diceData.currentMovement = diceData.currentMovement - 1
+        return true
+    end
+
+    return false
+end
 PlayerStatsHandler.GetCurrentMovement = function()
     return statsTable[PlayerStatsHandler.username].currentMovement
 end
@@ -296,6 +315,11 @@ PlayerStatsHandler.SetUser = function(user)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
 end
 
+PlayerStatsHandler.CheckDataPresence = function(username)
+
+    statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
+    if statsTable[username] then return true else return false end
+end
 ---------------
 
 

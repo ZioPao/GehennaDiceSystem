@@ -166,8 +166,10 @@ function DiceMenu.OnTick()
 
         local comboStatus = DiceMenu.instance.comboStatusEffects
     else
-        -- disable occupation choice if it's already initialized
+        -- disable occupation choice and allocated skill points label if it's already initialized
         DiceMenu.instance.comboOccupation.disabled = true
+        DiceMenu.instance.labelSkillPointsAllocated:setName("")
+
     end
 
 
@@ -213,6 +215,8 @@ function DiceMenu.OnTick()
     local currMovement = PlayerHandler.GetCurrentMovement()
     DiceMenu.instance.panelMovement:setText(getText("IGUI_Movement", currMovement, totMovement))
     DiceMenu.instance.panelMovement.textDirty = true
+    DiceMenu.instance.btnPlusMovement:setEnable(currMovement < totMovement)
+    DiceMenu.instance.btnMinusMovement:setEnable(currMovement > 0)
 end
 
 function DiceMenu:createChildren()
@@ -225,8 +229,6 @@ function DiceMenu:createChildren()
     self.labelPlayer:instantiate()
     self:addChild(self.labelPlayer)
     yOffset = yOffset + 50
-
-    -- TODO Add frame for each mini section
 
     local frameHeight = 40
     local yOffsetFrame = frameHeight/4
@@ -343,7 +345,7 @@ function DiceMenu:createChildren()
 
     --LEFT MINUS BUTTON
     self.btnMinusMovement = ISButton:new(2, 0, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
-    self.btnMinusMovement.internal = "MINUS_HEALTH"
+    self.btnMinusMovement.internal = "MINUS_MOVEMENT"
     self.btnMinusMovement:initialise()
     self.btnMinusMovement:instantiate()
     self.btnMinusMovement:setEnable(true)
@@ -351,7 +353,7 @@ function DiceMenu:createChildren()
 
     --RIGHT PLUS BUTTON
     self.btnPlusMovement = ISButton:new(self.width/1.333 - 2, 0, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
-    self.btnPlusMovement.internal = "PLUS_HEALTH"
+    self.btnPlusMovement.internal = "PLUS_MOVEMENT"
     self.btnPlusMovement:initialise()
     self.btnPlusMovement:instantiate()
     self.btnPlusMovement:setEnable(true)
@@ -415,47 +417,28 @@ end
 function DiceMenu:onOptionMouseDown(btn)
     if btn.internal == 'PLUS_HEALTH' then
         PlayerHandler.IncrementCurrentHealth()
-    end
-
-    if btn.internal == 'MINUS_HEALTH' then
+    elseif btn.internal == 'MINUS_HEALTH' then
         PlayerHandler.DecrementCurrentHealth()
-    end
-
-    if btn.internal == 'PLUS_MOVEMENT' then
-        PlayerHandler.IncrementMovement()
-    end
-
-    if btn.internal == 'MINUS_MOVEMENT' then
-        PlayerHandler.DecrementMovement()
-    end
-
-    if btn.internal == 'PLUS_SKILL' then
+    elseif btn.internal == 'PLUS_MOVEMENT' then
+        PlayerHandler.IncrementCurrentMovement()
+    elseif btn.internal == 'MINUS_MOVEMENT' then
+        PlayerHandler.DecrementCurrentMovement()
+    elseif btn.internal == 'PLUS_SKILL' then
         --print(btn.skill)
         PlayerHandler.IncrementSkillPoint(btn.skill)
-    end
-    if btn.internal == 'MINUS_SKILL' then
+    elseif btn.internal == 'MINUS_SKILL' then
         --print(btn.skill)
         PlayerHandler.DecrementSkillPoint(btn.skill)
-    end
-
-    if btn.internal == 'SKILL_ROLL' then
-        print(btn.skill)
+    elseif btn.internal == 'SKILL_ROLL' then
+        --print(btn.skill)
         local points = PlayerHandler.GetFullSkillPoints(btn.skill)
         DiceHandler.Roll(btn.skill, points)
-    end
-
-
-    if btn.internal == 'SAVE' then
+    elseif btn.internal == 'SAVE' then
         PlayerHandler.SetIsInitialized(true)
-    end
-
-    if btn.internal == 'CLOSE' then
+        DiceMenu.instance.btnConfirm:setEnable(false)
+    elseif btn.internal == 'CLOSE' then
         self:closeMenu()
     end
-
-
-
-
 	--local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
 end
 
