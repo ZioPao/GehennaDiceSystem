@@ -1,4 +1,7 @@
+DICE_SYSTEM_MOD_STRING = "PandemoniumDiceSystem"
+
 local Dice = {}
+
 
 --- Do a roll for a specific skill and print the result into chat. If something goes
 ---@param skill string

@@ -177,7 +177,10 @@ function DiceMenu.OnTick()
         end
 
         -- Players can finish the setup only when they've allocated all their 20 points
-        DiceMenu.instance.btnConfirm:setEnable(allocatedPoints == 20)
+
+        -- todo ONLY FOR TEST
+        DiceMenu.instance.btnConfirm:setEnable(true)
+        --DiceMenu.instance.btnConfirm:setEnable(allocatedPoints == 20)
 
         local comboOcc = DiceMenu.instance.comboOccupation
         local selectedOccupation = comboOcc:getOptionData(comboOcc.selected)
@@ -458,10 +461,12 @@ function DiceMenu:closeMenu()
     self.instance:close()
 end
 
-
 function DiceMenu.OpenPanel()
 	--local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
 
+    if DiceMenu.instance then
+        DiceMenu.instance:closeMenu()
+    end
     local pnl = DiceMenu:new(50, 200, 400, 700)
     pnl:initialise()
     pnl:addToUIManager()
