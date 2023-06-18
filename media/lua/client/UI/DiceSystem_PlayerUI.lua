@@ -148,39 +148,15 @@ function DiceMenu.OnTick()
     -- TODO Check if skill points are still not allocated
 
     local isInit = PlayerHandler.IsPlayerInitialized()
+    local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
 
+
+    -- Show allocated points during init 
     if not isInit then
-        local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
-
         DiceMenu.instance.labelSkillPointsAllocated:setName(pointsAllocatedString)
-        for i=1, #skills do
-            local skill = skills[i]
-            local skillPoints = PlayerHandler.GetSkillPoints(skill)
-            local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
 
-            DiceMenu.instance["btnMinus" .. skill]:setEnable(skillPoints ~= 0 )
-            DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
-
-            -- TODO To make these colorful we need to use ISRichText
-            local skillPointsString
-            if bonusSkillPoints ~= 0 then
-                skillPointsString = string.format(" <RIGHT> %d <SPACE> <SPACE> <RGB:0.94,0.82,0.09> + %d", skillPoints, bonusSkillPoints)
-
-            else
-                skillPointsString = string.format(" <RIGHT> %d", skillPoints)
-
-            end
-
-
-            DiceMenu.instance["labelSkillPoints" .. skill]:setText(skillPointsString)
-        end
-
-        -- Players can finish the setup only when they've allocated all their 20 points
-
-        -- todo ONLY FOR TEST
-        DiceMenu.instance.btnConfirm:setEnable(true)
-        --DiceMenu.instance.btnConfirm:setEnable(allocatedPoints == 20)
+        DiceMenu.instance.btnConfirm:setEnable(allocatedPoints == 20)
 
         local comboOcc = DiceMenu.instance.comboOccupation
         local selectedOccupation = comboOcc:getOptionData(comboOcc.selected)
@@ -188,14 +164,33 @@ function DiceMenu.OnTick()
 
 
         local comboStatus = DiceMenu.instance.comboStatusEffects
-
-
     else
-        -- TODO Users won't be able to change their profession once it is init.
+        -- disable occupation choice if it's already initialized
         DiceMenu.instance.comboOccupation.disabled = true
     end
 
 
+
+    -- Show skill points
+    for i=1, #skills do
+        local skill = skills[i]
+        local skillPoints = PlayerHandler.GetSkillPoints(skill)
+        local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
+        local skillPointsString
+        if bonusSkillPoints ~= 0 then
+            skillPointsString = string.format(" <RIGHT> %d <SPACE> <SPACE> <RGB:0.94,0.82,0.09> + %d", skillPoints, bonusSkillPoints)
+
+        else
+            skillPointsString = string.format(" <RIGHT> %d", skillPoints)
+        end
+        DiceMenu.instance["labelSkillPoints" .. skill]:setText(skillPointsString)
+
+        -- Handles buttons to assign skill points
+        if not isInit then
+            DiceMenu.instance["btnMinus" .. skill]:setEnable(skillPoints ~= 0 )
+            DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
+        end
+    end
 
     -- todo armor bonus test only
     DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus",2))
@@ -203,9 +198,14 @@ function DiceMenu.OnTick()
     DiceMenu.instance.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler:GetMovementBonus()))
     DiceMenu.instance.panelMovementBonus.textDirty = true
 
-    -- TODO Fill it with the correct values
-    DiceMenu.instance.panelHealth:setText(getText("IGUI_Health",5,5))
+
+    local currentHealth = PlayerHandler.GetCurrentHealth()
+    local maxHealth = PlayerHandler.GetMaxHealth()
+    DiceMenu.instance.panelHealth:setText(getText("IGUI_Health",PlayerHandler.GetCurrentHealth(),PlayerHandler.GetMaxHealth()))
     DiceMenu.instance.panelHealth.textDirty = true
+    DiceMenu.instance.btnPlusHealth:setEnable(currentHealth < maxHealth)
+    DiceMenu.instance.btnMinusHealth:setEnable(currentHealth > 0)
+
 
     local totMovement = PlayerHandler.GetMaxMovement() + PlayerHandler.GetMovementBonus()
     local currMovement = PlayerHandler.GetCurrentMovement()
@@ -412,12 +412,11 @@ end
 
 function DiceMenu:onOptionMouseDown(btn)
     if btn.internal == 'PLUS_HEALTH' then
-        PlayerHandler.IncrementHealth()
+        PlayerHandler.IncrementCurrentHealth()
     end
 
     if btn.internal == 'MINUS_HEALTH' then
-        PlayerHandler.DecrementHealth()
-
+        PlayerHandler.DecrementCurrentHealth()
     end
 
     if btn.internal == 'PLUS_MOVEMENT' then

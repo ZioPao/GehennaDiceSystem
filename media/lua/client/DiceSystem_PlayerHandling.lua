@@ -131,7 +131,34 @@ end
 
 
 --* Health *--
--- TODO do it
+PlayerStatsHandler.GetCurrentHealth = function()
+    return globalModData[PlayerStatsHandler.username].currentHealth
+end
+
+PlayerStatsHandler.GetMaxHealth = function()
+    return globalModData[PlayerStatsHandler.username].maxHealth
+
+end
+
+PlayerStatsHandler.IncrementCurrentHealth = function()
+    local diceData = globalModData[PlayerStatsHandler.username]
+    if diceData.currentHealth < diceData.maxHealth then
+        diceData.currentHealth = diceData.currentHealth + 1
+        return true
+    end
+
+    return false
+end
+
+PlayerStatsHandler.DecrementCurrentHealth = function()
+    local diceData = globalModData[PlayerStatsHandler.username]
+    if diceData.currentHealth > 0 then
+        diceData.currentHealth = diceData.currentHealth - 1
+        return true
+    end
+
+    return false
+end
 
 --* Movement *--
 PlayerStatsHandler.GetCurrentMovement = function()
