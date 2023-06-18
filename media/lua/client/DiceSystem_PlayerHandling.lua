@@ -13,6 +13,8 @@ local occupationsBonusData = {
 local PlayerStatsHandler = {}
 
 
+--*  Skills handling *--
+
 ---Get the amount of points for a specific skill.
 ---@param skill string
 ---@return number
@@ -32,85 +34,6 @@ PlayerStatsHandler.GetSkillPoints = function(skill)
         return -1
     end
 
-end
-
-PlayerStatsHandler.GetBonusSkillPoints = function(skill)
-    local diceData = getPlayer():getModData()['DiceSystem']
-    if diceData == nil then
-        print("DiceSystem: modData is nil, can't return skill point value")
-        return -1
-     end
-
-     local points = diceData.skillsBonus[skill]
-     if points ~= nil then
-        return points
-    else
-        return -1
-    end
-end
-
-PlayerStatsHandler.GetAllocatedSkillPoints = function()
-
-    local diceData = getPlayer():getModData()['DiceSystem']
-
-    if diceData == nil then
-        print("DiceSystem: modData is nil, can't return skill point value")
-        return -1
-     end
-
-     local allocatedPoints = diceData.allocatedPoints
-     if allocatedPoints ~= nil then return allocatedPoints else return -1 end
-
-
-end
-
----comment
----@param val any
-PlayerStatsHandler.SetIsInitialized = function(val)
-    getPlayer():getModData()['DiceSystem'].isInitialized = val
-end
-
-PlayerStatsHandler.SetMovementBonus = function(deftPoints)
-    -- Movement starts at 5
-    --print("Setting bonus")
-    local addedBonus = math.floor(deftPoints/2)
-    getPlayer():getModData()['DiceSystem'].movementBonus = addedBonus
-end
-
-PlayerStatsHandler.GetMovementBonus = function()
-
-    return getPlayer():getModData()['DiceSystem'].movementBonus
-
-end
-
-PlayerStatsHandler.GetCurrentMovement = function()
-    return getPlayer():getModData()['DiceSystem'].currentMovement
-end
-
-PlayerStatsHandler.SetCurrentMovement = function(movement)
-    getPlayer():getModData()['DiceSystem'].currentMovement = movement
-end
-
-PlayerStatsHandler.GetMaxMovement = function()
-    return getPlayer():getModData()['DiceSystem'].maxMovement
-
-end
-
-PlayerStatsHandler.GetOccupation = function()
-    return getPlayer():getModData()['DiceSystem'].occupation
-end
-
-PlayerStatsHandler.SetOccupation = function(occupation)
-    local diceData = getPlayer():getModData()['DiceSystem']
-
-    --print("Setting occupation => " .. occupation)
-    diceData.occupation = occupation
-    local bonusData = occupationsBonusData[occupation]
-
-
-    for key, bonus in pairs(bonusData) do
-        diceData.skillsBonus[key] = bonus
-    end
 end
 
 PlayerStatsHandler.IncrementSkillPoint = function(skill)
@@ -148,16 +71,53 @@ PlayerStatsHandler.DecrementSkillPoint = function(skill)
 
 end
 
-PlayerStatsHandler.IsPlayerInitialized = function()
+PlayerStatsHandler.GetBonusSkillPoints = function(skill)
+    local diceData = getPlayer():getModData()['DiceSystem']
+    if diceData == nil then
+        print("DiceSystem: modData is nil, can't return skill point value")
+        return -1
+     end
 
-    local isInit = getPlayer():getModData()['DiceSystem'].isInitialized
-
-    if isInit == nil then
-        return false
+     local points = diceData.skillsBonus[skill]
+     if points ~= nil then
+        return points
+    else
+        return -1
     end
+end
 
-    return isInit
+PlayerStatsHandler.GetAllocatedSkillPoints = function()
 
+    local diceData = getPlayer():getModData()['DiceSystem']
+
+    if diceData == nil then
+        print("DiceSystem: modData is nil, can't return skill point value")
+        return -1
+     end
+
+     local allocatedPoints = diceData.allocatedPoints
+     if allocatedPoints ~= nil then return allocatedPoints else return -1 end
+
+
+end
+
+--* Occupations *--
+
+PlayerStatsHandler.GetOccupation = function()
+    return getPlayer():getModData()['DiceSystem'].occupation
+end
+
+PlayerStatsHandler.SetOccupation = function(occupation)
+    local diceData = getPlayer():getModData()['DiceSystem']
+
+    --print("Setting occupation => " .. occupation)
+    diceData.occupation = occupation
+    local bonusData = occupationsBonusData[occupation]
+
+
+    for key, bonus in pairs(bonusData) do
+        diceData.skillsBonus[key] = bonus
+    end
 end
 
 PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
@@ -166,6 +126,39 @@ PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
     end
     return 0
 end
+
+
+--* Health *--
+-- TODO do it
+
+--* Movement *--
+PlayerStatsHandler.GetCurrentMovement = function()
+    return getPlayer():getModData()['DiceSystem'].currentMovement
+end
+
+PlayerStatsHandler.SetCurrentMovement = function(movement)
+    getPlayer():getModData()['DiceSystem'].currentMovement = movement
+end
+
+PlayerStatsHandler.GetMaxMovement = function()
+    return getPlayer():getModData()['DiceSystem'].maxMovement
+end
+
+PlayerStatsHandler.SetMovementBonus = function(deftPoints)
+    -- Movement starts at 5
+    --print("Setting bonus")
+    local addedBonus = math.floor(deftPoints/2)
+    getPlayer():getModData()['DiceSystem'].movementBonus = addedBonus
+end
+
+PlayerStatsHandler.GetMovementBonus = function()
+
+    return getPlayer():getModData()['DiceSystem'].movementBonus
+
+end
+
+
+-- * Initialization
 
 --- Creates a new ModData for a player
 PlayerStatsHandler.InitModData = function(force)
@@ -212,6 +205,26 @@ PlayerStatsHandler.InitModData = function(force)
     end
 end
 
+---Set if player has finished their setup via the UI
+---@param val any
+PlayerStatsHandler.SetIsInitialized = function(val)
+    getPlayer():getModData()['DiceSystem'].isInitialized = val
+end
+
+PlayerStatsHandler.IsPlayerInitialized = function()
+
+    local isInit = getPlayer():getModData()['DiceSystem'].isInitialized
+
+    if isInit == nil then
+        return false
+    end
+
+    return isInit
+
+end
+
+--* Admin functions *--
+
 PlayerStatsHandler.CleanModData = function()
     getPlayer():getModData()['DiceSystem'] = nil
 end
@@ -221,6 +234,7 @@ PlayerStatsHandler.SendData = function()
 
 end
 
+---------------
 
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
