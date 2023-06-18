@@ -169,7 +169,6 @@ end
 
 --- Creates a new ModData for a player
 PlayerStatsHandler.InitModData = function(force)
-    -- TODO This should run when a player gets created for the first time, or if he doesn't have DiceSystem mod data.
     local modData = getPlayer():getModData()
 
     if modData['DiceSystem'] == nil or force then
@@ -179,10 +178,8 @@ PlayerStatsHandler.InitModData = function(force)
             occupation = "",
             statusEffects = {""},
 
-
             currentHealth = 5,
             maxHealth = 5,
-
 
             armorBonus = 0,
 
