@@ -203,9 +203,18 @@ end
 --- Creates a new ModData for a player
 PlayerStatsHandler.InitModData = function(force)
 	ModData.request(DICE_SYSTEM_MOD_STRING)
-    PlayerStatsHandler.username = getPlayer():getUsername()
+
+
+    if PlayerStatsHandler.username == nil then
+        PlayerStatsHandler.username = getPlayer():getUsername()
+    end
+
+    print("Initializing mod data for " .. PlayerStatsHandler.username)
+
+    globalModData = ModData.get(DICE_SYSTEM_MOD_STRING)     -- get it again to be sure that it exists
 
     if globalModData[PlayerStatsHandler.username] == nil or force then
+        print("Global mod data for " .. PlayerStatsHandler.username .. " is nil, creating it")
         globalModData[PlayerStatsHandler.username] = {
             isInitialized = false,
             occupation = "",
@@ -242,13 +251,21 @@ PlayerStatsHandler.InitModData = function(force)
                 Luck = 0
             }
         }
+        ModData.add(DICE_SYSTEM_MOD_STRING, globalModData)
+        ModData.transmit(DICE_SYSTEM_MOD_STRING)
     end
+
 end
 
 ---Set if player has finished their setup via the UI
 ---@param val any
 PlayerStatsHandler.SetIsInitialized = function(val)
     globalModData[PlayerStatsHandler.username].isInitialized = val
+
+    if val then
+        ModData.add(DICE_SYSTEM_MOD_STRING, globalModData)
+        ModData.transmit(DICE_SYSTEM_MOD_STRING)
+    end
 end
 
 PlayerStatsHandler.IsPlayerInitialized = function()

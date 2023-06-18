@@ -7,7 +7,7 @@ local Dice = {}
 ---@param skill string
 ---@param point number
 ---@return number
-Dice.Roll = function(skill, point)
+Dice.Roll = function(skill, points)
     local rolledValue = ZombRand(20) + 1
     local additionalMsg = ""
 
@@ -15,20 +15,15 @@ Dice.Roll = function(skill, point)
     if rolledValue == 1 then
         -- crit fail
         additionalMsg = "CRITICAL FAILURE! "
-    end
-
-    if rolledValue == 20 then
+    elseif rolledValue == 20 then
         -- crit success
         additionalMsg = "CRITICAL SUCCESS! "
     end
 
-
-    local finalValue = rolledValue + point
-
-    -- send to chat
-
+    local finalValue = rolledValue + points
     local message = "Rolled " .. skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(point) .. "=" .. tostring(finalValue)
-
+    
+    -- send to chat
     if isClient() then
         processGeneralMessage(message)
     end

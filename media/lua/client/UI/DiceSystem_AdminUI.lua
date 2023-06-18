@@ -15,6 +15,11 @@ DiceMenuAdminViewer.messages = {}
 
 function DiceMenuAdminViewer.OnOpenPanel()
 
+
+    if DiceMenuAdminViewer.instance then
+        DiceMenuAdminViewer.instance:close()
+    end
+
     local modal = DiceMenuAdminViewer:new(50, 200, 300, 300)
     modal:initialise()
     modal:addToUIManager()
@@ -70,22 +75,14 @@ function DiceMenuAdminViewer:initialise()
     self.panel:addView("Players", mainCategory)
     self.panel:activateView("Players")
 
+    local players
+    if isClient() then
+        players = getOnlinePlayers()
+    else
+        players = ArrayList.new()
+        players:add(getPlayer())
 
-    local players = ArrayList.new()
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-    players:add(getPlayer())
-
+    end
     mainCategory:initList(players)
 
 
@@ -193,7 +190,7 @@ function DiceMenuAdminScrollingTable:validateInputs()
 end
 
 function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
-    print("Selected" .. tostring(pl))
+    print("Selected " .. tostring(pl))
 
     -- TODO Request player for their data
     ModData.request(DICE_SYSTEM_MOD_STRING)
@@ -231,4 +228,26 @@ function DiceMenuAdminScrollingTable:drawDatas(y, item, alt)
     local xOffset = 10
     self:drawText(item.text, xOffset, y + 4, 1, 1, 1, a, self.font)
     return y + self.itemheight
+end
+
+
+----------------------------------------------
+
+require "ISUI/ISAdminPanelUI"
+
+local _ISAdminPanelUICreate = ISAdminPanelUI.create
+
+function ISAdminPanelUI:create()
+    _ISAdminPanelUICreate(self)
+
+    local btnHgt = math.max(25, FONT_HGT_SMALL + 3 * 2)
+    local btnGapY = 5
+    local y = self.showStatisticsBtn.y + btnHgt + btnGapY
+    local btnWid = 150
+
+    self.btnOpenAdminDiceMenu = ISButton:new(10 + btnWid + 20, y, btnWid, btnHgt, getText("IGUI_DiceAdminMenu"), self, DiceMenuAdminViewer.OnOpenPanel)
+    self.btnOpenAdminDiceMenu:initialise()
+    self.btnOpenAdminDiceMenu:instantiate()
+    self.btnOpenAdminDiceMenu.borderColor = self.buttonBorderColor
+    self:addChild(self.btnOpenAdminDiceMenu)
 end
