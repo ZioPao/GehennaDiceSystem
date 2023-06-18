@@ -3,11 +3,6 @@ require "ISUI/ISCharacterScreen"
 _ISCharacterScreenCreate = ISCharacterScreen.create
 function ISCharacterScreen:create()
     _ISCharacterScreenCreate(self)
-
-
-
-
-
     self.diceMenuButton = ISButton:new(0, 0, 100, getTextManager():getFontHeight(UIFont.Small), "Dice System", self, ISCharacterScreen.onOpenDiceMenu)
 	self.diceMenuButton:initialise()
 	self.diceMenuButton:instantiate()
@@ -17,7 +12,6 @@ end
 
 _ISCharacterScreenUpdate = ISCharacterScreen.update
 function ISCharacterScreen:update()
-
     _ISCharacterScreenUpdate(self)
     local nameX = self.avatarX + self.avatarWidth + 25
 
