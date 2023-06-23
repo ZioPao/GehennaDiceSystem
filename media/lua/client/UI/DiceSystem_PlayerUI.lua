@@ -144,10 +144,8 @@ end
 
 function DiceMenu.OnTick()
     -- TODO Check if skill points are still not allocated
-
     local isInit = PlayerHandler.IsPlayerInitialized()
     local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
-
 
     -- Show allocated points during init 
     if not isInit then
@@ -161,17 +159,15 @@ function DiceMenu.OnTick()
         PlayerHandler.SetOccupation(selectedOccupation)
 
 
-        local comboStatus = DiceMenu.instance.comboStatusEffects
-        local selectedStatus = comboStatus:getOptionData(comboStatus.selected)
-        PlayerHandler.SetStatus(selectedStatus)
+        --local comboStatus = DiceMenu.instance.comboStatusEffects
+        --local selectedStatus = comboStatus:getOptionData(comboStatus.selected)
+        --PlayerHandler.SetStatusEffectValue(selectedStatus)
     else
         -- disable occupation choice and allocated skill points label if it's already initialized
         DiceMenu.instance.comboOccupation.disabled = true
         DiceMenu.instance.labelSkillPointsAllocated:setName("")
 
     end
-
-
 
     -- Show skill points
     for i=1, #PLAYER_DICE_VALUES.SKILLS do
@@ -195,12 +191,25 @@ function DiceMenu.OnTick()
         end
     end
 
+    -- Write active status effects
+    DiceMenu.instance.comboStatusEffects:clear()
+    for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+        local status = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+        local isActive = PlayerHandler.GetStatusEffectValue(status)
+
+        local addedString = ""
+        if isActive then
+            addedString = "[X] "
+        end
+
+        DiceMenu.instance.comboStatusEffects:addOptionWithData(addedString .. getText("IGUI_StsEfct_" .. status), status)
+    end
+
     -- todo armor bonus test only
     DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus",2))
     DiceMenu.instance.panelArmorBonus.textDirty = true
     DiceMenu.instance.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler:GetMovementBonus()))
     DiceMenu.instance.panelMovementBonus.textDirty = true
-
 
     local currentHealth = PlayerHandler.GetCurrentHealth()
     local maxHealth = PlayerHandler.GetMaxHealth()
@@ -208,7 +217,6 @@ function DiceMenu.OnTick()
     DiceMenu.instance.panelHealth.textDirty = true
     DiceMenu.instance.btnPlusHealth:setEnable(currentHealth < maxHealth)
     DiceMenu.instance.btnMinusHealth:setEnable(currentHealth > 0)
-
 
     local totMovement = PlayerHandler.GetMaxMovement() + PlayerHandler.GetMovementBonus()
     local currMovement = PlayerHandler.GetCurrentMovement()

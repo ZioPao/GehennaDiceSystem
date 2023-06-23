@@ -19,7 +19,6 @@ Dice.Roll = function(skill, points)
     local rolledValue = ZombRand(20) + 1
     local additionalMsg = ""
 
-
     if rolledValue == 1 then
         -- crit fail
         additionalMsg = "CRITICAL FAILURE! "
@@ -39,7 +38,6 @@ Dice.Roll = function(skill, points)
     --print(message)
     return finalValue
 end
-
 
 
 return Dice

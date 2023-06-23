@@ -147,22 +147,31 @@ PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
 end
 
 --* Status Effect *--
-PlayerStatsHandler.SetStatus = function(status)
-
-    -- TODO Check if it's already in the list.
+PlayerStatsHandler.SetStatusEffectValue = function(status)
     -- if it's already in the list, let's remove it.
     -- Add a check in the UI to make it clear that we have selected them or something
     local diceData = statsTable[PlayerStatsHandler.username]
+    if diceData.statusEffects[status] ~= nil then
+        diceData.statusEffects[status] = not diceData.statusEffects[status]
+    end
+    --print("Setting occupation => " .. occupation)
+end
 
-    if diceData.statusEffects[status] then
-        table.remove(diceData.statusEffects, status)
-        -- Remove
-    else
-        table.insert(diceData.statusEffects, status)
+PlayerStatsHandler.GetStatusEffectValue = function(status)
+    return statsTable[PlayerStatsHandler.username].statusEffects[status]
+end
 
+PlayerStatsHandler.GetActiveStatusEffects = function()
+    local diceData = statsTable[PlayerStatsHandler.username]
+    local list = {}
+    for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+        local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+        if diceData.statusEffects[x] ~= nil and diceData.statusEffects[x] == true then
+            table.insert(list, x)
+        end
     end
 
-    --print("Setting occupation => " .. occupation)
+    return list
 end
 
 --* Health *--
@@ -282,7 +291,7 @@ PlayerStatsHandler.InitModData = function(force)
         -- Setup status effects
         for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
             local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-            statsTable[PlayerStatsHandler.username].statusEffects[x] = 0
+            statsTable[PlayerStatsHandler.username].statusEffects[x] = false
         end
 
         -- Setup skills
