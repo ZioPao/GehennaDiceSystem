@@ -24,9 +24,6 @@ Admin utilities
     Menu with a list of players, where admins can open a specific player dice menu.
 ]]
 
-local statusEffects = {"Stable", "Wounded", "Bleeding", "Prone", "Unconscious"}
-local occupations = {"Medic", "PeaceOfficer", "Soldier", "Outlaw", "Artisan"}
-local skills = {"Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck"}
 local PlayerHandler = require("DiceSystem_PlayerHandling")
 local DiceHandler = require("DiceSystem_Main")
 
@@ -60,8 +57,8 @@ function DiceMenu:fillSkillPanel()
     local frameHeight = 40
     local isInitialized = PlayerHandler.IsPlayerInitialized()
 
-    for i=1, #skills do
-        local skill = skills[i]
+    for i=1, #PLAYER_DICE_VALUES.SKILLS do
+        local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local panel = ISPanel:new(0, yOffset, self.width, frameHeight)
 
         if i%2 == 0 then
@@ -95,26 +92,26 @@ function DiceMenu:fillSkillPanel()
             btnRoll.internal = "SKILL_ROLL"
             btnRoll:initialise()
             btnRoll:instantiate()
-            btnRoll.skill = skills[i]
+            btnRoll.skill = PLAYER_DICE_VALUES.SKILLS[i]
             btnRoll:setEnable(true)
             panel:addChild(btnRoll)
         else
             local btnPlus = ISButton:new(self.width - btnWidth, 0, btnWidth, frameHeight - 2, "+", self, self.onOptionMouseDown)
             btnPlus.internal = "PLUS_SKILL"
-            btnPlus.skill = skills[i]
+            btnPlus.skill = PLAYER_DICE_VALUES.SKILLS[i]
             btnPlus:initialise()
             btnPlus:instantiate()
             btnPlus:setEnable(true)
-            self["btnPlus" .. skills[i]] = btnPlus
+            self["btnPlus" .. PLAYER_DICE_VALUES.SKILLS[i]] = btnPlus
             panel:addChild(btnPlus)
 
             local btnMinus = ISButton:new(self.width - btnWidth*2, 0, btnWidth, frameHeight - 2, "-", self, self.onOptionMouseDown)
             btnMinus.internal = "MINUS_SKILL"
-            btnMinus.skill = skills[i]
+            btnMinus.skill = PLAYER_DICE_VALUES.SKILLS[i]
             btnMinus:initialise()
             btnMinus:instantiate()
             btnMinus:setEnable(true)
-            self["btnMinus" .. skills[i]] = btnMinus
+            self["btnMinus" .. PLAYER_DICE_VALUES.SKILLS[i]] = btnMinus
             panel:addChild(btnMinus)
 
         end
@@ -165,6 +162,8 @@ function DiceMenu.OnTick()
 
 
         local comboStatus = DiceMenu.instance.comboStatusEffects
+        local selectedStatus = comboStatus:getOptionData(comboStatus.selected)
+        PlayerHandler.SetStatus(selectedStatus)
     else
         -- disable occupation choice and allocated skill points label if it's already initialized
         DiceMenu.instance.comboOccupation.disabled = true
@@ -175,8 +174,8 @@ function DiceMenu.OnTick()
 
 
     -- Show skill points
-    for i=1, #skills do
-        local skill = skills[i]
+    for i=1, #PLAYER_DICE_VALUES.SKILLS do
+        local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local skillPoints = PlayerHandler.GetSkillPoints(skill)
         local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
         local skillPointsString
@@ -248,8 +247,9 @@ function DiceMenu:createChildren()
     self.comboOccupation.noSelectionText = ""
 	self.comboOccupation:setEditable(true)
 
-    for i=1, #occupations do
-        self.comboOccupation:addOptionWithData(getText("IGUI_Ocptn_" .. occupations[i]), occupations[i])
+    for i=1, #PLAYER_DICE_VALUES.OCCUPATIONS do
+        local occ = PLAYER_DICE_VALUES.OCCUPATIONS[i]
+        self.comboOccupation:addOptionWithData(getText("IGUI_Ocptn_" .. occ), occ)
     end
     local occupation = PlayerHandler.GetOccupation()
     if occupation ~= "" then
@@ -273,8 +273,9 @@ function DiceMenu:createChildren()
 	self.comboStatusEffects = ISComboBox:new(self.labelStatusEffects:getRight() + 6, self.labelStatusEffects:getY(), self.width/4, 25, self, self.onChangeStatusEffect)
 	self.comboStatusEffects.noSelectionText = ""
 	self.comboStatusEffects:setEditable(true)
-    for i=1, #statusEffects do
-        self.comboStatusEffects:addOptionWithData(getText("IGUI_StsEfct_" .. statusEffects[i]), statusEffects[i])
+    for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+        local statusEffect = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+        self.comboStatusEffects:addOptionWithData(getText("IGUI_StsEfct_" .. statusEffect), statusEffect)
     end
 	self.panelStatusEffects:addChild(self.comboStatusEffects)
 

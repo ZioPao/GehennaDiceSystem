@@ -146,6 +146,24 @@ PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
     return 0
 end
 
+--* Status Effect *--
+PlayerStatsHandler.SetStatus = function(status)
+
+    -- TODO Check if it's already in the list.
+    -- if it's already in the list, let's remove it.
+    -- Add a check in the UI to make it clear that we have selected them or something
+    local diceData = statsTable[PlayerStatsHandler.username]
+
+    if diceData.statusEffects[status] then
+        table.remove(diceData.statusEffects, status)
+        -- Remove
+    else
+        table.insert(diceData.statusEffects, status)
+
+    end
+
+    --print("Setting occupation => " .. occupation)
+end
 
 --* Health *--
 PlayerStatsHandler.GetCurrentHealth = function()
@@ -244,7 +262,7 @@ PlayerStatsHandler.InitModData = function(force)
         statsTable[PlayerStatsHandler.username] = {
             isInitialized = false,
             occupation = "",
-            statusEffects = {""},
+            statusEffects = {},
 
             currentHealth = 5,
             maxHealth = 5,
@@ -257,26 +275,23 @@ PlayerStatsHandler.InitModData = function(force)
 
             allocatedPoints = 0,
 
-            skills = {
-                Charm = 0,
-                Brutal = 0,
-                Resolve = 0,
-                Sharp = 0,
-                Deft = 0,
-                Wit = 0,
-                Luck = 0
-            },
-
-            skillsBonus = {
-                Charm = 0,
-                Brutal = 0,
-                Resolve = 0,
-                Sharp = 0,
-                Deft = 0,
-                Wit = 0,
-                Luck = 0
-            }
+            skills = {},
+            skillsBonus = {}
         }
+
+        -- Setup status effects
+        for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+            local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+            statsTable[PlayerStatsHandler.username].statusEffects[x] = 0
+        end
+
+        -- Setup skills
+        for i=1, #PLAYER_DICE_VALUES.SKILLS do
+            local x = PLAYER_DICE_VALUES.SKILLS[i]
+            statsTable[PlayerStatsHandler.username].skills[x] = 0
+            statsTable[PlayerStatsHandler.username].skillsBonus[x] = 0
+        end
+
     end
 
 end
