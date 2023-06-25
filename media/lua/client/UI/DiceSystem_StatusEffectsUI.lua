@@ -46,8 +46,11 @@ function StatusEffectsUI:new()
 	return o
 end
 
-local function InitStatusEffectsUI()
-    StatusEffectsUI:new()
+--************************************--
+-- Setup Status Effects UI
+if isClient() then
+    local function InitStatusEffectsUI()
+        StatusEffectsUI:new()
+    end
+    Events.OnGameStart.Add(InitStatusEffectsUI)
 end
-
-Events.OnGameStart.Add(InitStatusEffectsUI)

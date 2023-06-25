@@ -54,7 +54,7 @@ end
 
 
 local PlayerHandler = require("DiceSystem_PlayerHandling")
-local DiceHandler = require("DiceSystem_Main")
+local DiceHandler = require("DiceSystem_DiceLogic")
 
 DiceMenu = ISCollapsableWindow:derive("DiceMenu")
 DiceMenu.instance = nil
@@ -109,12 +109,9 @@ function DiceMenu:fillSkillPanel()
         panel:addChild(label)
 
 
-        -- Check if skill is initialized
-        local skillPoints = PlayerHandler.GetSkillPoints(skill)
         local btnWidth = 100
 
-
-        -- TODO This check must be related to the allocated skill points, not the skill points themselves
+        -- Check if is initialized
         if isInitialized then
             -- ROLL
             local btnRoll = ISButton:new(self.width - btnWidth * 2, 0, btnWidth * 2, frameHeight - 2, "Roll", self, self.onOptionMouseDown)
@@ -154,17 +151,6 @@ function DiceMenu:fillSkillPanel()
         skillPointsPanel.background = false
         skillPointsPanel:paginate()
         self["labelSkillPoints" .. skill] = skillPointsPanel
-
-
-
-
-        -- local skillPointsString = string.format("%d", skillPoints)
-        -- local skillPointsLabel = ISLabel:new(self.width - btnWidth*2 - 25, frameHeight/4, 25, skillPointsString, 1, 1, 1, 1, UIFont.Small, true)
-        -- skillPointsLabel:initialise()
-        -- skillPointsLabel:instantiate()
-        -- self["labelSkillPoints" .. skill] = skillPointsLabel
-        -- panel:addChild(skillPointsLabel)
-
         yOffset = yOffset + frameHeight
     end
 
@@ -272,7 +258,7 @@ function DiceMenu:createChildren()
     local frameHeight = 40
     local yOffsetFrame = frameHeight/4
 
-    self.labelStatusEffectsList = ISRichTextPanel:new(0, yOffset, self.width - 10, 25)
+    self.labelStatusEffectsList = ISRichTextPanel:new(0, yOffset, self.width - 20, 25)
     self.labelStatusEffectsList:initialise()
     self:addChild(self.labelStatusEffectsList)
 

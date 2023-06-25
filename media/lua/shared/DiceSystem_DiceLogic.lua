@@ -1,19 +1,9 @@
-DICE_SYSTEM_MOD_STRING = "PandemoniumDiceSystem"
-
--- TODO Move this away
-PLAYER_DICE_VALUES = {}
-PLAYER_DICE_VALUES.STATUS_EFFECTS = {"Stable", "Wounded", "Bleeding", "Prone", "Unconscious"}
-PLAYER_DICE_VALUES.OCCUPATIONS = {"Medic", "PeaceOfficer", "Soldier", "Outlaw", "Artisan"}
-PLAYER_DICE_VALUES.SKILLS = {"Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck"}
-
-
--- TODO Move this, this is useless here.
 local Dice = {}
 
 
 --- Do a roll for a specific skill and print the result into chat. If something goes
 ---@param skill string
----@param point number
+---@param points number
 ---@return number
 Dice.Roll = function(skill, points)
     local rolledValue = ZombRand(20) + 1
