@@ -1,5 +1,6 @@
---This table will describe how much added bonus we should add to each skill.
+local PlayerStatsHandler = {}
 
+--This table will describe how much added bonus we should add to each skill.
 -- Different naming style 'cause of IGUI crap and I don't wanna manage two naming styles
 local occupationsBonusData = {
     Medic = {},
@@ -17,9 +18,6 @@ function OnConnected()
     print("Requested global mod data")
     ModData.request(DICE_SYSTEM_MOD_STRING)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
-
-
-    -- TODO Add check if it's
 end
 Events.OnConnected.Add(OnConnected)
 
@@ -38,6 +36,13 @@ local function copyTable(tableA, tableB)
     end
 end
 
+local function SyncTable(username)
+    ModData.request(DICE_SYSTEM_MOD_STRING)
+    local syncedTable = ModData.get(DICE_SYSTEM_MOD_STRING)
+    syncedTable[username] = statsTable[username]
+    sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", {data = statsTable[username]})
+end
+
 local function ReceiveGlobalModData(key, data)
     print("Received global mod data")
     if key == DICE_SYSTEM_MOD_STRING then
@@ -54,7 +59,6 @@ Events.OnReceiveGlobalModData.Add(ReceiveGlobalModData)
 --------------------------------
 
 
-local PlayerStatsHandler = {}
 
 --*  Skills handling *--
 
@@ -186,6 +190,10 @@ PlayerStatsHandler.ToggleStatusEffectValue = function(status)
     if diceData.statusEffects[status] ~= nil then
         diceData.statusEffects[status] = not diceData.statusEffects[status]
     end
+
+    -- We need to force set an update since this is gonna be visible to all players!
+    SyncTable(PlayerStatsHandler.username)
+
     --print("Setting occupation => " .. occupation)
 end
 
@@ -223,51 +231,6 @@ PlayerStatsHandler.GetActiveStatusEffectsByUsername = function(username)
     return list
 end
 
-
--- local function LoopShowStatusEffects()
---     local currentTime = os_time()
-
---     if currentTime < lastExecTime + 1 then return end
-
---     local list = PlayerStatsHandler.GetActiveStatusEffects()
---     local players = getOnlinePlayers()
-
---     for i=0, players:size() - 1 do
---         local statusString = ""
---         local pl = players:get(i)
---         if pl then
---             print(pl:getUsername())
---             for _,v in ipairs(list) do
---                 if statusString == "" then
---                     statusString = v
---                 else
---                     statusString = statusString .. ", " .. v
---                 end
---             end
---             --if statusString ~=
---             pl:setDisplayName(statusString +)
---             --pl:setHaloNote(statusString, 255,255,255, 1000)
---         end
-
---     end
-
---     lastExecTime = os_time()
--- end
-
----Show status effects on the top of the head of a player
-PlayerStatsHandler.ToggleShowStatusEffects = function()
-    lastExecTime = os_time()
-    --Events.OnTick.Add(LoopShowStatusEffects)
-
-    -- if PlayerStatsHandler.isShowingStatusEffects == false then
-    --     PlayerStatsHandler.isShowingStatusEffects = true
-    --     Events.EveryOneMinute.Add(LoopShowStatusEffects)
-    -- else
-    --     Events.EveryOneMinute.Remove(LoopShowStatusEffects)
-    --     PlayerStatsHandler.isShowingStatusEffects = false
-    -- end
-
-end
 
 --* Health *--
 PlayerStatsHandler.GetCurrentHealth = function()
@@ -410,14 +373,10 @@ end
 ---Set if player has finished their setup via the UI
 ---@param val boolean
 PlayerStatsHandler.SetIsInitialized = function(val)
-
     -- Syncs it with server
     statsTable[PlayerStatsHandler.username].isInitialized = val
     if val then
-        ModData.request(DICE_SYSTEM_MOD_STRING)
-        local syncedTable = ModData.get(DICE_SYSTEM_MOD_STRING)
-        syncedTable[PlayerStatsHandler.username] = statsTable[PlayerStatsHandler.username]
-        sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", {data = statsTable[PlayerStatsHandler.username]})
+        SyncTable(PlayerStatsHandler.username)
     end
 end
 
@@ -459,20 +418,8 @@ end
 ---------------
 
 
--- function SetStatusNote()
-
---     local pl = getPlayer()
---     getPlayer():setHaloNote("[Status]\n[Injured]", 255,255,255,100)
---     getPlayer():setHaloNote("\n\n\n[Injured]", 0, 255, 0, 100)
-
--- end
-
---Events.OnTick.Add(SetStatusNote)
-
-
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
-Events.OnGameStart.Add(PlayerStatsHandler.ToggleShowStatusEffects)
 Events.OnPlayerDeath.Add(PlayerStatsHandler.CleanModData)
 
 
