@@ -24,6 +24,35 @@ Admin utilities
     Menu with a list of players, where admins can open a specific player dice menu.
 ]]
 
+
+--* Helper functions
+
+---Get a string for ISRichTextPanel containing a colored status effect string
+---@param value string
+---@return string
+local function GetColoredStatusEffect(value)
+    local colorString
+    if value == "Stable" then
+        colorString = " <RGB:0,0.68,0.94> "
+    elseif value == "Wounded" then
+        colorString = " <RGB:0.95,0.35,0.16> "
+    elseif value == "Bleeding" then
+        colorString = " <RGB:0.66,0.15,0.18> "
+    elseif value == "Prone" then
+        colorString = " <RGB:0.04,0.58,0.27> "
+    elseif value == "Unconscious" then
+        colorString = " <RGB:0.57,0.15,0.56> "
+    end
+
+    return colorString .. value
+
+end
+
+
+----------------------------------
+
+
+
 local PlayerHandler = require("DiceSystem_PlayerHandling")
 local DiceHandler = require("DiceSystem_Main")
 
@@ -157,11 +186,6 @@ function DiceMenu.OnTick()
         local comboOcc = DiceMenu.instance.comboOccupation
         local selectedOccupation = comboOcc:getOptionData(comboOcc.selected)
         PlayerHandler.SetOccupation(selectedOccupation)
-
-
-        --local comboStatus = DiceMenu.instance.comboStatusEffects
-        --local selectedStatus = comboStatus:getOptionData(comboStatus.selected)
-        --PlayerHandler.SetStatusEffectValue(selectedStatus)
     else
         -- disable occupation choice and allocated skill points label if it's already initialized
         DiceMenu.instance.comboOccupation.disabled = true
@@ -191,19 +215,21 @@ function DiceMenu.OnTick()
         end
     end
 
-    -- Write active status effects
-    DiceMenu.instance.comboStatusEffects:clear()
-    for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
-        local status = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-        local isActive = PlayerHandler.GetStatusEffectValue(status)
+    local statusEffectsText = ""
+    for _,v in ipairs(PlayerHandler.GetActiveStatusEffects()) do
+        local singleStatus = GetColoredStatusEffect(v)
 
-        local addedString = ""
-        if isActive then
-            addedString = "[X] "
+        if statusEffectsText == "" then
+            statusEffectsText = singleStatus
+        else
+            statusEffectsText = statusEffectsText .. " - " .. singleStatus
         end
-
-        DiceMenu.instance.comboStatusEffects:addOptionWithData(addedString .. getText("IGUI_StsEfct_" .. status), status)
     end
+    DiceMenu.instance.labelStatusEffectsList:setText(statusEffectsText)
+    DiceMenu.instance.labelStatusEffectsList.textDirty = true
+
+
+
 
     -- todo armor bonus test only
     DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus",2))
@@ -235,10 +261,25 @@ function DiceMenu:createChildren()
     self.labelPlayer:initialise()
     self.labelPlayer:instantiate()
     self:addChild(self.labelPlayer)
-    yOffset = yOffset + 50
+    yOffset = yOffset + 10
 
     local frameHeight = 40
     local yOffsetFrame = frameHeight/4
+
+    self.labelStatusEffectsList = ISRichTextPanel:new(self.width/4, yOffset, self.width/2, 25)
+    self.labelStatusEffectsList:initialise()
+    self:addChild(self.labelStatusEffectsList)
+
+    self.labelStatusEffectsList.marginLeft = 0
+    self.labelStatusEffectsList.autosetheight = false
+    self.labelStatusEffectsList.background = false
+    self.labelStatusEffectsList.backgroundColor = {r=0, g=0, b=0, a=0}
+    self.labelStatusEffectsList.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.labelStatusEffectsList:paginate()
+
+
+    yOffset = yOffset + 45
+
 
     --* Occupation *--
     self.panelOccupation = ISPanel:new(0, yOffset, self.width/2, frameHeight)        -- y = 25, test only
@@ -278,7 +319,7 @@ function DiceMenu:createChildren()
     self.labelStatusEffects:instantiate()
     self.panelStatusEffects:addChild(self.labelStatusEffects)
 
-	self.comboStatusEffects = ISComboBox:new(self.labelStatusEffects:getRight() + 6, self.labelStatusEffects:getY(), self.width/4, 25, self, self.onChangeStatusEffect)
+	self.comboStatusEffects = OccupationsComboBox:new(self.labelStatusEffects:getRight() + 6, self.labelStatusEffects:getY(), self.width/4, 25, self, self.onChangeStatusEffect)
 	self.comboStatusEffects.noSelectionText = ""
 	self.comboStatusEffects:setEditable(true)
     for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
@@ -420,7 +461,8 @@ function DiceMenu:onChangeOccupation()
 end
 
 function DiceMenu:onChangeStatusEffect()
-
+    local statusEffect = self.comboStatusEffects:getSelectedText()
+    PlayerHandler.ToggleStatusEffectValue(statusEffect)
 end
 
 function DiceMenu:onOptionMouseDown(btn)

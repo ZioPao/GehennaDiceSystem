@@ -147,8 +147,7 @@ PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
 end
 
 --* Status Effect *--
-PlayerStatsHandler.SetStatusEffectValue = function(status)
-    -- if it's already in the list, let's remove it.
+PlayerStatsHandler.ToggleStatusEffectValue = function(status)
     -- Add a check in the UI to make it clear that we have selected them or something
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.statusEffects[status] ~= nil then
@@ -158,7 +157,9 @@ PlayerStatsHandler.SetStatusEffectValue = function(status)
 end
 
 PlayerStatsHandler.GetStatusEffectValue = function(status)
-    return statsTable[PlayerStatsHandler.username].statusEffects[status]
+    local val = statsTable[PlayerStatsHandler.username].statusEffects[status]
+    print("Status: " .. status .. ",value: " .. tostring(val))
+    return val
 end
 
 PlayerStatsHandler.GetActiveStatusEffects = function()
@@ -172,6 +173,12 @@ PlayerStatsHandler.GetActiveStatusEffects = function()
     end
 
     return list
+end
+
+---Show status effects on the top of the head of a player
+PlayerStatsHandler.ShowStatusEffects = function()
+    local note = "Test"
+    getPlayer():setHaloNote(note)
 end
 
 --* Health *--
@@ -224,6 +231,7 @@ PlayerStatsHandler.DecrementCurrentMovement = function()
 
     return false
 end
+
 PlayerStatsHandler.GetCurrentMovement = function()
     return statsTable[PlayerStatsHandler.username].currentMovement
 end
