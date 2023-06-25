@@ -158,7 +158,7 @@ end
 
 PlayerStatsHandler.GetStatusEffectValue = function(status)
     local val = statsTable[PlayerStatsHandler.username].statusEffects[status]
-    print("Status: " .. status .. ",value: " .. tostring(val))
+    --print("Status: " .. status .. ",value: " .. tostring(val))
     return val
 end
 

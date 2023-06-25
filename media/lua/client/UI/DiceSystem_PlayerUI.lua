@@ -186,10 +186,29 @@ function DiceMenu.OnTick()
         local comboOcc = DiceMenu.instance.comboOccupation
         local selectedOccupation = comboOcc:getOptionData(comboOcc.selected)
         PlayerHandler.SetOccupation(selectedOccupation)
+
+        DiceMenu.instance.comboStatusEffects.disabled = true
+
+
     else
         -- disable occupation choice and allocated skill points label if it's already initialized
         DiceMenu.instance.comboOccupation.disabled = true
         DiceMenu.instance.labelSkillPointsAllocated:setName("")
+
+        DiceMenu.instance.comboStatusEffects.disabled = false
+        local statusEffectsText = ""
+        for _,v in ipairs(PlayerHandler.GetActiveStatusEffects()) do
+            local singleStatus = GetColoredStatusEffect(v)
+
+            if statusEffectsText == "" then
+                statusEffectsText = singleStatus
+            else
+                statusEffectsText = statusEffectsText .. " - <SPACE> " .. singleStatus
+            end
+        end
+        DiceMenu.instance.labelStatusEffectsList:setText(statusEffectsText)
+        DiceMenu.instance.labelStatusEffectsList.textDirty = true
+
 
     end
 
@@ -214,19 +233,6 @@ function DiceMenu.OnTick()
             DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
         end
     end
-
-    local statusEffectsText = ""
-    for _,v in ipairs(PlayerHandler.GetActiveStatusEffects()) do
-        local singleStatus = GetColoredStatusEffect(v)
-
-        if statusEffectsText == "" then
-            statusEffectsText = singleStatus
-        else
-            statusEffectsText = statusEffectsText .. " - " .. singleStatus
-        end
-    end
-    DiceMenu.instance.labelStatusEffectsList:setText(statusEffectsText)
-    DiceMenu.instance.labelStatusEffectsList.textDirty = true
 
 
 
@@ -266,11 +272,11 @@ function DiceMenu:createChildren()
     local frameHeight = 40
     local yOffsetFrame = frameHeight/4
 
-    self.labelStatusEffectsList = ISRichTextPanel:new(self.width/4, yOffset, self.width/2, 25)
+    self.labelStatusEffectsList = ISRichTextPanel:new(0, yOffset, self.width - 10, 25)
     self.labelStatusEffectsList:initialise()
     self:addChild(self.labelStatusEffectsList)
 
-    self.labelStatusEffectsList.marginLeft = 0
+    self.labelStatusEffectsList.marginLeft = self.width/4
     self.labelStatusEffectsList.autosetheight = false
     self.labelStatusEffectsList.background = false
     self.labelStatusEffectsList.backgroundColor = {r=0, g=0, b=0, a=0}
@@ -487,6 +493,7 @@ function DiceMenu:onOptionMouseDown(btn)
     elseif btn.internal == 'SAVE' then
         PlayerHandler.SetIsInitialized(true)
         DiceMenu.instance.btnConfirm:setEnable(false)
+        self:closeMenu()
     elseif btn.internal == 'CLOSE' then
         self:closeMenu()
     end
