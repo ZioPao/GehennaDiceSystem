@@ -14,10 +14,43 @@ local occupationsBonusData = {
 
 local statsTable = {}
 function OnConnected()
+    print("Requested global mod data")
     ModData.request(DICE_SYSTEM_MOD_STRING)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
+
+
+    -- TODO Add check if it's
 end
 Events.OnConnected.Add(OnConnected)
+
+
+local function copyTable(tableA, tableB)
+    if not tableA or not tableB then
+        return
+    end
+    for key, value in pairs(tableB) do
+        tableA[key] = value
+    end
+    for key, _ in pairs(tableA) do
+        if not tableB[key] then
+            tableA[key] = nil
+        end
+    end
+end
+
+local function ReceiveGlobalModData(key, data)
+    print("Received global mod data")
+    if key == DICE_SYSTEM_MOD_STRING then
+        --Creating a deep copy of recieved data and storing it in local store CLIENT_GLOBALMODDATA table
+        copyTable(statsTable, data)
+    end
+
+    --Update global mod data with local table (from global_mod_data.bin)
+    ModData.add(DICE_SYSTEM_MOD_STRING, statsTable)
+end
+
+
+Events.OnReceiveGlobalModData.Add(ReceiveGlobalModData)
 --------------------------------
 
 
@@ -266,13 +299,14 @@ PlayerStatsHandler.InitModData = function(force)
     -- Fetch data from server
 	ModData.request(DICE_SYSTEM_MOD_STRING)
 
-
     if PlayerStatsHandler.username == nil then
         PlayerStatsHandler.username = getPlayer():getUsername()
     end
 
-
-    statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
+    if statsTable == nil then
+        print("Stats Table is nil :(")
+        statsTable = {}
+    end
 
     if (statsTable ~= nil and statsTable[PlayerStatsHandler.username] == nil) or force then
         statsTable = {}
@@ -309,21 +343,36 @@ PlayerStatsHandler.InitModData = function(force)
             statsTable[PlayerStatsHandler.username].skillsBonus[x] = 0
         end
 
+        sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", {data = statsTable[PlayerStatsHandler.username]})
+        print("DiceSystem: initialized player")
+    elseif statsTable[PlayerStatsHandler.username] ~= nil then
+        print("DiceSystem: Player already initialized")
+    else
+        error("DiceSystem: Global mod data is broken")
     end
-
 end
 
 ---Set if player has finished their setup via the UI
 ---@param val boolean
 PlayerStatsHandler.SetIsInitialized = function(val)
-    statsTable[PlayerStatsHandler.username].isInitialized = val
 
+    -- Syncs it with server
+    statsTable[PlayerStatsHandler.username].isInitialized = val
     if val then
+        ModData.request(DICE_SYSTEM_MOD_STRING)
+        local syncedTable = ModData.get(DICE_SYSTEM_MOD_STRING)
+        syncedTable[PlayerStatsHandler.username] = statsTable[PlayerStatsHandler.username]
         sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", {data = statsTable[PlayerStatsHandler.username]})
     end
 end
 
 PlayerStatsHandler.IsPlayerInitialized = function()
+
+    if statsTable[PlayerStatsHandler.username] == nil then
+        error("Couldn't find player dice data!")
+        return
+    end
+
 
     local isInit = statsTable[PlayerStatsHandler.username].isInitialized
 

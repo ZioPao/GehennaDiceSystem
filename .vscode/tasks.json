@@ -46,7 +46,7 @@
             "label": "Run Zomboid Test Server",
             "options": {"statusbar": {"label": "$(run) Zomboid Server"}},
             "type": "shell",
-            "command":"\"${config:zomboid_folder}\\StartServer64_nosteam.bat\"",
+            "command":"\"${config:zomboid_server_folder}\\StartServer64_nosteam.bat\"",
             "problemMatcher": [
                 "$eslint-stylish"
             ]

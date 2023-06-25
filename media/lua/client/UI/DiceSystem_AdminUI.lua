@@ -157,9 +157,9 @@ function DiceMenuAdminScrollingTable:initList(module)
         local pl = module:get(i)
         local username = pl:getUsername()
         --check if there are dice data for that specific player
-        if PlayerHandler.CheckDataPresence(username) then
-            self.datas:addItem(username, pl)
-        end
+        --if PlayerHandler.CheckDataPresence(username) then
+        self.datas:addItem(username, pl)
+        --end
     end
 end
 
