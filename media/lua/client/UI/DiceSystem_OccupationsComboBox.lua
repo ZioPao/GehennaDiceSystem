@@ -34,7 +34,7 @@ function OccupationsComboBoxPopup:doDrawItem(y, item, alt)
     local color = {r=1,b=1,g=1,a=1}
     --print(item.text)
     if playerHandler.GetStatusEffectValue(item.text) then
-        print("Active!")
+        --print("Active!")
         color.r = 0
         color.g = 1
         color.b = 0

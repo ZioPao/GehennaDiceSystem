@@ -208,10 +208,65 @@ PlayerStatsHandler.GetActiveStatusEffects = function()
     return list
 end
 
+---Get a certain player active status effects
+---@return table
+PlayerStatsHandler.GetActiveStatusEffectsByUsername = function(username)
+    local diceData = statsTable[username]
+    local list = {}
+    for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+        local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+        if diceData.statusEffects[x] ~= nil and diceData.statusEffects[x] == true then
+            table.insert(list, x)
+        end
+    end
+
+    return list
+end
+
+
+-- local function LoopShowStatusEffects()
+--     local currentTime = os_time()
+
+--     if currentTime < lastExecTime + 1 then return end
+
+--     local list = PlayerStatsHandler.GetActiveStatusEffects()
+--     local players = getOnlinePlayers()
+
+--     for i=0, players:size() - 1 do
+--         local statusString = ""
+--         local pl = players:get(i)
+--         if pl then
+--             print(pl:getUsername())
+--             for _,v in ipairs(list) do
+--                 if statusString == "" then
+--                     statusString = v
+--                 else
+--                     statusString = statusString .. ", " .. v
+--                 end
+--             end
+--             --if statusString ~=
+--             pl:setDisplayName(statusString +)
+--             --pl:setHaloNote(statusString, 255,255,255, 1000)
+--         end
+
+--     end
+
+--     lastExecTime = os_time()
+-- end
+
 ---Show status effects on the top of the head of a player
-PlayerStatsHandler.ShowStatusEffects = function()
-    local note = "Test"
-    getPlayer():setHaloNote(note)
+PlayerStatsHandler.ToggleShowStatusEffects = function()
+    lastExecTime = os_time()
+    --Events.OnTick.Add(LoopShowStatusEffects)
+
+    -- if PlayerStatsHandler.isShowingStatusEffects == false then
+    --     PlayerStatsHandler.isShowingStatusEffects = true
+    --     Events.EveryOneMinute.Add(LoopShowStatusEffects)
+    -- else
+    --     Events.EveryOneMinute.Remove(LoopShowStatusEffects)
+    --     PlayerStatsHandler.isShowingStatusEffects = false
+    -- end
+
 end
 
 --* Health *--
@@ -304,7 +359,7 @@ PlayerStatsHandler.InitModData = function(force)
     end
 
     if statsTable == nil then
-        print("Stats Table is nil :(")
+        --print("Stats Table is nil :(")
         statsTable = {}
     end
 
@@ -388,10 +443,10 @@ end
 
 PlayerStatsHandler.CleanModData = function()
     statsTable[PlayerStatsHandler.username] = nil
+    -- TODO We need to do it in the server, not here
 end
 
 PlayerStatsHandler.SetUser = function(user)
-    -- TODO an admin should be able to "ping" another client and ask him to send the data. Or use global mod data and be done with it
     PlayerStatsHandler.username = user
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
 end
@@ -417,6 +472,7 @@ end
 
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
+Events.OnGameStart.Add(PlayerStatsHandler.ToggleShowStatusEffects)
 Events.OnPlayerDeath.Add(PlayerStatsHandler.CleanModData)
 
 
