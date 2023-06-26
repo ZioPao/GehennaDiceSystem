@@ -5,7 +5,7 @@ local PlayerStatsHandler = {}
 local occupationsBonusData = {
     Medic = {},
     PeaceOfficer = {},
-    Soldier = {Resolve = 1, Sharp = 2},
+    Soldier = { Resolve = 1, Sharp = 2 },
     Outlaw = {},
     Artisan = {}
 }
@@ -19,6 +19,7 @@ function OnConnected()
     ModData.request(DICE_SYSTEM_MOD_STRING)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
 end
+
 Events.OnConnected.Add(OnConnected)
 
 
@@ -40,7 +41,7 @@ local function SyncTable(username)
     ModData.request(DICE_SYSTEM_MOD_STRING)
     local syncedTable = ModData.get(DICE_SYSTEM_MOD_STRING)
     syncedTable[username] = statsTable[username]
-    sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", {data = statsTable[username]})
+    sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", { data = statsTable[username] })
 end
 
 local function ReceiveGlobalModData(key, data)
@@ -68,28 +69,25 @@ PlayerStatsHandler.GetFullSkillPoints = function(skill)
     local bonusPoints = diceData.skillsBonus[skill]
 
     return points + bonusPoints
-    
 end
 
 ---Get the amount of points for a specific skill.
 ---@param skill string
 ---@return number
 PlayerStatsHandler.GetSkillPoints = function(skill)
-
     --print("DiceSystem: playerHandler searching for skill " .. skill)
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData == nil then
         --print("DiceSystem: modData is nil, can't return skill point value")
         return -1
-     end
+    end
 
-     local points = diceData.skills[skill]
-     if points ~= nil then
+    local points = diceData.skills[skill]
+    if points ~= nil then
         return points
     else
         return -1
     end
-
 end
 
 PlayerStatsHandler.IncrementSkillPoint = function(skill)
@@ -124,7 +122,6 @@ PlayerStatsHandler.DecrementSkillPoint = function(skill)
     else
         return false
     end
-
 end
 
 PlayerStatsHandler.GetBonusSkillPoints = function(skill)
@@ -132,10 +129,10 @@ PlayerStatsHandler.GetBonusSkillPoints = function(skill)
     if diceData == nil then
         --print("DiceSystem: modData is nil, can't return skill point value")
         return -1
-     end
+    end
 
-     local points = diceData.skillsBonus[skill]
-     if points ~= nil then
+    local points = diceData.skillsBonus[skill]
+    if points ~= nil then
         return points
     else
         return -1
@@ -143,18 +140,15 @@ PlayerStatsHandler.GetBonusSkillPoints = function(skill)
 end
 
 PlayerStatsHandler.GetAllocatedSkillPoints = function()
-
     local diceData = statsTable[PlayerStatsHandler.username]
 
     if diceData == nil then
         --print("DiceSystem: modData is nil, can't return skill point value")
         return -1
-     end
+    end
 
-     local allocatedPoints = diceData.allocatedPoints
-     if allocatedPoints ~= nil then return allocatedPoints else return -1 end
-
-
+    local allocatedPoints = diceData.allocatedPoints
+    if allocatedPoints ~= nil then return allocatedPoints else return -1 end
 end
 
 --* Occupations *--
@@ -206,7 +200,7 @@ end
 PlayerStatsHandler.GetActiveStatusEffects = function()
     local diceData = statsTable[PlayerStatsHandler.username]
     local list = {}
-    for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+    for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
         local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
         if diceData.statusEffects[x] ~= nil and diceData.statusEffects[x] == true then
             table.insert(list, x)
@@ -221,7 +215,7 @@ end
 PlayerStatsHandler.GetActiveStatusEffectsByUsername = function(username)
     local diceData = statsTable[username]
     local list = {}
-    for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+    for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
         local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
         if diceData.statusEffects[x] ~= nil and diceData.statusEffects[x] == true then
             table.insert(list, x)
@@ -239,7 +233,6 @@ end
 
 PlayerStatsHandler.GetMaxHealth = function()
     return statsTable[PlayerStatsHandler.username].maxHealth
-
 end
 
 PlayerStatsHandler.IncrementCurrentHealth = function()
@@ -298,14 +291,12 @@ end
 PlayerStatsHandler.SetMovementBonus = function(deftPoints)
     -- Movement starts at 5
     --print("Setting bonus")
-    local addedBonus = math.floor(deftPoints/2)
+    local addedBonus = math.floor(deftPoints / 2)
     statsTable[PlayerStatsHandler.username].movementBonus = addedBonus
 end
 
 PlayerStatsHandler.GetMovementBonus = function()
-
     return statsTable[PlayerStatsHandler.username].movementBonus
-
 end
 
 
@@ -313,9 +304,8 @@ end
 
 --- Creates a new ModData for a player
 PlayerStatsHandler.InitModData = function(force)
-
     -- Fetch data from server
-	ModData.request(DICE_SYSTEM_MOD_STRING)
+    ModData.request(DICE_SYSTEM_MOD_STRING)
 
     if PlayerStatsHandler.username == nil then
         PlayerStatsHandler.username = getPlayer():getUsername()
@@ -349,19 +339,20 @@ PlayerStatsHandler.InitModData = function(force)
         }
 
         -- Setup status effects
-        for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+        for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
             local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
             statsTable[PlayerStatsHandler.username].statusEffects[x] = false
         end
 
         -- Setup skills
-        for i=1, #PLAYER_DICE_VALUES.SKILLS do
+        for i = 1, #PLAYER_DICE_VALUES.SKILLS do
             local x = PLAYER_DICE_VALUES.SKILLS[i]
             statsTable[PlayerStatsHandler.username].skills[x] = 0
             statsTable[PlayerStatsHandler.username].skillsBonus[x] = 0
         end
 
-        sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", {data = statsTable[PlayerStatsHandler.username]})
+        sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
+            { data = statsTable[PlayerStatsHandler.username] })
         print("DiceSystem: initialized player")
     elseif statsTable[PlayerStatsHandler.username] ~= nil then
         print("DiceSystem: Player already initialized")
@@ -381,7 +372,6 @@ PlayerStatsHandler.SetIsInitialized = function(val)
 end
 
 PlayerStatsHandler.IsPlayerInitialized = function()
-
     if statsTable[PlayerStatsHandler.username] == nil then
         error("Couldn't find player dice data!")
         return
@@ -395,7 +385,6 @@ PlayerStatsHandler.IsPlayerInitialized = function()
     end
 
     return isInit
-
 end
 
 --* Admin functions *--
@@ -411,7 +400,6 @@ PlayerStatsHandler.SetUser = function(user)
 end
 
 PlayerStatsHandler.CheckDataPresence = function(username)
-
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
     if statsTable[username] then return true else return false end
 end

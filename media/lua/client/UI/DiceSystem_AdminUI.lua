@@ -12,7 +12,6 @@ local function FetchPlayers()
     else
         players = ArrayList.new()
         players:add(getPlayer())
-
     end
 
     return players
@@ -22,11 +21,6 @@ end
 
 
 --*****************
-
-
-
-
-
 
 
 
@@ -55,14 +49,13 @@ function DiceMenuAdminViewer.OnOpenPanel()
     return modal
 end
 
-
 function DiceMenuAdminViewer:new(x, y, width, height)
     local o = {}
     o = ISCollapsableWindow:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
-    o.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
-    o.backgroundColor = {r=0, g=0, b=0, a=1}
+    o.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    o.backgroundColor = { r = 0, g = 0, b = 0, a = 1 }
     o.width = width
     o.height = height
     o.resizable = false
@@ -81,31 +74,33 @@ function DiceMenuAdminViewer:initialise()
 
     self.panel = ISTabPanel:new(10, top, self.width - 10 * 2, self.height)
     self.panel:initialise()
-    self.panel.borderColor = { r = 0, g = 0, b = 0, a = 0}
+    self.panel.borderColor = { r = 0, g = 0, b = 0, a = 0 }
     self.panel.target = self
     self.panel.equalTabWidth = false
     self.panel.tabTransparency = 0
     self.panel.tabHeight = 0
     self:addChild(self.panel)
 
-    self.btnDeleteData = ISButton:new(10, self:getHeight() - padBottom - btnHgt, btnWid, btnHgt, getText("IGUI_DeleteData"), self, DiceMenuAdminViewer.onClick)
+    self.btnDeleteData = ISButton:new(10, self:getHeight() - padBottom - btnHgt, btnWid, btnHgt,
+        getText("IGUI_DeleteData"), self, DiceMenuAdminViewer.onClick)
     self.btnDeleteData.internal = "DELETE_DATA"
     self.btnDeleteData.anchorTop = false
     self.btnDeleteData.anchorBottom = true
     self.btnDeleteData:initialise()
     self.btnDeleteData:instantiate()
-    self.btnDeleteData.borderColor = {r=1, g=1, b=1, a=0.1}
+    self.btnDeleteData.borderColor = { r = 1, g = 1, b = 1, a = 0.1 }
     self:addChild(self.btnDeleteData)
 
 
 
-    self.btnClose = ISButton:new(self:getWidth() - btnWid - 10, self:getHeight() - padBottom - btnHgt, btnWid, btnHgt, getText("IGUI_Close"), self, DiceMenuAdminViewer.onClick)
+    self.btnClose = ISButton:new(self:getWidth() - btnWid - 10, self:getHeight() - padBottom - btnHgt, btnWid, btnHgt,
+        getText("IGUI_Close"), self, DiceMenuAdminViewer.onClick)
     self.btnClose.internal = "CLOSE"
     self.btnClose.anchorTop = false
     self.btnClose.anchorBottom = true
     self.btnClose:initialise()
     self.btnClose:instantiate()
-    self.btnClose.borderColor = {r=1, g=1, b=1, a=0.1}
+    self.btnClose.borderColor = { r = 1, g = 1, b = 1, a = 0.1 }
     self:addChild(self.btnClose)
 
 
@@ -116,17 +111,18 @@ function DiceMenuAdminViewer:initialise()
 
     local players = FetchPlayers()
     self.mainCategory:initList(players)
-
-
 end
 
 function DiceMenuAdminViewer:prerender()
     local z = 20
-    self:drawRect(0, 0, self.width, self.height, self.backgroundColor.a, self.backgroundColor.r, self.backgroundColor.g, self.backgroundColor.b)
-    self:drawRectBorder(0, 0, self.width, self.height, self.borderColor.a, self.borderColor.r, self.borderColor.g, self.borderColor.b)
+    self:drawRect(0, 0, self.width, self.height, self.backgroundColor.a, self.backgroundColor.r, self.backgroundColor.g,
+        self.backgroundColor.b)
+    self:drawRectBorder(0, 0, self.width, self.height, self.borderColor.a, self.borderColor.r, self.borderColor.g,
+        self.borderColor.b)
 
     local title = getText("IGUI_DiceAdminMenu")
-    self:drawText(title, self.width/2 - (getTextManager():MeasureStringX(UIFont.Medium, title) / 2), z, 1,1,1,1, UIFont.Medium)
+    self:drawText(title, self.width / 2 - (getTextManager():MeasureStringX(UIFont.Medium, title) / 2), z, 1, 1, 1, 1,
+        UIFont.Medium)
 end
 
 function DiceMenuAdminViewer:onClick(button)
@@ -140,7 +136,6 @@ function DiceMenuAdminViewer:onClick(button)
         local players = FetchPlayers()
         self.mainCategory:initList(players)
     end
-
 end
 
 function DiceMenuAdminViewer:setKeyboardFocus()
@@ -155,20 +150,19 @@ function DiceMenuAdminViewer:close()
     self:removeFromUIManager()
 end
 
-
 --************************************************************************--
 
 
 DiceMenuAdminScrollingTable = ISPanel:derive("DiceMenuAdminScrollingTable")
 
-function DiceMenuAdminScrollingTable:new (x, y, width, height, viewer)
+function DiceMenuAdminScrollingTable:new(x, y, width, height, viewer)
     local o = ISPanel:new(x, y, width, height)
     setmetatable(o, self)
 
-    o.listHeaderColor = {r=0.4, g=0.4, b=0.4, a=0.3}
-    o.borderColor = {r=0.4, g=0.4, b=0.4, a=0}
-    o.backgroundColor = {r=0, g=0, b=0, a=0.0}
-    o.buttonBorderColor = {r=0.7, g=0.7, b=0.7, a=0.5}
+    o.listHeaderColor = { r = 0.4, g = 0.4, b = 0.4, a = 0.3 }
+    o.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 0 }
+    o.backgroundColor = { r = 0, g = 0, b = 0, a = 0.0 }
+    o.buttonBorderColor = { r = 0.7, g = 0.7, b = 0.7, a = 0.5 }
     o.totalResult = 0
     o.viewer = viewer
     DiceMenuAdminScrollingTable.instance = o
@@ -194,7 +188,7 @@ function DiceMenuAdminScrollingTable:createChildren()
 end
 
 function DiceMenuAdminScrollingTable:initList(module)
-    for i=0, module:size() - 1 do
+    for i = 0, module:size() - 1 do
         local pl = module:get(i)
         local username = pl:getUsername()
         --check if there are dice data for that specific player
@@ -203,7 +197,6 @@ function DiceMenuAdminScrollingTable:initList(module)
         end
     end
 end
-
 
 function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
     --print("Selected " .. tostring(pl))
@@ -220,7 +213,6 @@ function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
         DiceMenu.OpenPanel()
     end
 end
-
 
 function DiceMenuAdminScrollingTable:update()
     self.datas.doDrawItem = self.drawDatas
@@ -240,13 +232,13 @@ function DiceMenuAdminScrollingTable:drawDatas(y, item, alt)
         self:drawRect(0, (y), self:getWidth(), self.itemheight, 0.3, 0.6, 0.5, 0.5)
     end
 
-    self:drawRectBorder(0, (y), self:getWidth(), self.itemheight, a, self.borderColor.r, self.borderColor.g, self.borderColor.b)
+    self:drawRectBorder(0, (y), self:getWidth(), self.itemheight, a, self.borderColor.r, self.borderColor.g,
+        self.borderColor.b)
 
     local xOffset = 10
     self:drawText(item.text, xOffset, y + 4, 1, 1, 1, a, self.font)
     return y + self.itemheight
 end
-
 
 ----------------------------------------------
 
@@ -262,7 +254,8 @@ function ISAdminPanelUI:create()
     local y = self.showStatisticsBtn.y + btnHgt + btnGapY
     local btnWid = 150
 
-    self.btnOpenAdminDiceMenu = ISButton:new(10 + btnWid + 20, y, btnWid, btnHgt, getText("IGUI_DiceAdminMenu"), self, DiceMenuAdminViewer.OnOpenPanel)
+    self.btnOpenAdminDiceMenu = ISButton:new(10 + btnWid + 20, y, btnWid, btnHgt, getText("IGUI_DiceAdminMenu"), self,
+        DiceMenuAdminViewer.OnOpenPanel)
     self.btnOpenAdminDiceMenu:initialise()
     self.btnOpenAdminDiceMenu:instantiate()
     self.btnOpenAdminDiceMenu.borderColor = self.buttonBorderColor

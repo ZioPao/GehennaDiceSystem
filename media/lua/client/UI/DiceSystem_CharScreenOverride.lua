@@ -3,11 +3,12 @@ require "ISUI/ISCharacterScreen"
 _ISCharacterScreenCreate = ISCharacterScreen.create
 function ISCharacterScreen:create()
     _ISCharacterScreenCreate(self)
-    self.diceMenuButton = ISButton:new(0, 0, 100, getTextManager():getFontHeight(UIFont.Small), "Dice System", self, ISCharacterScreen.onOpenDiceMenu)
-	self.diceMenuButton:initialise()
-	self.diceMenuButton:instantiate()
-	self.diceMenuButton.background = false
-	self:addChild(self.diceMenuButton)
+    self.diceMenuButton = ISButton:new(0, 0, 100, getTextManager():getFontHeight(UIFont.Small), "Dice System", self,
+        ISCharacterScreen.onOpenDiceMenu)
+    self.diceMenuButton:initialise()
+    self.diceMenuButton:instantiate()
+    self.diceMenuButton.background = false
+    self:addChild(self.diceMenuButton)
 end
 
 _ISCharacterScreenUpdate = ISCharacterScreen.update
