@@ -2,18 +2,7 @@
 StatusEffectsUI = ISPanel:derive("StatusEffectsUI")
 local PlayerHandler = require("DiceSystem_PlayerHandling")
 
-local COLORS_TABLE = {
-    Stable = {r = 0, g = 0.68, b = 0.94},
-    Wounded = {r = 0.95, g = 0.35, b = 0.16},
-    Bleeding = {r = 0.66, g = 0.15, b = 0.18},
-    Prone = {r = 0.04, g = 0.58, b = 0.27},
-    Unconscious = {r = 0.57, g = 0.15, b = 0.56}
-}
-
-
-
 function StatusEffectsUI:drawStatusEffect(pl)
-
     local plNum = pl:getPlayerNum()
     local plX = pl:getX()
     local plY = pl:getY()
@@ -36,22 +25,19 @@ function StatusEffectsUI:drawStatusEffect(pl)
             isSecondLine = true
         end
 
-        local color = COLORS_TABLE[v]
+        -- TODO add client only check somehow
+        local color = StatusEffectsUI.colorsTable[v]
 
+        -- The first DrawText is to simulate a drop shadow to help readability
         self:drawText(stringToPrint, x - 2, y -2, 0, 0, 0, 0.5, UIFont.NewMedium)
         self:drawText(stringToPrint, x, y, color.r, color.g, color.b, 1, UIFont.NewMedium)
         x = x + getTextManager():MeasureStringX(UIFont.NewMedium, stringToPrint) + 10
     end
 end
 
-
 function StatusEffectsUI:render()
     self.zoom = getCore():getZoom(self.player:getPlayerNum())
     local players = getOnlinePlayers()
-
-    -- local players = ArrayList.new()
-    -- players:add(getPlayer())
-
     for i=0, players:size() - 1 do
         local pl = players:get(i)
         if pl then
@@ -67,6 +53,12 @@ function StatusEffectsUI:initialise()
 	ISPanel.initialise(self)
     self:addToUIManager()
     self:bringToTop()
+end
+
+function StatusEffectsUI.SetColorsTable(table)
+
+    StatusEffectsUI.colorsTable = table
+
 end
 
 --************************************--
@@ -87,6 +79,13 @@ end
 -- Setup Status Effects UI
 if isClient() then
     local function InitStatusEffectsUI()
+
+        if ModOptions and ModOptions.getInstance then
+            ModOptions:getInstance(SETTINGS)
+        end
+        
+
+
         StatusEffectsUI:new()
     end
     Events.OnGameStart.Add(InitStatusEffectsUI)
