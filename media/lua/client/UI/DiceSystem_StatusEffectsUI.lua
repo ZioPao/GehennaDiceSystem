@@ -2,8 +2,6 @@
 StatusEffectsUI = ISPanel:derive("StatusEffectsUI")
 local PlayerHandler = require("DiceSystem_PlayerHandling")
 
-
-
 local COLORS_TABLE = {
     Stable = {r = 0, g = 0.68, b = 0.94},
     Wounded = {r = 0.95, g = 0.35, b = 0.16},
@@ -13,54 +11,56 @@ local COLORS_TABLE = {
 }
 
 
+
+function StatusEffectsUI:drawStatusEffect(pl)
+
+    local plNum = pl:getPlayerNum()
+    local plX = pl:getX()
+    local plY = pl:getY()
+    local plZ = pl:getZ()
+
+    local list = PlayerHandler.GetActiveStatusEffectsByUsername(pl:getUsername())
+
+    local baseX = isoToScreenX(plNum, plX, plY, plZ) - 150
+    local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 / self.zoom)
+
+    local x = baseX
+    local y = baseY
+
+    local isSecondLine = false
+    for k,v in ipairs(list) do
+        local stringToPrint = "[" .. v .. "]"
+        if k > 3 and isSecondLine == false then
+            y = y + getTextManager():MeasureStringY(UIFont.NewMedium, stringToPrint)
+            x = baseX
+            isSecondLine = true
+        end
+
+        local color = COLORS_TABLE[v]
+
+        self:drawText(stringToPrint, x - 2, y -2, 0, 0, 0, 0.5, UIFont.NewMedium)
+        self:drawText(stringToPrint, x, y, color.r, color.g, color.b, 1, UIFont.NewMedium)
+        x = x + getTextManager():MeasureStringX(UIFont.NewMedium, stringToPrint) + 10
+    end
+end
+
+
 function StatusEffectsUI:render()
     self.zoom = getCore():getZoom(self.player:getPlayerNum())
+    local players = getOnlinePlayers()
 
-
-    --local players = getOnlinePlayers()
-
-    local players = ArrayList.new()
-    players:add(getPlayer())
+    -- local players = ArrayList.new()
+    -- players:add(getPlayer())
 
     for i=0, players:size() - 1 do
         local pl = players:get(i)
         if pl then
-            local list = PlayerHandler.GetActiveStatusEffectsByUsername(pl:getUsername())
-
-            local baseX = isoToScreenX(pl:getPlayerNum(), pl:getX(), pl:getY(), pl:getZ()) - 150
-            local baseY = isoToScreenY(pl:getPlayerNum(), pl:getX(), pl:getY(), pl:getZ()) - (150 / self.zoom)
-
-            local x = baseX
-            local y = baseY
-
-            local highestX = 0
-            local isSecondLine = false
-            for k,v in ipairs(list) do
-                local stringToPrint = "[" .. v .. "]"
-                if k > 3 and isSecondLine == false then
-                    y = y + getTextManager():MeasureStringY(UIFont.NewMedium, stringToPrint)
-                    x = baseX
-                    isSecondLine = true
-                end
-                --print("Length: " .. tostring(getTextManager():MeasureStringX(UIFont.Medium, stringToPrint)))
-                --print(x)
-                --print(v)
-                --print("____________")
-                local color = COLORS_TABLE[v]
-  
-                self:drawText(stringToPrint, x - 2, y -2, 0, 0, 0, 0.5, UIFont.NewMedium)
-                self:drawText(stringToPrint, x, y, color.r, color.g, color.b, 1, UIFont.NewMedium)
-                x = x + getTextManager():MeasureStringX(UIFont.NewMedium, stringToPrint) + 10
-
-                -- if highestX < x then
-                --     highestX = x
-                -- end
+            if self.player:getDistanceSq(pl) < 30 then
+                self:drawStatusEffect(pl)
             end
-
-            --self:drawRect(getPlayerScreenWidth(pl:getPlayerNum()) - highestX - 150, y, getPlayerScreenWidth(pl:getPlayerNum()) - highestX - 550,55, 0.3, 0, 0, 0)
-
         end
     end
+
 end
 
 function StatusEffectsUI:initialise()
