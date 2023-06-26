@@ -30,6 +30,7 @@ IG_UI_EN = {
 
     IGUI_Save = "Save",
     IGUI_Close = "Close",
+    IGUI_DeleteData = "Delete Data",
 
 
     IGUI_DiceAdminMenu = "Dice System - Admin Panel",

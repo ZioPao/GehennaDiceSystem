@@ -400,9 +400,9 @@ end
 
 --* Admin functions *--
 
-PlayerStatsHandler.CleanModData = function()
-    statsTable[PlayerStatsHandler.username] = nil
-    -- TODO We need to do it in the server, not here
+PlayerStatsHandler.CleanModData = function(username)
+    statsTable[username] = nil
+    SyncTable(username)
 end
 
 PlayerStatsHandler.SetUser = function(user)

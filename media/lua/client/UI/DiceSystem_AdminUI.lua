@@ -1,6 +1,35 @@
 require "ISUI/ISPanel"
 require "ISUI/ISScrollingListBox"
 
+
+--**************--
+-- Helper funcs
+
+local function FetchPlayers()
+    local players
+    if isClient() then
+        players = getOnlinePlayers()
+    else
+        players = ArrayList.new()
+        players:add(getPlayer())
+
+    end
+
+    return players
+end
+
+
+
+
+--*****************
+
+
+
+
+
+
+
+
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
 local FONT_HGT_LARGE = getTextManager():getFontHeight(UIFont.Large)
@@ -59,8 +88,18 @@ function DiceMenuAdminViewer:initialise()
     self.panel.tabHeight = 0
     self:addChild(self.panel)
 
+    self.btnDeleteData = ISButton:new(10, self:getHeight() - padBottom - btnHgt, btnWid, btnHgt, getText("IGUI_DeleteData"), self, DiceMenuAdminViewer.onClick)
+    self.btnDeleteData.internal = "DELETE_DATA"
+    self.btnDeleteData.anchorTop = false
+    self.btnDeleteData.anchorBottom = true
+    self.btnDeleteData:initialise()
+    self.btnDeleteData:instantiate()
+    self.btnDeleteData.borderColor = {r=1, g=1, b=1, a=0.1}
+    self:addChild(self.btnDeleteData)
 
-    self.btnClose = ISButton:new(10, self:getHeight() - padBottom - btnHgt, btnWid, btnHgt, getText("IGUI_Close"), self, DiceMenuAdminViewer.onClick)
+
+
+    self.btnClose = ISButton:new(self:getWidth() - btnWid - 10, self:getHeight() - padBottom - btnHgt, btnWid, btnHgt, getText("IGUI_Close"), self, DiceMenuAdminViewer.onClick)
     self.btnClose.internal = "CLOSE"
     self.btnClose.anchorTop = false
     self.btnClose.anchorBottom = true
@@ -70,20 +109,13 @@ function DiceMenuAdminViewer:initialise()
     self:addChild(self.btnClose)
 
 
-    local mainCategory = DiceMenuAdminScrollingTable:new(0, 0, self.panel.width, self.panel.height, self)
-    mainCategory:initialise()
-    self.panel:addView("Players", mainCategory)
+    self.mainCategory = DiceMenuAdminScrollingTable:new(0, 0, self.panel.width, self.panel.height, self)
+    self.mainCategory:initialise()
+    self.panel:addView("Players", self.mainCategory)
     self.panel:activateView("Players")
 
-    local players
-    if isClient() then
-        players = getOnlinePlayers()
-    else
-        players = ArrayList.new()
-        players:add(getPlayer())
-
-    end
-    mainCategory:initList(players)
+    local players = FetchPlayers()
+    self.mainCategory:initList(players)
 
 
 end
@@ -98,8 +130,15 @@ function DiceMenuAdminViewer:prerender()
 end
 
 function DiceMenuAdminViewer:onClick(button)
-    if button.internal == "CLOSE" then
+    if button.internal == 'CLOSE' then
         self:close()
+    elseif button.internal == 'DELETE_DATA' then
+        -- Get selected player
+        ModData.request(DICE_SYSTEM_MOD_STRING)
+        local player = self.mainCategory.datas.items[self.mainCategory.datas.selected].item
+        PlayerHandler.CleanModData(player:getUsername())
+        local players = FetchPlayers()
+        self.mainCategory:initList(players)
     end
 
 end
@@ -118,6 +157,8 @@ end
 
 
 --************************************************************************--
+
+
 DiceMenuAdminScrollingTable = ISPanel:derive("DiceMenuAdminScrollingTable")
 
 function DiceMenuAdminScrollingTable:new (x, y, width, height, viewer)
@@ -157,48 +198,20 @@ function DiceMenuAdminScrollingTable:initList(module)
         local pl = module:get(i)
         local username = pl:getUsername()
         --check if there are dice data for that specific player
-        --if PlayerHandler.CheckDataPresence(username) then
-        self.datas:addItem(username, pl)
-        --end
+        if PlayerHandler.CheckDataPresence(username) then
+            self.datas:addItem(username, pl)
+        end
     end
 end
 
-function DiceMenuAdminScrollingTable:validateInputs()
-
-
-    return true
-    -- local itemName = self.typeEntry:getText()
-    -- local maxAmount = self.amountEntry:getText()
-
-    -- local isItemNameValid = false
-    -- local isMaxAmountValid = false
-
-    
-    -- -- Check itemName via regex validation
-    -- local regexItemName = "(%S*)%.(%S*)"
-    -- if string.find(itemName, regexItemName) then
-    --     isItemNameValid = true
-    -- end
-
-    -- -- Rarity is already managed
-
-
-    -- local maxAmountRegex = "(%d+)"
-    -- if string.find(maxAmount, maxAmountRegex) then
-    --     isMaxAmountValid = true
-    -- end
-
-    -- return isItemNameValid and isMaxAmountValid
-
-end
 
 function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
     --print("Selected " .. tostring(pl))
 
-    -- TODO Request player for their data
+    -- TODO This could have some problems, we're bypassing PlayersHandler.
+
     ModData.request(DICE_SYSTEM_MOD_STRING)
     local globalModData = ModData.get(DICE_SYSTEM_MOD_STRING)
-
     local diceData = globalModData[pl:getUsername()]
 
     if diceData then
@@ -207,6 +220,7 @@ function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
         DiceMenu.OpenPanel()
     end
 end
+
 
 function DiceMenuAdminScrollingTable:update()
     self.datas.doDrawItem = self.drawDatas
