@@ -30,31 +30,17 @@ Admin utilities
 ---Get a string for ISRichTextPanel containing a colored status effect string
 ---@param value string
 ---@return string
-local function GetColoredStatusEffect(value)
-    local colorString
-    if value == "Stable" then
-        colorString = " <RGB:0,0.68,0.94> "
-    elseif value == "Wounded" then
-        colorString = " <RGB:0.95,0.35,0.16> "
-    elseif value == "Bleeding" then
-        colorString = " <RGB:0.66,0.15,0.18> "
-    elseif value == "Prone" then
-        colorString = " <RGB:0.04,0.58,0.27> "
-    elseif value == "Unconscious" then
-        colorString = " <RGB:0.57,0.15,0.56> "
-    end
-
-    return colorString .. value
-
+local function GetColoredStatusEffect(status)
+    -- Pick from table colors
+    local statusColors = DiceSystem_Common.statusEffectsColors[status]
+    local colorString = string.format(" <RGB:%s,%s,%s> ", statusColors.r, statusColors.g, statusColors.b)
+    return colorString .. status
 end
 
 
 ----------------------------------
 
-
-
 local PlayerHandler = require("DiceSystem_PlayerHandling")
-local DiceHandler = require("DiceSystem_DiceLogic")
 
 DiceMenu = ISCollapsableWindow:derive("DiceMenu")
 DiceMenu.instance = nil
@@ -475,7 +461,7 @@ function DiceMenu:onOptionMouseDown(btn)
     elseif btn.internal == 'SKILL_ROLL' then
         --print(btn.skill)
         local points = PlayerHandler.GetFullSkillPoints(btn.skill)
-        DiceHandler.Roll(btn.skill, points)
+        DiceSystem_Common.Roll(btn.skill, points)
     elseif btn.internal == 'SAVE' then
         PlayerHandler.SetIsInitialized(true)
         DiceMenu.instance.btnConfirm:setEnable(false)

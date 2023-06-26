@@ -20,3 +20,41 @@ STATUS_EFFECTS_COLORS_TABLE_ALT = {
     Prone = {r = 0.35, g = 0.49, b = 0.64},         -- #5A7EA3
     Unconscious = {r = 0.96, g = 0.69, b = 0.81}    -- #F5B0CF
 }
+
+
+--**************************************--
+
+DiceSystem_Common = {}
+
+function DiceSystem_Common.SetStatusEffectsColorsTable(table)
+    DiceSystem_Common.statusEffectsColors = table
+end
+
+--- Do a roll for a specific skill and print the result into chat. If something goes
+---@param skill string
+---@param points number
+---@return number
+function DiceSystem_Common.Roll(skill, points)
+    local rolledValue = ZombRand(20) + 1
+    local additionalMsg = ""
+
+    if rolledValue == 1 then
+        -- crit fail
+        additionalMsg = "CRITICAL FAILURE! "
+    elseif rolledValue == 20 then
+        -- crit success
+        additionalMsg = "CRITICAL SUCCESS! "
+    end
+
+    local finalValue = rolledValue + points
+    local message = "Rolled " .. skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(points) .. "=" .. tostring(finalValue)
+
+    -- send to chat
+    if isClient() then
+        processGeneralMessage(message)
+    end
+
+    --print(message)
+    return finalValue
+end
+

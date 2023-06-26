@@ -17,9 +17,9 @@ if ModOptions and ModOptions.getInstance then
     function enableColorBlind:OnApplyInGame(val)
         print("Reapplying")
         if not val then
-            StatusEffectsUI.SetColorsTable(STATUS_EFFECTS_COLORS_TABLE)
+            DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE)
         else
-            StatusEffectsUI.SetColorsTable(STATUS_EFFECTS_COLORS_TABLE_ALT)
+            DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE_ALT)
         end
     end
 end

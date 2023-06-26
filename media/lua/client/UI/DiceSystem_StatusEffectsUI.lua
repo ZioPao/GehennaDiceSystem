@@ -26,7 +26,7 @@ function StatusEffectsUI:drawStatusEffect(pl)
         end
 
         -- TODO add client only check somehow
-        local color = StatusEffectsUI.colorsTable[v]
+        local color = DiceSystem_Common.statusEffectsColors[v]
 
         -- The first DrawText is to simulate a drop shadow to help readability
         self:drawText(stringToPrint, x - 2, y -2, 0, 0, 0, 0.5, UIFont.NewMedium)
