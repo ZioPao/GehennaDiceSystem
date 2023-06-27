@@ -132,7 +132,10 @@ function DiceMenuAdminViewer:onClick(button)
         -- Get selected player
         ModData.request(DICE_SYSTEM_MOD_STRING)
         local player = self.mainCategory.datas.items[self.mainCategory.datas.selected].item
-        PlayerHandler.CleanModData(player:getUsername())
+
+
+        --PlayerHandler.CleanModData(player:getUsername())
+        PlayerHandler.CleanModData(player:getOnlineID())
         local players = FetchPlayers()
         self.mainCategory:initList(players)
     end

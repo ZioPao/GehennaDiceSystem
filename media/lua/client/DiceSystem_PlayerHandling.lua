@@ -164,7 +164,6 @@ PlayerStatsHandler.SetOccupation = function(occupation)
     diceData.occupation = occupation
     local bonusData = occupationsBonusData[occupation]
 
-
     for key, bonus in pairs(bonusData) do
         diceData.skillsBonus[key] = bonus
     end
@@ -393,9 +392,12 @@ end
 
 --* Admin functions *--
 
-PlayerStatsHandler.CleanModData = function(username)
-    statsTable[username] = nil
-    SyncTable(username)
+---Start cleaning process for a specific user
+---@param userID any
+PlayerStatsHandler.CleanModData = function(userID)
+    sendClientCommand(DICE_SYSTEM_MOD_STRING, "resetDiceData", {userID=userID})
+    --statsTable[username] = nil
+    --SyncTable(username)
 end
 
 PlayerStatsHandler.SetUser = function(user)
