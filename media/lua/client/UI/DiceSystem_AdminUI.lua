@@ -191,6 +191,7 @@ function DiceMenuAdminScrollingTable:createChildren()
 end
 
 function DiceMenuAdminScrollingTable:initList(module)
+    self.datas:clear()
     for i = 0, module:size() - 1 do
         local pl = module:get(i)
         local username = pl:getUsername()
