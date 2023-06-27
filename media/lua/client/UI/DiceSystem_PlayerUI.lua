@@ -169,7 +169,11 @@ function DiceMenu.OnTick()
 
         DiceMenu.instance.comboStatusEffects.disabled = false
         local statusEffectsText = ""
-        for _,v in ipairs(PlayerHandler.GetActiveStatusEffects()) do
+
+        local activeStatusEffects = PlayerHandler.GetActiveStatusEffects()
+
+        for i=1, #activeStatusEffects do
+            local v = activeStatusEffects[i]
             local singleStatus = GetColoredStatusEffect(v)
 
             if statusEffectsText == "" then
