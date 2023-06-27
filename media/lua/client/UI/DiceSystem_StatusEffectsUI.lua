@@ -61,8 +61,6 @@ function StatusEffectsUI:render()
         if pl then
             if self.player:getDistanceSq(pl) < StatusEffectsUI.renderDistance then
                 self:drawStatusEffect(pl)
-            else
-                print(getUsername(pl) .. " too far, skip render")
             end
         end
     end

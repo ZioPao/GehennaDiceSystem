@@ -175,7 +175,7 @@ function DiceMenu.OnTick()
             if statusEffectsText == "" then
                 statusEffectsText = singleStatus
             else
-                statusEffectsText = statusEffectsText .. " - <SPACE> " .. singleStatus
+                statusEffectsText = statusEffectsText .. " <SPACE> - <SPACE> " .. singleStatus
             end
         end
         DiceMenu.instance.labelStatusEffectsList:setText(statusEffectsText)
