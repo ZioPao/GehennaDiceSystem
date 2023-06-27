@@ -237,7 +237,12 @@ end
 function DiceMenu:createChildren()
 	local yOffset = 40
 
-    local playerName = PlayerHandler.username
+    local pl = getPlayer()
+    local playerName = pl:getDescriptor():getForename() .. " " .. pl:getDescriptor():getSurname()
+
+    if getPlayer():getUsername() ~= PlayerHandler.username then
+        playerName = "Other user - " .. PlayerHandler.username
+    end
 
 	self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset, 25, playerName, 1, 1, 1, 1, UIFont.Large, true)
     self.labelPlayer:initialise()
