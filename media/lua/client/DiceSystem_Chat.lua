@@ -29,8 +29,7 @@ end
 function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
     return function(self, ...)
         local originalReturn = originalFunc(self, ...)
-
-        -- TODO This will present issues, since say doesn't support ISRichText formatting. 
+        self:setOverHeadSpeech(true)    -- TODO Test this with general message
         if DiceSystem_ChatOverride.currentMsg ~= "" then
 
             local plDescriptor = getPlayer():getDescriptor()
@@ -40,10 +39,11 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
             local statusEffectsString = GetStatusEffectsString(getPlayer():getUsername())
             local correctedMsg = string.format("<RGB:1,1,1> %s %s <SPACE> %s %s", forename, surname, statusEffectsString, DiceSystem_ChatOverride.currentMsg )
             DiceSystem_ChatOverride.currentMsg = ""
+            self:setOverHeadSpeech(false)
             return correctedMsg
 
         end
-        -- DiceSystem_Common.Roll("Deft", 5)
+        -- DiceSystem_Common.Roll("Deft", 19)
         --local role = getStatusEffectForMessage(self) or ""
         --     line = line:gsub("%[" .. escape_pattern(message:getAuthor()) .. "%]" .. "%:", "");
 

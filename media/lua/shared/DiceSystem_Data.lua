@@ -42,16 +42,20 @@ function DiceSystem_Common.Roll(skill, points)
 
     if rolledValue == 1 then
         -- crit fail
-        additionalMsg = " <SPACE> <RGB:1,0,0> CRITICAL FAILURE! <SPACE> "
+        additionalMsg = " <SPACE> �� <RGB:1,0,0> �� CRITICAL FAILURE! �� <SPACE> "
     elseif rolledValue == 20 then
         -- crit success
-        additionalMsg = " <SPACE> <RGB:0,1,0> CRITICAL SUCCESS! <SPACE> "
+        additionalMsg = " <SPACE> �� <RGB:0,1,0> �� CRITICAL SUCCESS! �� <SPACE> "
     end
 
     local finalValue = rolledValue + points
     local message = " rolled " ..
     skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(points) .. "=" .. tostring(finalValue)
 
+
+
+
+    
     -- send to chat
     if isClient() then
         DiceSystem_ChatOverride.NotifyRoll(message)
