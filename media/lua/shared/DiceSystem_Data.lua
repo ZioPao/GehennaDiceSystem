@@ -26,6 +26,8 @@ STATUS_EFFECTS_COLORS_TABLE_ALT = {
 
 DiceSystem_Common = {}
 
+DiceSystem_Common.activeStatusEffects = {}
+
 function DiceSystem_Common.SetStatusEffectsColorsTable(table)
     DiceSystem_Common.statusEffectsColors = table
 end

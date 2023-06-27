@@ -199,10 +199,11 @@ end
 
 PlayerStatsHandler.GetActiveStatusEffects = function()
     local diceData = statsTable[PlayerStatsHandler.username]
+    local statusEffects = diceData.statusEffects
     local list = {}
     for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
         local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-        if diceData.statusEffects[x] ~= nil and diceData.statusEffects[x] == true then
+        if statusEffects[x] ~= nil and statusEffects[x] == true then
             table.insert(list, x)
         end
     end
@@ -210,14 +211,17 @@ PlayerStatsHandler.GetActiveStatusEffects = function()
     return list
 end
 
+-- TODO Cache this
 ---Get a certain player active status effects
 ---@return table
 PlayerStatsHandler.GetActiveStatusEffectsByUsername = function(username)
     local diceData = statsTable[username]
+    local statusEffects = diceData.statusEffects
     local list = {}
+
     for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
         local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-        if diceData.statusEffects[x] ~= nil and diceData.statusEffects[x] == true then
+        if statusEffects[x] ~= nil and statusEffects[x] == true then
             table.insert(list, x)
         end
     end

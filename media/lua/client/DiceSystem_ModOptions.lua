@@ -9,6 +9,15 @@ local SETTINGS = {
     mod_shortname = "Pandemonium RP - Dice System"
 }
 
+local function CheckOptions()
+    --* Color blindness check
+    if not SETTINGS.options.enableColorBlind then
+        StatusEffectsUI.SetColorsTable(STATUS_EFFECTS_COLORS_TABLE)
+    else
+        StatusEffectsUI.SetColorsTable(STATUS_EFFECTS_COLORS_TABLE_ALT)
+    end
+end
+
 if ModOptions and ModOptions.getInstance then
     local modOptions = ModOptions:getInstance(SETTINGS)
 
@@ -22,16 +31,13 @@ if ModOptions and ModOptions.getInstance then
             DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE_ALT)
         end
     end
+
+    Events.OnGameStart.Add(CheckOptions)
+
+else
+    print("Setting normal colors")
+    DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE)
 end
 
 
-local function CheckOptions()
-    --* Color blindness check
-    if not SETTINGS.options.enableColorBlind then
-        StatusEffectsUI.SetColorsTable(STATUS_EFFECTS_COLORS_TABLE)
-    else
-        StatusEffectsUI.SetColorsTable(STATUS_EFFECTS_COLORS_TABLE_ALT)
-    end
-end
 
-Events.OnGameStart.Add(CheckOptions)
