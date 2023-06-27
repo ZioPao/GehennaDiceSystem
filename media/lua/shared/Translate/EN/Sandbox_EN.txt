@@ -1,0 +1,5 @@
+Sandbox_EN = {
+    Sandbox_PandemoniumDiceSystem = "Pandemonium RP - Dice System",
+
+    Sandbox_PandemoniumDiceSystem_RenderDistanceStatusEffects = "Status Effects Render Distance",
+}

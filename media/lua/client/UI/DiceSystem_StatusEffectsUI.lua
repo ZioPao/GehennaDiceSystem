@@ -59,8 +59,10 @@ function StatusEffectsUI:render()
     for i = 0, players:size() - 1 do
         local pl = players:get(i)
         if pl then
-            if self.player:getDistanceSq(pl) < 30 then
+            if self.player:getDistanceSq(pl) < StatusEffectsUI.renderDistance then
                 self:drawStatusEffect(pl)
+            else
+                print(getUsername(pl) .. " too far, skip render")
             end
         end
     end
@@ -99,7 +101,7 @@ if isClient() then
         end
 
 
-
+        StatusEffectsUI.renderDistance = SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
         StatusEffectsUI:new()
     end
     Events.OnGameStart.Add(InitStatusEffectsUI)

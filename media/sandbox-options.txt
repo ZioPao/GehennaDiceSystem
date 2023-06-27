@@ -1,0 +1,12 @@
+VERSION = 1,
+
+option PandemoniumDiceSystem.RenderDistanceStatusEffects
+{
+    type = integer,
+    min = 10,
+    max = 300,
+    default = 100,
+
+    page = PandemoniumDiceSystem,
+    translation = PandemoniumDiceSystem_RenderDistanceStatusEffects,
+}

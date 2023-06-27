@@ -26,10 +26,10 @@ STATUS_EFFECTS_COLORS_TABLE_ALT = {
 
 DiceSystem_Common = {}
 
-DiceSystem_Common.activeStatusEffects = {}
-
-function DiceSystem_Common.SetStatusEffectsColorsTable(table)
-    DiceSystem_Common.statusEffectsColors = table
+---Assign the correct color table for status effects
+---@param colorsTable table
+function DiceSystem_Common.SetStatusEffectsColorsTable(colorsTable)
+    DiceSystem_Common.statusEffectsColors = colorsTable
 end
 
 --- Do a roll for a specific skill and print the result into chat. If something goes
