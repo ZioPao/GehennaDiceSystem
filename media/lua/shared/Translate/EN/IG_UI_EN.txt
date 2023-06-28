@@ -1,15 +1,28 @@
 IG_UI_EN = {
     IGUI_Occupation = "Occupation",
-    IGUI_Ocptn_Medic = "Medic",
-    IGUI_Ocptn_PeaceOfficer = "Peace Officer",
+    IGUI_Ocptn_Unemployed = "Unemployed",
+    IGUI_Ocptn_Artist = "Artist",
+    IGUI_Ocptn_WageSlave = "Wage Slave",
     IGUI_Ocptn_Soldier = "Soldier",
-    IGUI_Ocptn_Outlaw = "Outlaw",
-    IGUI_Ocptn_Artisan = "Artisan",
+    IGUI_Ocptn_Frontiersmen = "Frontiersmen",
+    IGUI_Ocptn_LawEnforcement = "Law Enforcement",
+    IGUI_Ocptn_FirstResponders = "First Responders",
+    IGUI_Ocptn_Criminal = "Criminal",
+    IGUI_Ocptn_BlueCollar = "Blue Collar",
+    IGUI_Ocptn_Engineer = "Engineer",
+    IGUI_Ocptn_WhiteCollar = "White Collar",
+    IGUI_Ocptn_Clinician = "Clinician",
+    IGUI_Ocptn_Academic = "Academic",
+
+
+    
 
     IGUI_StatusEffect = "Status Effect",
     IGUI_StsEfct_Stable = "Stable",
     IGUI_StsEfct_Wounded = "Wounded",
     IGUI_StsEfct_Bleeding = "Bleeding",
+    IGUI_StsEfct_Moderate = "Moderate",
+    IGUI_StsEfct_Severe = "Severe",
     IGUI_StsEfct_Prone = "Prone",
     IGUI_StsEfct_Unconscious = "Unconscious",
     

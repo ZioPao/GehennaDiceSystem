@@ -3,11 +3,19 @@ local PlayerStatsHandler = {}
 --This table will describe how much added bonus we should add to each skill.
 -- Different naming style 'cause of IGUI crap and I don't wanna manage two naming styles
 local occupationsBonusData = {
-    Medic = {},
-    PeaceOfficer = {},
-    Soldier = { Resolve = 1, Sharp = 2 },
-    Outlaw = {},
-    Artisan = {}
+    Unemployed      = { Brutal = 1, Luck = 1, Wit = 1 },
+    Artist          = { Charm = 2, Sharp = 2 },
+    WageSlave       = { Charm = 2, Resolve = 1 },
+    Soldier         = { Brutal = 2, Resolve = 1 },
+    Frontiersmen    = { Brutal = 2, Deft = 1 },
+    LawEnforcement  = { Sharp = 2, Wit = 1 },
+    FirstResponders = { Sharp = 2, Resolve = 1 },
+    Criminal        = { Sharp = 2, Luck = 1 },
+    BlueCollar      = { Deft = 2, Sharp = 1 },
+    Engineer        = { Deft = 2, Wit = 1 },
+    WhiteCollar     = { Wit = 2, Resolve = 1 },
+    Clinician       = { Wit = 2, Sharp = 1 },
+    Academic        = { Wit = 2, Charm = 1 }
 }
 
 --------------------------------
@@ -163,6 +171,11 @@ PlayerStatsHandler.SetOccupation = function(occupation)
     --print("Setting occupation => " .. occupation)
     diceData.occupation = occupation
     local bonusData = occupationsBonusData[occupation]
+
+    -- Reset diceData.skillBonus
+    for k,v in pairs(diceData.skillsBonus) do
+        diceData.skillsBonus[k] = 0
+    end
 
     for key, bonus in pairs(bonusData) do
         diceData.skillsBonus[key] = bonus
@@ -395,7 +408,7 @@ end
 ---Start cleaning process for a specific user
 ---@param userID any
 PlayerStatsHandler.CleanModData = function(userID)
-    sendClientCommand(DICE_SYSTEM_MOD_STRING, "resetDiceData", {userID=userID})
+    sendClientCommand(DICE_SYSTEM_MOD_STRING, "resetDiceData", { userID = userID })
     --statsTable[username] = nil
     --SyncTable(username)
 end
