@@ -135,7 +135,11 @@ function DiceMenuAdminViewer:onClick(button)
 
 
         --PlayerHandler.CleanModData(player:getUsername())
-        PlayerHandler.CleanModData(player:getOnlineID())
+        local playerID = player:getOnlineID()
+        PlayerHandler.CleanModData(playerID)
+        processAdminChatMessage("Reset " .. player:getUsername() .. " data")
+
+
         local players = FetchPlayers()
         self.mainCategory:initList(players)
     end

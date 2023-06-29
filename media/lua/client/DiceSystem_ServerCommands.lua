@@ -3,6 +3,7 @@ local function OnServerCommand(module, command, args)
 
     if command == "receiveResetDiceData" then
         local PlayerHandler = require("DiceSystem_PlayerHandling")
+        DiceMenu.ClosePanel()
         PlayerHandler.InitModData(true)
     end
 end

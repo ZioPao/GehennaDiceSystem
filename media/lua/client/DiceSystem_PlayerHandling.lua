@@ -228,6 +228,7 @@ end
 ---@return table
 PlayerStatsHandler.GetActiveStatusEffectsByUsername = function(username)
     local diceData = statsTable[username]
+    --if diceData == nil then return {} end
     local statusEffects = diceData.statusEffects
     local list = {}
 

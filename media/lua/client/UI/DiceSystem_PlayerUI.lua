@@ -504,6 +504,12 @@ function DiceMenu.OpenPanel()
     return pnl
 end
 
+function DiceMenu.ClosePanel()
+    if DiceMenu.instance then
+        DiceMenu.instance:closeMenu()
+    end
+end
+
 
 --****************************--
 

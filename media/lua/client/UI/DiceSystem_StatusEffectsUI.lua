@@ -58,7 +58,7 @@ function StatusEffectsUI:render()
     local players = getOnlinePlayers()
     for i = 0, players:size() - 1 do
         local pl = players:get(i)
-        if pl then
+        if pl and PlayerHandler.CheckDataPresence(pl:getUsername()) then
             if self.player:getDistanceSq(pl) < StatusEffectsUI.renderDistance then
                 self:drawStatusEffect(pl)
             end

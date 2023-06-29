@@ -1,4 +1,4 @@
-DiceSystem_ComboBox = ISComboBox:derive("OccupationsComboBox")
+DiceSystem_ComboBox = ISComboBox:derive("DiceSystem_ComboBox")
 DiceSystem_ComboBoxOccupationPopup = ISComboBoxPopup:derive("DiceSystem_ComboBoxOccupationPopup")
 DiceSystem_ComboBoxStatusPopup = ISComboBoxPopup:derive("DiceSystem_ComboBoxStatusPopup")
 local playerHandler = require("DiceSystem_PlayerHandling")
@@ -37,14 +37,14 @@ function DiceSystem_ComboBoxOccupationPopup:doDrawItem(y, item, alt)
 
     -- todo check if current item is selected
     -- #ffde16
-    local color = { r = 1, b = 1, g = 1, a = 1 }
+    local color = { r = 1, g = 0.871, b = 0.086, a = 1 }
     --print(item.text)
-    if playerHandler.GetOccupation() == item.text then
-        --print("Active!")
-        color.r = 1
-        color.b = 0.871
-        color.g = 0.086
-    end
+    -- if playerHandler.GetOccupation() == item.text then
+    --     --print("Active!")
+    --     color.r = 0
+    --     color.g = 1
+    --     color.b = 0
+    -- end
 
 
     self:drawText(item.text, 10, y + itemPadY, color.r, color.g, color.b, color.a, self.font)
@@ -120,10 +120,8 @@ function DiceSystem_ComboBox:createChildren()
 
     if self.contents == "OCCUPATIONS" then
         self.popup = DiceSystem_ComboBoxOccupationPopup:new(0, 0, 100, 50)
-    elseif self.contents == "STATUS_EFFECTS" then
-        self.popup = DiceSystem_ComboBoxStatusPopup:new(0, 0, 100, 50)
     else
-        self:close()
+        self.popup = DiceSystem_ComboBoxStatusPopup:new(0, 0, 100, 50)
     end
 
     self.popup:initialise()
@@ -180,7 +178,20 @@ function DiceSystem_ComboBox:prerender()
     local fontHgt = getTextManager():getFontHeight(self.font)
     local y = (self.height - fontHgt) / 2
 
-    self:drawText("Open List", 10, y, self.textColor.r, self.textColor.g, self.textColor.b, self.textColor.a, self.font)
+    local boxLabelString
+    local boxLabelColor = {r = 1 , b = 1, g = 1 }
+    if self.contents == "OCCUPATIONS" then
+        boxLabelString = playerHandler.GetOccupation()
+        boxLabelColor.r = 1
+        boxLabelColor.g = 0.871
+        boxLabelColor.b = 0.086
+    else
+        boxLabelString = "Open List"
+        boxLabelColor.r = self.textColor.r
+        boxLabelColor.g = self.textColor.g
+        boxLabelColor.b = self.textColor.b
+    end
+    self:drawText(boxLabelString, 10, y,boxLabelColor.r, boxLabelColor.g, boxLabelColor.b, self.textColor.a, self.font)
 
     if self:isMouseOver() and not self.expanded and self:getOptionTooltip(self.selected) then
         local text = self:getOptionTooltip(self.selected)
@@ -218,8 +229,8 @@ function DiceSystem_ComboBox:prerender()
     end
 end
 
-function DiceSystem_ComboBox:new(x, y, width, height, target, onChange, onChangeArg1, onChangeArg2, contents)
-    local o = ISComboBox:new(x, y, width, height, target, onChange, onChangeArg1, onChangeArg2)
+function DiceSystem_ComboBox:new(x, y, width, height, target, onChange, contents)
+    local o = ISComboBox:new(x, y, width, height, target, onChange, nil, nil)
     setmetatable(o, self)
     self.__index = self
 
