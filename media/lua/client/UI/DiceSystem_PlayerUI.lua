@@ -279,7 +279,7 @@ function DiceMenu:createChildren()
     self.labelOccupation:instantiate()
     self.panelOccupation:addChild(self.labelOccupation)
 
-	self.comboOccupation = ISComboBox:new(self.labelOccupation:getRight() + 6, self.labelOccupation:getY(), self.width/4, 25, self, self.onChangeOccupation)
+	self.comboOccupation = DiceSystem_ComboBox:new(self.labelOccupation:getRight() + 6, self.labelOccupation:getY(), self.width/4, 25, self, self.onChangeOccupation, "OCCUPATIONS")
     self.comboOccupation.noSelectionText = ""
 	self.comboOccupation:setEditable(true)
 
@@ -306,7 +306,7 @@ function DiceMenu:createChildren()
     self.labelStatusEffects:instantiate()
     self.panelStatusEffects:addChild(self.labelStatusEffects)
 
-	self.comboStatusEffects = OccupationsComboBox:new(self.labelStatusEffects:getRight() + 6, self.labelStatusEffects:getY(), self.width/4, 25, self, self.onChangeStatusEffect)
+	self.comboStatusEffects = DiceSystem_ComboBox:new(self.labelStatusEffects:getRight() + 6, self.labelStatusEffects:getY(), self.width/4, 25, self, self.onChangeStatusEffect, "STATUS_EFFECTS")
 	self.comboStatusEffects.noSelectionText = ""
 	self.comboStatusEffects:setEditable(true)
     for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
