@@ -12,9 +12,11 @@ local SETTINGS = {
 local function CheckOptions()
     --* Color blindness check
     if not SETTINGS.options.enableColorBlind then
-        StatusEffectsUI.SetColorsTable(STATUS_EFFECTS_COLORS_TABLE)
+        print("Color Blind colors")
+        DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE_ALT)
     else
-        StatusEffectsUI.SetColorsTable(STATUS_EFFECTS_COLORS_TABLE_ALT)
+        print("Normal colors")
+        DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE)
     end
 end
 
@@ -38,6 +40,3 @@ else
     --print("Setting normal colors")
     DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE)
 end
-
-
-

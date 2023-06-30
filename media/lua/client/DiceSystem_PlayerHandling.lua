@@ -441,7 +441,7 @@ end
 
 PlayerStatsHandler.IsPlayerInitialized = function()
     if statsTable[PlayerStatsHandler.username] == nil then
-        error("Couldn't find player dice data!")
+        --error("Couldn't find player dice data!")
         return
     end
 
