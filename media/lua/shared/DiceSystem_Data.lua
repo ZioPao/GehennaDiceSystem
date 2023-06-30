@@ -3,7 +3,10 @@ PLAYER_DICE_VALUES = {
     STATUS_EFFECTS = { "Stable", "Wounded", "Bleeding", "Moderate", "Severe", "Prone", "Unconscious" },
     OCCUPATIONS = { "Unemployed", "Artist", "WageSlave", "Soldier", "Frontiersmen", "LawEnforcement", "FirstResponders",
         "Criminal", "BlueCollar", "Engineer", "WhiteCollar", "Clinician", "Academic" },
-    SKILLS = { "Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck" }
+    SKILLS = { "Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck" },
+
+    DEFAULT_HEALTH = 5,
+    DEFAULT_MOVEMENT = 5,
 }
 STATUS_EFFECTS_COLORS_TABLE = {
     Stable = { r = 0, g = 0.68, b = 0.94 },

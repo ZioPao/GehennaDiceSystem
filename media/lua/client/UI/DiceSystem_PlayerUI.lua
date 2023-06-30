@@ -144,7 +144,6 @@ function DiceMenu:fillSkillPanel()
 end
 
 function DiceMenu.OnTick()
-    -- TODO Check if skill points are still not allocated
     local isInit = PlayerHandler.IsPlayerInitialized()
     local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
 
@@ -314,7 +313,6 @@ function DiceMenu:createChildren()
     yOffset = yOffset + frameHeight
 
     --* Armor Bonus *--
-    -- TODO add check onUpdate
     self.panelArmorBonus = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
     self.panelArmorBonus:initialise()
     self:addChild(self.panelArmorBonus)
@@ -395,9 +393,6 @@ function DiceMenu:createChildren()
     yOffset = yOffset + frameHeight
 
     --* Skill points *--
-
-    -- TODO This is gonna be a different check to get if a player has already set up his page or not.
-
     local arePointsAllocated = false
     if not arePointsAllocated then
 

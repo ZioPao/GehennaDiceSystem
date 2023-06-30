@@ -63,8 +63,8 @@ local function ReceiveGlobalModData(key, data)
     ModData.add(DICE_SYSTEM_MOD_STRING, statsTable)
 end
 
-
 Events.OnReceiveGlobalModData.Add(ReceiveGlobalModData)
+
 --------------------------------
 
 
@@ -101,6 +101,7 @@ end
 PlayerStatsHandler.IncrementSkillPoint = function(skill)
     --print("DiceSystem: adding to skill " .. skill)
     local diceData = statsTable[PlayerStatsHandler.username]
+    local result = false
 
     if diceData.allocatedPoints < 20 and diceData.skills[skill] < 5 then
         diceData.skills[skill] = diceData.skills[skill] + 1
@@ -110,10 +111,10 @@ PlayerStatsHandler.IncrementSkillPoint = function(skill)
         if skill == 'Deft' then
             PlayerStatsHandler.SetMovementBonus(diceData.skills[skill])
         end
-        return true
-    else
-        return false
+        result = true
     end
+
+    return result
 end
 
 PlayerStatsHandler.DecrementSkillPoint = function(skill)
@@ -162,9 +163,9 @@ end
 --* Occupations *--
 
 PlayerStatsHandler.GetOccupation = function()
-    -- This is used in the prerender for our special combobox. We'll add a bit of custom logic to be sure that it doesn't break
+    -- This is used in the prerender for our special combobox. We'll add a bit of added logic to be sure that it doesn't break
     if statsTable and PlayerStatsHandler.username and statsTable[PlayerStatsHandler.username] then
-        return statsTable[PlayerStatsHandler.username].occupation 
+        return statsTable[PlayerStatsHandler.username].occupation
     end
 
     return ""
@@ -350,8 +351,8 @@ PlayerStatsHandler.CalculateArmorBonus = function(pl)
     -- Set the correct amount of armor bonus
     statsTable[PlayerStatsHandler.username].armorBonus = scaledProtection
 
-    -- TODO This kinda sucks, set that 5 is the default value somewhere
-    PlayerStatsHandler.SetMaxMovement(5 - scaledProtection)
+    -- We need to scale the movement accordingly
+    PlayerStatsHandler.SetMaxMovement(PLAYER_DICE_VALUES.DEFAULT_MOVEMENT - scaledProtection)
 
 end
 
@@ -362,12 +363,10 @@ PlayerStatsHandler.GetArmorBonus = function()
 end
 
 
-
-
-
 -- * Initialization
 
 --- Creates a new ModData for a player
+---@param force boolean Force initializiation for the current player
 PlayerStatsHandler.InitModData = function(force)
     -- Fetch data from server
     ModData.request(DICE_SYSTEM_MOD_STRING)
@@ -388,13 +387,13 @@ PlayerStatsHandler.InitModData = function(force)
             occupation = "",
             statusEffects = {},
 
-            currentHealth = 5,
-            maxHealth = 5,
+            currentHealth = PLAYER_DICE_VALUES.DEFAULT_HEALTH,
+            maxHealth = PLAYER_DICE_VALUES.DEFAULT_HEALTH,
 
             armorBonus = 0,
 
-            currentMovement = 5,
-            maxMovement = 5,
+            currentMovement = PLAYER_DICE_VALUES.DEFAULT_MOVEMENT,
+            maxMovement = PLAYER_DICE_VALUES.DEFAULT_MOVEMENT,
             movementBonus = 0,
 
             allocatedPoints = 0,

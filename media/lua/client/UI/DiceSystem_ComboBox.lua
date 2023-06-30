@@ -35,7 +35,6 @@ function DiceSystem_ComboBoxOccupationPopup:doDrawItem(y, item, alt)
     end
     local itemPadY = self.itemPadY or (item.height - self.fontHgt) / 2
 
-    -- todo check if current item is selected
     -- #ffde16
     local color = { r = 1, g = 0.871, b = 0.086, a = 1 }
     --print(item.text)
@@ -91,8 +90,6 @@ function DiceSystem_ComboBoxStatusPopup:doDrawItem(y, item, alt)
         end
     end
     local itemPadY = self.itemPadY or (item.height - self.fontHgt) / 2
-
-    -- todo check if current item is selected
     local color = { r = 1, b = 1, g = 1, a = 1 }
     --print(item.text)
     if playerHandler.GetStatusEffectValue(item.text) then
