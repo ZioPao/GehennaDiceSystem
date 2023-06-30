@@ -23,7 +23,7 @@ local occupationsBonusData = {
 
 local statsTable = {}
 function OnConnected()
-    print("Requested global mod data")
+    --print("Requested global mod data")
     ModData.request(DICE_SYSTEM_MOD_STRING)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
 end
@@ -417,9 +417,9 @@ PlayerStatsHandler.InitModData = function(force)
 
         sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
             { data = statsTable[PlayerStatsHandler.username] })
-        print("DiceSystem: initialized player")
+       --print("DiceSystem: initialized player")
     elseif statsTable[PlayerStatsHandler.username] ~= nil then
-        print("DiceSystem: Player already initialized")
+        --print("DiceSystem: Player already initialized")
     else
         error("DiceSystem: Global mod data is broken")
     end

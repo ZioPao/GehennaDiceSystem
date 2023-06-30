@@ -24,7 +24,7 @@ if ModOptions and ModOptions.getInstance then
     local enableColorBlind = modOptions:getData("enableColorBlind")
 
     function enableColorBlind:OnApplyInGame(val)
-        print("Reapplying")
+        --print("Reapplying")
         if not val then
             DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE)
         else
@@ -35,7 +35,7 @@ if ModOptions and ModOptions.getInstance then
     Events.OnGameStart.Add(CheckOptions)
 
 else
-    print("Setting normal colors")
+    --print("Setting normal colors")
     DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE)
 end
 

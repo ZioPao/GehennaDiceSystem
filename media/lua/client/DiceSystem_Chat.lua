@@ -1,11 +1,3 @@
-
-
-
-local function getStatusEffectForMessage(message)
-
-
-end
-
 local PlayerHandler = require("DiceSystem_PlayerHandling")
 
 DiceSystem_ChatOverride = {}
@@ -47,7 +39,7 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
         --local role = getStatusEffectForMessage(self) or ""
         --     line = line:gsub("%[" .. escape_pattern(message:getAuthor()) .. "%]" .. "%:", "");
 
-        print(originalReturn)
+        --print(originalReturn)
         return originalReturn
     end
 end

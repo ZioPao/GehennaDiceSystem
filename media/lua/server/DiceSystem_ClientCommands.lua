@@ -28,7 +28,7 @@ Events.OnClientCommand.Add(OnClientCommand)
 ------------------------------
 -- Handle Global Mod Data
 local function OnInitGlobalModData()
-	print("Initializing global mod data")
+	--print("Initializing global mod data")
 	PlayersDiceData = ModData.getOrCreate(DICE_SYSTEM_MOD_STRING)
 end
 Events.OnInitGlobalModData.Add(OnInitGlobalModData)

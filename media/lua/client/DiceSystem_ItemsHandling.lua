@@ -1,4 +1,3 @@
-
 local function CleanModData(playerIndex, item)
     local PlayerHandler = require("DiceSystem_PlayerHandling")
     PlayerHandler.CleanModData(playerIndex)
@@ -7,10 +6,9 @@ local function CleanModData(playerIndex, item)
     pl:Say("Cleaning data")
 
     local plInv = pl:getInventory()
-
     local diceTool = plInv:FindAndReturn("DiceResetTool")
     if diceTool then
-        plInv:Remove(diceTool)  -- Don't worry about the warning, umbrella must be wrong. This returns a inventoryitem
+        plInv:Remove(diceTool) -- Don't worry about the warning, umbrella must be wrong. This returns a inventoryitem
     end
 end
 
