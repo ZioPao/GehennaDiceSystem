@@ -162,7 +162,12 @@ end
 --* Occupations *--
 
 PlayerStatsHandler.GetOccupation = function()
-    return statsTable[PlayerStatsHandler.username].occupation
+    -- This is used in the prerender for our special combobox. We'll add a bit of custom logic to be sure that it doesn't break
+    if statsTable and PlayerStatsHandler.username and statsTable[PlayerStatsHandler.username] then
+        return statsTable[PlayerStatsHandler.username].occupation 
+    end
+
+    return ""
 end
 
 PlayerStatsHandler.SetOccupation = function(occupation)
