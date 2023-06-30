@@ -66,11 +66,14 @@ function DiceMenu:new(x, y, width, height)
     return o
 end
 
+
+--- Fill the skill panel. The various buttons will be enabled ONLY for the actual player.
 function DiceMenu:fillSkillPanel()
 
     local yOffset = 0
     local frameHeight = 40
     local isInitialized = PlayerHandler.IsPlayerInitialized()
+    local plUsername = getPlayer():getUsername()
 
     for i=1, #PLAYER_DICE_VALUES.SKILLS do
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
@@ -105,7 +108,7 @@ function DiceMenu:fillSkillPanel()
             btnRoll:initialise()
             btnRoll:instantiate()
             btnRoll.skill = PLAYER_DICE_VALUES.SKILLS[i]
-            btnRoll:setEnable(true)
+            btnRoll:setEnable(plUsername == PlayerHandler.username)
             panel:addChild(btnRoll)
         else
             local btnPlus = ISButton:new(self.width - btnWidth, 0, btnWidth, frameHeight - 2, "+", self, self.onOptionMouseDown)
@@ -113,7 +116,7 @@ function DiceMenu:fillSkillPanel()
             btnPlus.skill = PLAYER_DICE_VALUES.SKILLS[i]
             btnPlus:initialise()
             btnPlus:instantiate()
-            btnPlus:setEnable(true)
+            btnPlus:setEnable(plUsername == PlayerHandler.username)
             self["btnPlus" .. PLAYER_DICE_VALUES.SKILLS[i]] = btnPlus
             panel:addChild(btnPlus)
 
@@ -122,7 +125,7 @@ function DiceMenu:fillSkillPanel()
             btnMinus.skill = PLAYER_DICE_VALUES.SKILLS[i]
             btnMinus:initialise()
             btnMinus:instantiate()
-            btnMinus:setEnable(true)
+            btnMinus:setEnable(plUsername == PlayerHandler.username)
             self["btnMinus" .. PLAYER_DICE_VALUES.SKILLS[i]] = btnMinus
             panel:addChild(btnMinus)
 
@@ -146,6 +149,7 @@ end
 function DiceMenu.OnTick()
     local isInit = PlayerHandler.IsPlayerInitialized()
     local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
+    local plUsername = getPlayer():getUsername()        -- TODO optimize this
 
     -- Show allocated points during init 
     if not isInit then
@@ -166,7 +170,7 @@ function DiceMenu.OnTick()
         DiceMenu.instance.comboOccupation.disabled = true
         DiceMenu.instance.labelSkillPointsAllocated:setName("")
 
-        DiceMenu.instance.comboStatusEffects.disabled = false
+        DiceMenu.instance.comboStatusEffects.disabled = (plUsername ~= PlayerHandler.username)
         local statusEffectsText = ""
 
         local activeStatusEffects = PlayerHandler.GetActiveStatusEffects()
@@ -227,6 +231,21 @@ function DiceMenu.OnTick()
     DiceMenu.instance.panelMovement.textDirty = true
     DiceMenu.instance.btnPlusMovement:setEnable(currMovement < totMovement)
     DiceMenu.instance.btnMinusMovement:setEnable(currMovement > 0)
+
+
+
+    ---------------------------
+    -- Since it's gonna be read only for admins, we're gonna disable every possible interactive button
+
+    if plUsername ~= PlayerHandler.username then
+
+        DiceMenu.instance.btnPlusHealth:setEnable(false)
+        DiceMenu.instance.btnMinusHealth:setEnable(false)
+    
+        DiceMenu.instance.btnMinusMovement:setEnable(false)
+        DiceMenu.instance.btnPlusMovement:setEnable(false)
+    end
+    
 end
 
 function DiceMenu:createChildren()

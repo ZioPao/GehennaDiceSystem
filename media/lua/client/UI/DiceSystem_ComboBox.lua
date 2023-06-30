@@ -178,7 +178,7 @@ function DiceSystem_ComboBox:prerender()
     local boxLabelString
     local boxLabelColor = {r = 1 , b = 1, g = 1 }
     if self.contents == "OCCUPATIONS" then
-        boxLabelString = playerHandler.GetOccupation()
+        boxLabelString = getText("IGUI_Ocptn_" .. playerHandler.GetOccupation())
         boxLabelColor.r = 1
         boxLabelColor.g = 0.871
         boxLabelColor.b = 0.086
