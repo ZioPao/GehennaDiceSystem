@@ -1,5 +1,5 @@
 IG_UI_EN = {
-    IGUI_Occupation = "Occupation",
+    IGUI_Occupation = "Professions",
     IGUI_Ocptn_Unemployed = "Unemployed",
     IGUI_Ocptn_Artist = "Artist",
     IGUI_Ocptn_WageSlave = "Wage Slave",
