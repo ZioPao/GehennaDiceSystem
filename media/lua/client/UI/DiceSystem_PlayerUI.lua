@@ -210,13 +210,9 @@ function DiceMenu.OnTick()
         end
     end
 
-
-
-
-    -- todo armor bonus test only
-    DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus",2))
+    DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus", PlayerHandler.GetArmorBonus()))
     DiceMenu.instance.panelArmorBonus.textDirty = true
-    DiceMenu.instance.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler:GetMovementBonus()))
+    DiceMenu.instance.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler.GetMovementBonus()))
     DiceMenu.instance.panelMovementBonus.textDirty = true
 
     local currentHealth = PlayerHandler.GetCurrentHealth()

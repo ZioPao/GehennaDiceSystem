@@ -1,0 +1,12 @@
+module Base
+{
+    item DiceResetTool
+	{
+	    DisplayCategory = Tool,
+		Weight	=	0.1,
+		Type	=	Normal,
+		DisplayName	= Dice System - Reset Tool,
+		Icon	=	Paper,
+		WorldStaticModel = SheetOfPaper,
+	}
+}

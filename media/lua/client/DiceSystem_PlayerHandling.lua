@@ -316,6 +316,49 @@ PlayerStatsHandler.GetMovementBonus = function()
     return statsTable[PlayerStatsHandler.username].movementBonus
 end
 
+PlayerStatsHandler.SetMaxMovement = function(movement)
+    statsTable[PlayerStatsHandler.username].maxMovement = movement
+
+    if statsTable[PlayerStatsHandler.username].currentMovement > movement then
+        statsTable[PlayerStatsHandler.username].currentMovement = movement
+    end
+end
+
+-- * Armor Bonus
+PlayerStatsHandler.CalculateArmorBonus = function(pl)
+    if statsTable == nil or statsTable[PlayerStatsHandler.username] == nil then return end
+
+    --getBulletDefense()
+    local wornItems = pl:getWornItems()
+    local tempProtection = 0
+    for i=1,wornItems:size() do
+        local item = wornItems:get(i-1):getItem()
+        if instanceof(item, "Clothing") then
+            tempProtection = tempProtection + item:getBulletDefense()
+        end
+    end
+
+    local scaledProtection = math.floor(tempProtection/100)
+
+    if scaledProtection < 0 then scaledProtection = 0 end
+
+    -- Set the correct amount of armor bonus
+    statsTable[PlayerStatsHandler.username].armorBonus = scaledProtection
+
+    -- TODO This kinda sucks, set that 5 is the default value somewhere
+    PlayerStatsHandler.SetMaxMovement(5 - scaledProtection)
+
+end
+
+--- Returns the current value of armor bonus
+---@return number
+PlayerStatsHandler.GetArmorBonus = function()
+    return statsTable[PlayerStatsHandler.username].armorBonus
+end
+
+
+
+
 
 -- * Initialization
 
@@ -367,6 +410,10 @@ PlayerStatsHandler.InitModData = function(force)
             statsTable[PlayerStatsHandler.username].skills[x] = 0
             statsTable[PlayerStatsHandler.username].skillsBonus[x] = 0
         end
+
+
+        PlayerStatsHandler.CalculateArmorBonus(getPlayer())
+
 
         sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
             { data = statsTable[PlayerStatsHandler.username] })
@@ -429,6 +476,6 @@ end
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
 Events.OnPlayerDeath.Add(PlayerStatsHandler.CleanModData)
-
+Events.OnClothingUpdated.Add(PlayerStatsHandler.CalculateArmorBonus)
 
 return PlayerStatsHandler
