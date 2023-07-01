@@ -17,7 +17,7 @@ local function GetStatusEffectsString(username)
     return formattedString
 end
 
-
+-- TODO you idiot, currentmsg will be empty for the other players. Fix this
 function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
     return function(self, ...)
         local originalReturn = originalFunc(self, ...)
