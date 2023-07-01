@@ -57,7 +57,7 @@ function DiceSystem_Common.Roll(skill, points)
     end
 
     local finalValue = rolledValue + points
-    local message = " rolled " ..
+    local message = " (||DICE_SYSTEM_MESSAGE||) rolled " ..
         skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(points) .. "=" .. tostring(finalValue)
 
 
@@ -67,7 +67,6 @@ function DiceSystem_Common.Roll(skill, points)
     -- send to chat
     if isClient() then
         DiceSystem_ChatOverride.NotifyRoll(message)
-        --processSayMessage(message)
     end
 
     --print(message)

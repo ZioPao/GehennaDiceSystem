@@ -21,6 +21,51 @@ end
 function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
     return function(self, ...)
         local originalReturn = originalFunc(self, ...)
+
+
+        if string.find(originalReturn, '(||DICE_SYSTEM_MESSAGE||)') then
+            -- TODO Scrub first part
+
+            local match = "%[.+%]:"
+            local found = string.sub(originalReturn, string.find(originalReturn, match))
+            if found then
+                local correctUsername = string.sub(found, 2, string.len(found) - 2)
+                print(correctUsername)
+
+                -- TODO We have their name, now we have to find the desciptor
+
+                local onlinePlayers = getOnlinePlayers()
+
+                for i=0, onlinePlayers:size() - 1 do
+                    local player = onlinePlayers:get(i)
+
+                    if player:getUsername() == correctUsername then
+                        local plDescriptor = player:getDescriptor()
+                        local forename = plDescriptor:getForename()
+                        local surname = plDescriptor:getSurname()
+
+                        local statusEffectsString = GetStatusEffectsString(correctUsername)
+
+                        -- TODO We need only the message without [username]: 
+                        local correctedMsg = string.format("<RGB:1,1,1> %s %s <SPACE> %s %s", forename, surname, statusEffectsString, DiceSystem_ChatOverride.currentMsg )
+                        DiceSystem_ChatOverride.currentMsg = ""
+                    end
+                end
+
+            end
+
+
+        end
+
+
+
+
+            --local plDescriptor = getPlayer():getDescriptor()
+
+
+
+
+
         self:setOverHeadSpeech(true)    -- TODO Test this with general message
         if DiceSystem_ChatOverride.currentMsg ~= "" then
 
