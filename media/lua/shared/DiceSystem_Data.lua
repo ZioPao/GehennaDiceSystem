@@ -47,7 +47,6 @@ end
 function DiceSystem_Common.Roll(skill, points)
     local rolledValue = ZombRand(20) + 1
     local additionalMsg = ""
-
     if rolledValue == 1 then
         -- crit fail
         additionalMsg = "<SPACE> <RGB:1,0,0> CRITICAL FAILURE! "
@@ -60,17 +59,10 @@ function DiceSystem_Common.Roll(skill, points)
     local message = "(||DICE_SYSTEM_MESSAGE||) rolled " ..
         skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(points) .. "=" .. tostring(finalValue)
 
-    -- message = " rolled " ..
-    -- skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(points) .. "=" .. tostring(finalValue)
-
-
-
-
     -- send to chat
     if isClient() then
         DiceSystem_ChatOverride.NotifyRoll(message)
     end
 
-    --print(message)
     return finalValue
 end

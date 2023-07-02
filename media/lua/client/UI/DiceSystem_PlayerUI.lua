@@ -56,43 +56,40 @@ function DiceMenu:new(x, y, width, height)
 
     o.resizable = false
 
-    o.variableColor={r=0.9, g=0.55, b=0.1, a=1}
-    o.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
-    o.backgroundColor = {r=0, g=0, b=0, a=1.0}
-    o.buttonBorderColor = {r=0.7, g=0.7, b=0.7, a=0.5}
+    o.variableColor = { r = 0.9, g = 0.55, b = 0.1, a = 1 }
+    o.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    o.backgroundColor = { r = 0, g = 0, b = 0, a = 1.0 }
+    o.buttonBorderColor = { r = 0.7, g = 0.7, b = 0.7, a = 0.5 }
     o.moveWithMouse = true
 
     DiceMenu.instance = o
     return o
 end
 
-
 --- Fill the skill panel. The various buttons will be enabled ONLY for the actual player.
 function DiceMenu:fillSkillPanel()
-
     local yOffset = 0
     local frameHeight = 40
     local isInitialized = PlayerHandler.IsPlayerInitialized()
     local plUsername = getPlayer():getUsername()
 
-    for i=1, #PLAYER_DICE_VALUES.SKILLS do
+    for i = 1, #PLAYER_DICE_VALUES.SKILLS do
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local panel = ISPanel:new(0, yOffset, self.width, frameHeight)
 
-        if i%2 == 0 then
+        if i % 2 == 0 then
             -- rgb(56, 57, 56)
-            panel.backgroundColor = {r=0.22, g=0.22, b=0.22, a=1}
+            panel.backgroundColor = { r = 0.22, g = 0.22, b = 0.22, a = 1 }
         else
             -- rgb(71, 56, 51)
-            panel.backgroundColor = {r=0.28, g=0.22, b=0.2, a=1}
-
+            panel.backgroundColor = { r = 0.28, g = 0.22, b = 0.2, a = 1 }
         end
 
-        panel.borderColor = {r=0, g=0, b=0, a=1}
+        panel.borderColor = { r = 0, g = 0, b = 0, a = 1 }
         self.panelSkills:addChild(panel)
 
         local skillString = getText("IGUI_Skill_" .. skill)
-        local label = ISLabel:new(10, frameHeight/4, 25, skillString, 1, 1, 1, 1, UIFont.Small, true)
+        local label = ISLabel:new(10, frameHeight / 4, 25, skillString, 1, 1, 1, 1, UIFont.Small, true)
         label:initialise()
         label:instantiate()
         panel:addChild(label)
@@ -103,7 +100,8 @@ function DiceMenu:fillSkillPanel()
         -- Check if is initialized
         if isInitialized then
             -- ROLL
-            local btnRoll = ISButton:new(self.width - btnWidth * 2, 0, btnWidth * 2, frameHeight - 2, "Roll", self, self.onOptionMouseDown)
+            local btnRoll = ISButton:new(self.width - btnWidth * 2, 0, btnWidth * 2, frameHeight - 2, "Roll", self,
+                self.onOptionMouseDown)
             btnRoll.internal = "SKILL_ROLL"
             btnRoll:initialise()
             btnRoll:instantiate()
@@ -111,7 +109,8 @@ function DiceMenu:fillSkillPanel()
             btnRoll:setEnable(plUsername == PlayerHandler.username)
             panel:addChild(btnRoll)
         else
-            local btnPlus = ISButton:new(self.width - btnWidth, 0, btnWidth, frameHeight - 2, "+", self, self.onOptionMouseDown)
+            local btnPlus = ISButton:new(self.width - btnWidth, 0, btnWidth, frameHeight - 2, "+", self,
+                self.onOptionMouseDown)
             btnPlus.internal = "PLUS_SKILL"
             btnPlus.skill = PLAYER_DICE_VALUES.SKILLS[i]
             btnPlus:initialise()
@@ -120,7 +119,8 @@ function DiceMenu:fillSkillPanel()
             self["btnPlus" .. PLAYER_DICE_VALUES.SKILLS[i]] = btnPlus
             panel:addChild(btnPlus)
 
-            local btnMinus = ISButton:new(self.width - btnWidth*2, 0, btnWidth, frameHeight - 2, "-", self, self.onOptionMouseDown)
+            local btnMinus = ISButton:new(self.width - btnWidth * 2, 0, btnWidth, frameHeight - 2, "-", self,
+                self.onOptionMouseDown)
             btnMinus.internal = "MINUS_SKILL"
             btnMinus.skill = PLAYER_DICE_VALUES.SKILLS[i]
             btnMinus:initialise()
@@ -128,11 +128,10 @@ function DiceMenu:fillSkillPanel()
             btnMinus:setEnable(plUsername == PlayerHandler.username)
             self["btnMinus" .. PLAYER_DICE_VALUES.SKILLS[i]] = btnMinus
             panel:addChild(btnMinus)
-
         end
 
-
-        local skillPointsPanel = ISRichTextPanel:new(self.width - btnWidth* 2 - 50, 0, 100, 25)
+        -- Added - 100 to account for eventual armor bonus
+        local skillPointsPanel = ISRichTextPanel:new(self.width - btnWidth * 2 - 100, 0, 100, 25)
 
         skillPointsPanel:initialise()
         panel:addChild(skillPointsPanel)
@@ -142,16 +141,14 @@ function DiceMenu:fillSkillPanel()
         self["labelSkillPoints" .. skill] = skillPointsPanel
         yOffset = yOffset + frameHeight
     end
-
-
 end
 
 function DiceMenu.OnTick()
     local isInit = PlayerHandler.IsPlayerInitialized()
     local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
-    local plUsername = getPlayer():getUsername()        -- TODO optimize this
+    local plUsername = getPlayer():getUsername() -- TODO optimize this
 
-    -- Show allocated points during init 
+    -- Show allocated points during init
     if not isInit then
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
         DiceMenu.instance.labelSkillPointsAllocated:setName(pointsAllocatedString)
@@ -163,8 +160,6 @@ function DiceMenu.OnTick()
         PlayerHandler.SetOccupation(selectedOccupation)
 
         DiceMenu.instance.comboStatusEffects.disabled = true
-
-
     else
         -- disable occupation choice and allocated skill points label if it's already initialized
         DiceMenu.instance.comboOccupation.disabled = true
@@ -175,7 +170,7 @@ function DiceMenu.OnTick()
 
         local activeStatusEffects = PlayerHandler.GetActiveStatusEffects()
 
-        for i=1, #activeStatusEffects do
+        for i = 1, #activeStatusEffects do
             local v = activeStatusEffects[i]
             local singleStatus = GetColoredStatusEffect(v)
 
@@ -187,27 +182,25 @@ function DiceMenu.OnTick()
         end
         DiceMenu.instance.labelStatusEffectsList:setText(statusEffectsText)
         DiceMenu.instance.labelStatusEffectsList.textDirty = true
-
-
     end
 
     -- Show skill points
-    for i=1, #PLAYER_DICE_VALUES.SKILLS do
+    for i = 1, #PLAYER_DICE_VALUES.SKILLS do
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local skillPoints = PlayerHandler.GetSkillPoints(skill)
         local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
         local armorBonusPoints = PlayerHandler.GetArmorBonus()
 
 
-        local skillPointsString = string.format(" <RIGHT> %d", skillPoints)
+        local skillPointsString = string.format(" <RIGHT> %d <SPACE> ", skillPoints)
 
         --local skillPointsString
         if bonusSkillPoints ~= 0 then
-            skillPointsString = string.format(skillPointsString .. " <SPACE> <SPACE> <RGB:0.94,0.82,0.09> + %d", bonusSkillPoints)
+            skillPointsString = string.format(skillPointsString .. " <SPACE> <RGB:0.94,0.82,0.09> + %d", bonusSkillPoints)
         end
         -- Specific case for Resolve, it should scale on armor bonus
         if skill == "Resolve" and armorBonusPoints ~= 0 then
-            skillPointsString = string.format(skillPointsString .. " <SPACE> <SPACE> <RGB:1,0,0> + %d", armorBonusPoints)
+            skillPointsString = string.format(skillPointsString .. " <SPACE> <RGB:1,0,0> + %d", armorBonusPoints)
         end
 
 
@@ -216,7 +209,7 @@ function DiceMenu.OnTick()
 
         -- Handles buttons to assign skill points
         if not isInit then
-            DiceMenu.instance["btnMinus" .. skill]:setEnable(skillPoints ~= 0 )
+            DiceMenu.instance["btnMinus" .. skill]:setEnable(skillPoints ~= 0)
             DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
         end
     end
@@ -228,7 +221,8 @@ function DiceMenu.OnTick()
 
     local currentHealth = PlayerHandler.GetCurrentHealth()
     local maxHealth = PlayerHandler.GetMaxHealth()
-    DiceMenu.instance.panelHealth:setText(getText("IGUI_Health",PlayerHandler.GetCurrentHealth(),PlayerHandler.GetMaxHealth()))
+    DiceMenu.instance.panelHealth:setText(getText("IGUI_Health", PlayerHandler.GetCurrentHealth(),
+        PlayerHandler.GetMaxHealth()))
     DiceMenu.instance.panelHealth.textDirty = true
     DiceMenu.instance.btnPlusHealth:setEnable(currentHealth < maxHealth)
     DiceMenu.instance.btnMinusHealth:setEnable(currentHealth > 0)
@@ -246,18 +240,16 @@ function DiceMenu.OnTick()
     -- Since it's gonna be read only for admins, we're gonna disable every possible interactive button
 
     if plUsername ~= PlayerHandler.username then
-
         DiceMenu.instance.btnPlusHealth:setEnable(false)
         DiceMenu.instance.btnMinusHealth:setEnable(false)
-    
+
         DiceMenu.instance.btnMinusMovement:setEnable(false)
         DiceMenu.instance.btnPlusMovement:setEnable(false)
     end
-    
 end
 
 function DiceMenu:createChildren()
-	local yOffset = 40
+    local yOffset = 40
 
     local pl = getPlayer()
     local playerName = pl:getDescriptor():getForename() .. " " .. pl:getDescriptor():getSurname()
@@ -266,24 +258,25 @@ function DiceMenu:createChildren()
         playerName = "Other user - " .. PlayerHandler.username
     end
 
-	self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset, 25, playerName, 1, 1, 1, 1, UIFont.Large, true)
+    self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset,
+        25, playerName, 1, 1, 1, 1, UIFont.Large, true)
     self.labelPlayer:initialise()
     self.labelPlayer:instantiate()
     self:addChild(self.labelPlayer)
     yOffset = yOffset + 10
 
     local frameHeight = 40
-    local yOffsetFrame = frameHeight/4
+    local yOffsetFrame = frameHeight / 4
 
     self.labelStatusEffectsList = ISRichTextPanel:new(0, yOffset, self.width - 20, 25)
     self.labelStatusEffectsList:initialise()
     self:addChild(self.labelStatusEffectsList)
 
-    self.labelStatusEffectsList.marginLeft = self.width/4
+    self.labelStatusEffectsList.marginLeft = self.width / 4
     self.labelStatusEffectsList.autosetheight = false
     self.labelStatusEffectsList.background = false
-    self.labelStatusEffectsList.backgroundColor = {r=0, g=0, b=0, a=0}
-    self.labelStatusEffectsList.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.labelStatusEffectsList.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
+    self.labelStatusEffectsList.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.labelStatusEffectsList:paginate()
 
 
@@ -291,8 +284,8 @@ function DiceMenu:createChildren()
 
 
     --* Occupation *--
-    self.panelOccupation = ISPanel:new(0, yOffset, self.width/2, frameHeight)        -- y = 25, test only
-    self.panelOccupation.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.panelOccupation = ISPanel:new(0, yOffset, self.width / 2, frameHeight) -- y = 25, test only
+    self.panelOccupation.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self:addChild(self.panelOccupation)
 
     local occupationString = getText("IGUI_Occupation")
@@ -301,11 +294,12 @@ function DiceMenu:createChildren()
     self.labelOccupation:instantiate()
     self.panelOccupation:addChild(self.labelOccupation)
 
-	self.comboOccupation = DiceSystem_ComboBox:new(self.labelOccupation:getRight() + 6, self.labelOccupation:getY(), self.width/4, 25, self, self.onChangeOccupation, "OCCUPATIONS")
+    self.comboOccupation = DiceSystem_ComboBox:new(self.labelOccupation:getRight() + 6, self.labelOccupation:getY(),
+        self.width / 4, 25, self, self.onChangeOccupation, "OCCUPATIONS")
     self.comboOccupation.noSelectionText = ""
-	self.comboOccupation:setEditable(true)
+    self.comboOccupation:setEditable(true)
 
-    for i=1, #PLAYER_DICE_VALUES.OCCUPATIONS do
+    for i = 1, #PLAYER_DICE_VALUES.OCCUPATIONS do
         local occ = PLAYER_DICE_VALUES.OCCUPATIONS[i]
         self.comboOccupation:addOptionWithData(getText("IGUI_Ocptn_" .. occ), occ)
     end
@@ -315,50 +309,52 @@ function DiceMenu:createChildren()
         self.comboOccupation:select(occupation)
     end
 
-	self.panelOccupation:addChild(self.comboOccupation)
+    self.panelOccupation:addChild(self.comboOccupation)
 
     --* Status Effects *--
-    self.panelStatusEffects = ISPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
-    self.panelStatusEffects.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.panelStatusEffects = ISPanel:new(self.width / 2, yOffset, self.width / 2, frameHeight)
+    self.panelStatusEffects.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self:addChild(self.panelStatusEffects)
 
     local statusEffectString = getText("IGUI_StatusEffect")
-    self.labelStatusEffects = ISLabel:new(10, yOffsetFrame, 25, statusEffectString .. ": ", 1, 1, 1, 1, UIFont.Small, true)
+    self.labelStatusEffects = ISLabel:new(10, yOffsetFrame, 25, statusEffectString .. ": ", 1, 1, 1, 1, UIFont.Small,
+        true)
     self.labelStatusEffects:initialise()
     self.labelStatusEffects:instantiate()
     self.panelStatusEffects:addChild(self.labelStatusEffects)
 
-	self.comboStatusEffects = DiceSystem_ComboBox:new(self.labelStatusEffects:getRight() + 6, self.labelStatusEffects:getY(), self.width/4, 25, self, self.onChangeStatusEffect, "STATUS_EFFECTS")
-	self.comboStatusEffects.noSelectionText = ""
-	self.comboStatusEffects:setEditable(true)
-    for i=1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+    self.comboStatusEffects = DiceSystem_ComboBox:new(self.labelStatusEffects:getRight() + 6,
+        self.labelStatusEffects:getY(), self.width / 4, 25, self, self.onChangeStatusEffect, "STATUS_EFFECTS")
+    self.comboStatusEffects.noSelectionText = ""
+    self.comboStatusEffects:setEditable(true)
+    for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
         local statusEffect = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
         self.comboStatusEffects:addOptionWithData(getText("IGUI_StsEfct_" .. statusEffect), statusEffect)
     end
-	self.panelStatusEffects:addChild(self.comboStatusEffects)
+    self.panelStatusEffects:addChild(self.comboStatusEffects)
 
     yOffset = yOffset + frameHeight
 
     --* Armor Bonus *--
-    self.panelArmorBonus = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
+    self.panelArmorBonus = ISRichTextPanel:new(0, yOffset, self.width / 2, frameHeight)
     self.panelArmorBonus:initialise()
     self:addChild(self.panelArmorBonus)
     self.panelArmorBonus.autosetheight = false
     self.panelArmorBonus.background = true
-    self.panelArmorBonus.backgroundColor = {r=0, g=0, b=0, a=0}
-    self.panelArmorBonus.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.panelArmorBonus.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
+    self.panelArmorBonus.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.panelArmorBonus:paginate()
 
     --* Movement Bonus *--
-    self.panelMovementBonus = ISRichTextPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
+    self.panelMovementBonus = ISRichTextPanel:new(self.width / 2, yOffset, self.width / 2, frameHeight)
     self.panelMovementBonus:initialise()
     self:addChild(self.panelMovementBonus)
 
     self.panelMovementBonus.marginLeft = 20
     self.panelMovementBonus.autosetheight = false
     self.panelMovementBonus.background = true
-    self.panelMovementBonus.backgroundColor = {r=0, g=0, b=0, a=0}
-    self.panelMovementBonus.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.panelMovementBonus.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
+    self.panelMovementBonus.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.panelMovementBonus:paginate()
 
 
@@ -374,7 +370,7 @@ function DiceMenu:createChildren()
 
 
     --LEFT MINUS BUTTON
-    self.btnMinusHealth = ISButton:new(2, 0, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
+    self.btnMinusHealth = ISButton:new(2, 0, self.width / 4, frameHeight, "-", self, self.onOptionMouseDown)
     self.btnMinusHealth.internal = "MINUS_HEALTH"
     self.btnMinusHealth:initialise()
     self.btnMinusHealth:instantiate()
@@ -382,7 +378,8 @@ function DiceMenu:createChildren()
     self.panelHealth:addChild(self.btnMinusHealth)
 
     --RIGHT PLUS BUTTON
-    self.btnPlusHealth = ISButton:new(self.width/1.333 - 2, 0, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
+    self.btnPlusHealth = ISButton:new(self.width / 1.333 - 2, 0, self.width / 4, frameHeight, "+", self,
+        self.onOptionMouseDown)
     self.btnPlusHealth.internal = "PLUS_HEALTH"
     self.btnPlusHealth:initialise()
     self.btnPlusHealth:instantiate()
@@ -402,7 +399,7 @@ function DiceMenu:createChildren()
     self.panelMovement:paginate()
 
     --LEFT MINUS BUTTON
-    self.btnMinusMovement = ISButton:new(2, 0, self.width/4, frameHeight, "-", self, self.onOptionMouseDown)
+    self.btnMinusMovement = ISButton:new(2, 0, self.width / 4, frameHeight, "-", self, self.onOptionMouseDown)
     self.btnMinusMovement.internal = "MINUS_MOVEMENT"
     self.btnMinusMovement:initialise()
     self.btnMinusMovement:instantiate()
@@ -410,7 +407,8 @@ function DiceMenu:createChildren()
     self.panelMovement:addChild(self.btnMinusMovement)
 
     --RIGHT PLUS BUTTON
-    self.btnPlusMovement = ISButton:new(self.width/1.333 - 2, 0, self.width/4, frameHeight, "+", self, self.onOptionMouseDown)
+    self.btnPlusMovement = ISButton:new(self.width / 1.333 - 2, 0, self.width / 4, frameHeight, "+", self,
+        self.onOptionMouseDown)
     self.btnPlusMovement.internal = "PLUS_MOVEMENT"
     self.btnPlusMovement:initialise()
     self.btnPlusMovement:instantiate()
@@ -422,10 +420,12 @@ function DiceMenu:createChildren()
     --* Skill points *--
     local arePointsAllocated = false
     if not arePointsAllocated then
-
         local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
-        self.labelSkillPointsAllocated = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Small, pointsAllocatedString)) / 2, yOffset + frameHeight/4, 25, pointsAllocatedString, 1, 1, 1, 1, UIFont.Small, true)
+
+        self.labelSkillPointsAllocated = ISLabel:new(
+        (self.width - getTextManager():MeasureStringX(UIFont.Small, pointsAllocatedString)) / 2, yOffset + frameHeight /
+        4, 25, pointsAllocatedString, 1, 1, 1, 1, UIFont.Small, true)
         self.labelSkillPointsAllocated:initialise()
         self.labelSkillPointsAllocated:instantiate()
         self:addChild(self.labelSkillPointsAllocated)
@@ -451,18 +451,17 @@ function DiceMenu:createChildren()
         self:addChild(self.btnConfirm)
     end
 
-    self.btnClose = ISButton:new(self.width - 100 - 10, self.height - 35, 100, 25, getText("IGUI_Close"), self, self.onOptionMouseDown)
+    self.btnClose = ISButton:new(self.width - 100 - 10, self.height - 35, 100, 25, getText("IGUI_Close"), self,
+        self.onOptionMouseDown)
     self.btnClose.internal = "CLOSE"
     self.btnClose:initialise()
     self.btnClose:instantiate()
     self.btnClose:setEnable(true)
     self:addChild(self.btnClose)
-
 end
 
 function DiceMenu:onChangeOccupation()
-	--local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
-
+    --local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
 end
 
 function DiceMenu:onChangeStatusEffect()
@@ -496,7 +495,7 @@ function DiceMenu:onOptionMouseDown(btn)
     elseif btn.internal == 'CLOSE' then
         self:closeMenu()
     end
-	--local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
+    --local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
 end
 
 function DiceMenu:setVisible(visible)
@@ -509,8 +508,8 @@ function DiceMenu:closeMenu()
 end
 
 function DiceMenu.OpenPanel()
-	--local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
-    PlayerHandler.InitModData()
+    --local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
+    PlayerHandler.InitModData(false)
 
     if DiceMenu.instance then
         DiceMenu.instance:closeMenu()
@@ -527,7 +526,6 @@ function DiceMenu.ClosePanel()
         DiceMenu.instance:closeMenu()
     end
 end
-
 
 --****************************--
 

@@ -76,6 +76,11 @@ PlayerStatsHandler.GetFullSkillPoints = function(skill)
     local points = diceData.skills[skill]
     local bonusPoints = diceData.skillsBonus[skill]
 
+    -- TODO We must account better for this kind of stuff
+    if skill == "Resolve" then
+        bonusPoints = bonusPoints + diceData.armorBonus
+    end
+
     return points + bonusPoints
 end
 
@@ -180,7 +185,7 @@ PlayerStatsHandler.SetOccupation = function(occupation)
     local bonusData = occupationsBonusData[occupation]
 
     -- Reset diceData.skillBonus
-    for k,v in pairs(diceData.skillsBonus) do
+    for k, v in pairs(diceData.skillsBonus) do
         diceData.skillsBonus[k] = 0
     end
 
@@ -324,7 +329,11 @@ PlayerStatsHandler.SetMovementBonus = function(deftPoints)
 end
 
 PlayerStatsHandler.GetMovementBonus = function()
-    return statsTable[PlayerStatsHandler.username].movementBonus
+    if statsTable and statsTable[PlayerStatsHandler.username] then
+        return statsTable[PlayerStatsHandler.username].movementBonus
+    end
+
+    return 0
 end
 
 PlayerStatsHandler.SetMaxMovement = function(movement)
@@ -336,20 +345,24 @@ PlayerStatsHandler.SetMaxMovement = function(movement)
 end
 
 -- * Armor Bonus
+---Check the armor bonus for a certain player
+---@param pl IsoPlayer
+---@return boolean
 PlayerStatsHandler.CalculateArmorBonus = function(pl)
-    if statsTable == nil or statsTable[PlayerStatsHandler.username] == nil then return end
+    if statsTable == nil or statsTable[PlayerStatsHandler.username] == nil then return false end
+    if pl == nil then return false end
 
     --getBulletDefense()
     local wornItems = pl:getWornItems()
     local tempProtection = 0
-    for i=1,wornItems:size() do
-        local item = wornItems:get(i-1):getItem()
+    for i = 1, wornItems:size() do
+        local item = wornItems:get(i - 1):getItem()
         if instanceof(item, "Clothing") then
             tempProtection = tempProtection + item:getBulletDefense()
         end
     end
 
-    local scaledProtection = math.floor(tempProtection/100)
+    local scaledProtection = math.floor(tempProtection / 100)
 
     if scaledProtection < 0 then scaledProtection = 0 end
 
@@ -358,7 +371,7 @@ PlayerStatsHandler.CalculateArmorBonus = function(pl)
 
     -- We need to scale the movement accordingly
     PlayerStatsHandler.SetMaxMovement(PLAYER_DICE_VALUES.DEFAULT_MOVEMENT - scaledProtection)
-
+    return true
 end
 
 --- Returns the current value of armor bonus
@@ -369,8 +382,6 @@ PlayerStatsHandler.GetArmorBonus = function()
     else
         return 0
     end
-
-
 end
 
 
@@ -432,9 +443,13 @@ PlayerStatsHandler.InitModData = function(force)
 
         sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
             { data = statsTable[PlayerStatsHandler.username] })
-       --print("DiceSystem: initialized player")
+        --print("DiceSystem: initialized player")
     elseif statsTable[PlayerStatsHandler.username] ~= nil then
-        --print("DiceSystem: Player already initialized")
+        -- Armor bonus will be recalculated when it's the actual player that's opening the panel, not an admin
+        local localPlayer = getPlayer()
+        if localPlayer:getUsername() == PlayerStatsHandler.username then
+            PlayerStatsHandler.CalculateArmorBonus(localPlayer)
+        end
     else
         error("DiceSystem: Global mod data is broken")
     end
@@ -492,6 +507,13 @@ end
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
 Events.OnPlayerDeath.Add(PlayerStatsHandler.CleanModData)
 Events.OnClothingUpdated.Add(PlayerStatsHandler.CalculateArmorBonus)
-Events.OnGameStart.Add(PlayerStatsHandler.CalculateArmorBonus)
+
+-- A bit of an hack to be sure that it gets calculated at startup
+local function ForceCalculateArmorBonus()
+    if PlayerStatsHandler.CalculateArmorBonus(getPlayer()) == true then
+        Events.OnTick.Remove(ForceCalculateArmorBonus)
+    end
+end
+Events.OnTick.Add(ForceCalculateArmorBonus)
 
 return PlayerStatsHandler

@@ -35,7 +35,6 @@ if ModOptions and ModOptions.getInstance then
     end
 
     Events.OnGameStart.Add(CheckOptions)
-
 else
     --print("Setting normal colors")
     DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE)
