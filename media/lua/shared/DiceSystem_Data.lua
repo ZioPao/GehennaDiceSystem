@@ -57,7 +57,7 @@ function DiceSystem_Common.Roll(skill, points)
     end
 
     local finalValue = rolledValue + points
-    local message = " (||DICE_SYSTEM_MESSAGE||) rolled " ..
+    local message = "(||DICE_SYSTEM_MESSAGE||) rolled " ..
         skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(points) .. "=" .. tostring(finalValue)
 
     -- message = " rolled " ..
