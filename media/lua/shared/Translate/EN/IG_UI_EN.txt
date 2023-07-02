@@ -14,9 +14,6 @@ IG_UI_EN = {
     IGUI_Ocptn_Clinician = "Clinician",
     IGUI_Ocptn_Academic = "Academic",
 
-
-    
-
     IGUI_StatusEffect = "Status Effect",
     IGUI_StsEfct_Stable = "Stable",
     IGUI_StsEfct_Wounded = "Wounded",
@@ -41,9 +38,17 @@ IG_UI_EN = {
     IGUI_Skill_Wit = "Wit",
     IGUI_Skill_Luck = "Luck",
 
-    IGUI_Save = "Save",
-    IGUI_Close = "Close",
-    IGUI_DeleteData = "Delete Data",
+    IGUI_Dice_Save = "Save",
+    IGUI_Dice_Close = "Close",
+
+    IGUI_Dice_OpenPanel = "Open Panel",
+    IGUI_Dice_OpenPanelTooltip = Open the selected player dice panel",
+
+    IGUI_Dice_DeleteData = "Delete Data",
+    IGUI_Dice_DeleteDataTooltip = "Delete the selected player dice data",
+    
+    IGUI_Dice_RefreshPlayersList = "Refresh List",
+    IGUI_Dice_RefreshPlayersListTooltip = "Refresh players list with available dice data",
 
 
     IGUI_DiceAdminMenu = "Dice System - Admin Panel",

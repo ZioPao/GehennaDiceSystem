@@ -53,7 +53,7 @@ local function SyncTable(username)
 end
 
 local function ReceiveGlobalModData(key, data)
-    print("Received global mod data")
+    --print("Received global mod data")
     if key == DICE_SYSTEM_MOD_STRING then
         --Creating a deep copy of recieved data and storing it in local store CLIENT_GLOBALMODDATA table
         copyTable(statsTable, data)
@@ -371,12 +371,12 @@ PlayerStatsHandler.CalculateArmorBonus = function(pl)
     end
 
     ---------------------------
-    print(tempProtection)
+    --print(tempProtection)
     --------------------------
 
 
     local scaledProtection = math.floor(tempProtection / 100)
-    print(scaledProtection)
+    --print(scaledProtection)
     if scaledProtection < 0 then scaledProtection = 0 end
 
     -- Set the correct amount of armor bonus

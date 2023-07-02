@@ -23,6 +23,6 @@ end
 function ISCharacterScreen.onOpenDiceMenu()
     local PlayerHandler = require("DiceSystem_PlayerHandling")
     PlayerHandler.SetUser(getPlayer():getUsername())
-    print("Initializing mod data for " .. PlayerHandler.username)
+    --print("Initializing mod data for " .. PlayerHandler.username)
     DiceMenu.OpenPanel()
 end

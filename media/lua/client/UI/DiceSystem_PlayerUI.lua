@@ -191,7 +191,7 @@ function DiceMenu.OnTick()
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local skillPoints = PlayerHandler.GetSkillPoints(skill)
         local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
-        
+
 
 
         local skillPointsString = string.format(" <RIGHT> %d <SPACE> ", skillPoints)
@@ -426,8 +426,9 @@ function DiceMenu:createChildren()
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
 
         self.labelSkillPointsAllocated = ISLabel:new(
-        (self.width - getTextManager():MeasureStringX(UIFont.Small, pointsAllocatedString)) / 2, yOffset + frameHeight /
-        4, 25, pointsAllocatedString, 1, 1, 1, 1, UIFont.Small, true)
+            (self.width - getTextManager():MeasureStringX(UIFont.Small, pointsAllocatedString)) / 2,
+            yOffset + frameHeight /
+            4, 25, pointsAllocatedString, 1, 1, 1, 1, UIFont.Small, true)
         self.labelSkillPointsAllocated:initialise()
         self.labelSkillPointsAllocated:instantiate()
         self:addChild(self.labelSkillPointsAllocated)
@@ -445,7 +446,7 @@ function DiceMenu:createChildren()
     --------
 
     if not PlayerHandler.IsPlayerInitialized() then
-        self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Save"), self, self.onOptionMouseDown)
+        self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Dice_Save"), self, self.onOptionMouseDown)
         self.btnConfirm.internal = "SAVE"
         self.btnConfirm:initialise()
         self.btnConfirm:instantiate()
@@ -453,7 +454,7 @@ function DiceMenu:createChildren()
         self:addChild(self.btnConfirm)
     end
 
-    self.btnClose = ISButton:new(self.width - 100 - 10, self.height - 35, 100, 25, getText("IGUI_Close"), self,
+    self.btnClose = ISButton:new(self.width - 100 - 10, self.height - 35, 100, 25, getText("IGUI_Dice_Close"), self,
         self.onOptionMouseDown)
     self.btnClose.internal = "CLOSE"
     self.btnClose:initialise()

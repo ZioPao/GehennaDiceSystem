@@ -15,7 +15,7 @@ function DiceSystem_ComboBoxOccupationPopup:doDrawItem(y, item, alt)
         item.height = self.itemheight
     end
     local highlight = (self:isMouseOver() and not self:isMouseOverScrollBar()) and self.mouseoverselected or
-    self.selected
+        self.selected
     if self.parentCombo.joypadFocused then
         highlight = self.selected
     end
@@ -71,7 +71,7 @@ function DiceSystem_ComboBoxStatusPopup:doDrawItem(y, item, alt)
         item.height = self.itemheight
     end
     local highlight = (self:isMouseOver() and not self:isMouseOverScrollBar()) and self.mouseoverselected or
-    self.selected
+        self.selected
     if self.parentCombo.joypadFocused then
         highlight = self.selected
     end
@@ -114,7 +114,6 @@ end
 --**************************************************--
 
 function DiceSystem_ComboBox:createChildren()
-
     if self.contents == "OCCUPATIONS" then
         self.popup = DiceSystem_ComboBoxOccupationPopup:new(0, 0, 100, 50)
     else
@@ -176,7 +175,7 @@ function DiceSystem_ComboBox:prerender()
     local y = (self.height - fontHgt) / 2
 
     local boxLabelString
-    local boxLabelColor = {r = 1 , b = 1, g = 1 }
+    local boxLabelColor = { r = 1, b = 1, g = 1 }
     if self.contents == "OCCUPATIONS" then
         boxLabelString = getText("IGUI_Ocptn_" .. playerHandler.GetOccupation())
         boxLabelColor.r = 1
@@ -188,7 +187,7 @@ function DiceSystem_ComboBox:prerender()
         boxLabelColor.g = self.textColor.g
         boxLabelColor.b = self.textColor.b
     end
-    self:drawText(boxLabelString, 10, y,boxLabelColor.r, boxLabelColor.g, boxLabelColor.b, self.textColor.a, self.font)
+    self:drawText(boxLabelString, 10, y, boxLabelColor.r, boxLabelColor.g, boxLabelColor.b, self.textColor.a, self.font)
 
     if self:isMouseOver() and not self.expanded and self:getOptionTooltip(self.selected) then
         local text = self:getOptionTooltip(self.selected)
