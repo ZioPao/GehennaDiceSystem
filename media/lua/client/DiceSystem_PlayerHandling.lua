@@ -362,8 +362,13 @@ PlayerStatsHandler.CalculateArmorBonus = function(pl)
         end
     end
 
-    local scaledProtection = math.floor(tempProtection / 100)
+    ---------------------------
+    print(tempProtection)
+    --------------------------
 
+
+    local scaledProtection = math.floor(tempProtection / 100)
+    print(scaledProtection)
     if scaledProtection < 0 then scaledProtection = 0 end
 
     -- Set the correct amount of armor bonus
@@ -371,6 +376,7 @@ PlayerStatsHandler.CalculateArmorBonus = function(pl)
 
     -- We need to scale the movement accordingly
     PlayerStatsHandler.SetMaxMovement(PLAYER_DICE_VALUES.DEFAULT_MOVEMENT - scaledProtection)
+    SyncTable(PlayerStatsHandler.username)
     return true
 end
 
@@ -509,11 +515,11 @@ Events.OnPlayerDeath.Add(PlayerStatsHandler.CleanModData)
 Events.OnClothingUpdated.Add(PlayerStatsHandler.CalculateArmorBonus)
 
 -- A bit of an hack to be sure that it gets calculated at startup
-local function ForceCalculateArmorBonus()
-    if PlayerStatsHandler.CalculateArmorBonus(getPlayer()) == true then
-        Events.OnTick.Remove(ForceCalculateArmorBonus)
-    end
-end
-Events.OnTick.Add(ForceCalculateArmorBonus)
+-- local function ForceCalculateArmorBonus()
+--     if PlayerStatsHandler.CalculateArmorBonus(getPlayer()) == true then
+--         Events.OnTick.Remove(ForceCalculateArmorBonus)
+--     end
+-- end
+--Events.OnTick.Add(ForceCalculateArmorBonus)
 
 return PlayerStatsHandler

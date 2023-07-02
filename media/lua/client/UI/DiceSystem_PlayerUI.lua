@@ -130,8 +130,8 @@ function DiceMenu:fillSkillPanel()
             panel:addChild(btnMinus)
         end
 
-        -- Added - 100 to account for eventual armor bonus
-        local skillPointsPanel = ISRichTextPanel:new(self.width - btnWidth * 2 - 100, 0, 100, 25)
+        -- Added - 60 to account for eventual armor bonus
+        local skillPointsPanel = ISRichTextPanel:new(self.width - btnWidth * 2 - 60, 0, 100, 25)
 
         skillPointsPanel:initialise()
         panel:addChild(skillPointsPanel)
@@ -184,12 +184,14 @@ function DiceMenu.OnTick()
         DiceMenu.instance.labelStatusEffectsList.textDirty = true
     end
 
+    local armorBonusPoints = PlayerHandler.GetArmorBonus()
+    --print(armorBonusPoints)
     -- Show skill points
     for i = 1, #PLAYER_DICE_VALUES.SKILLS do
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local skillPoints = PlayerHandler.GetSkillPoints(skill)
         local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
-        local armorBonusPoints = PlayerHandler.GetArmorBonus()
+        
 
 
         local skillPointsString = string.format(" <RIGHT> %d <SPACE> ", skillPoints)
@@ -214,7 +216,7 @@ function DiceMenu.OnTick()
         end
     end
 
-    DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus", PlayerHandler.GetArmorBonus()))
+    DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus", armorBonusPoints))
     DiceMenu.instance.panelArmorBonus.textDirty = true
     DiceMenu.instance.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler.GetMovementBonus()))
     DiceMenu.instance.panelMovementBonus.textDirty = true
