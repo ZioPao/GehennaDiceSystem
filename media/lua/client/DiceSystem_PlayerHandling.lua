@@ -263,6 +263,7 @@ PlayerStatsHandler.IncrementCurrentHealth = function()
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentHealth < diceData.maxHealth then
         diceData.currentHealth = diceData.currentHealth + 1
+        SyncTable(PlayerStatsHandler.username)
         return true
     end
 
@@ -273,6 +274,7 @@ PlayerStatsHandler.DecrementCurrentHealth = function()
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentHealth > 0 then
         diceData.currentHealth = diceData.currentHealth - 1
+        SyncTable(PlayerStatsHandler.username)
         return true
     end
 
@@ -284,6 +286,7 @@ PlayerStatsHandler.IncrementCurrentMovement = function()
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentMovement < diceData.maxMovement + diceData.movementBonus then
         diceData.currentMovement = diceData.currentMovement + 1
+        SyncTable(PlayerStatsHandler.username)
         return true
     end
 
@@ -294,6 +297,7 @@ PlayerStatsHandler.DecrementCurrentMovement = function()
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentMovement > 0 then
         diceData.currentMovement = diceData.currentMovement - 1
+        SyncTable(PlayerStatsHandler.username)
         return true
     end
 
