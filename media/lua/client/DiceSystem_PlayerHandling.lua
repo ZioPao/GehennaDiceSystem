@@ -336,12 +336,20 @@ PlayerStatsHandler.GetMovementBonus = function()
     return 0
 end
 
-PlayerStatsHandler.SetMaxMovement = function(movement)
-    statsTable[PlayerStatsHandler.username].maxMovement = movement
+local function AdjustCurrentMovement()
+    local maxMov = PlayerStatsHandler.GetMaxMovement()
+    local movBonus = PlayerStatsHandler.GetMovementBonus()
 
-    if statsTable[PlayerStatsHandler.username].currentMovement > movement then
-        statsTable[PlayerStatsHandler.username].currentMovement = movement
+    if PlayerStatsHandler.GetCurrentMovement() > maxMov + movBonus then
+        statsTable[PlayerStatsHandler.username].currentMovement = maxMov + movBonus
     end
+end
+
+
+PlayerStatsHandler.SetMaxMovement = function(maxMov)
+    statsTable[PlayerStatsHandler.username].maxMovement = maxMov
+    AdjustCurrentMovement()
+    SyncTable(PlayerStatsHandler.username)
 end
 
 -- * Armor Bonus
@@ -408,6 +416,7 @@ PlayerStatsHandler.InitModData = function(force)
         statsTable = {}
     end
 
+    -- This should happen only from that specific player, not an admin
     if (statsTable ~= nil and statsTable[PlayerStatsHandler.username] == nil) or force then
         statsTable = {}
         statsTable[PlayerStatsHandler.username] = {
@@ -445,8 +454,6 @@ PlayerStatsHandler.InitModData = function(force)
 
 
         PlayerStatsHandler.CalculateArmorBonus(getPlayer())
-
-
         sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
             { data = statsTable[PlayerStatsHandler.username] })
         --print("DiceSystem: initialized player")

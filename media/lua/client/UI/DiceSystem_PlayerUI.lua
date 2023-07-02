@@ -462,10 +462,6 @@ function DiceMenu:createChildren()
     self:addChild(self.btnClose)
 end
 
-function DiceMenu:onChangeOccupation()
-    --local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
-end
-
 function DiceMenu:onChangeStatusEffect()
     local statusEffect = self.comboStatusEffects:getSelectedText()
     PlayerHandler.ToggleStatusEffectValue(statusEffect)
