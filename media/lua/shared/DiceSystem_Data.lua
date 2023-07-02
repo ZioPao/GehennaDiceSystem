@@ -50,16 +50,18 @@ function DiceSystem_Common.Roll(skill, points)
 
     if rolledValue == 1 then
         -- crit fail
-        additionalMsg = " <SPACE> <RGB:1,0,0> CRITICAL FAILURE! "
+        additionalMsg = "<SPACE> <RGB:1,0,0> CRITICAL FAILURE! "
     elseif rolledValue == 20 then
         -- crit success
-        additionalMsg = " <SPACE> <RGB:0,1,0> CRITICAL SUCCESS! "
+        additionalMsg = "<SPACE> <RGB:0,1,0> CRITICAL SUCCESS! "
     end
 
     local finalValue = rolledValue + points
     local message = " (||DICE_SYSTEM_MESSAGE||) rolled " ..
         skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(points) .. "=" .. tostring(finalValue)
 
+    -- message = " rolled " ..
+    -- skill .. " " .. additionalMsg .. tostring(rolledValue) .. "+" .. tostring(points) .. "=" .. tostring(finalValue)
 
 
 

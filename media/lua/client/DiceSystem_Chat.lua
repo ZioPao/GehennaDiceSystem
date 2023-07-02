@@ -21,8 +21,9 @@ end
 function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
     return function(self, ...)
         local originalReturn = originalFunc(self, ...)
+        self:setOverHeadSpeech(true)    -- TODO Test this with general message
 
-
+        --print(originalReturn)
         if string.find(originalReturn, '(||DICE_SYSTEM_MESSAGE||)') then
             -- TODO Scrub first part
 
@@ -45,10 +46,17 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
                         local surname = plDescriptor:getSurname()
 
                         local statusEffectsString = GetStatusEffectsString(correctUsername)
+                        local _, endMatch = string.find(originalReturn, '(||DICE_SYSTEM_MESSAGE||)')
 
-                        -- TODO We need only the message without [username]: 
-                        local correctedMsg = string.format("<RGB:1,1,1> %s %s <SPACE> %s %s", forename, surname, statusEffectsString, DiceSystem_ChatOverride.currentMsg )
-                        DiceSystem_ChatOverride.currentMsg = ""
+                        local separatedMsg = string.sub(originalReturn, endMatch + 2, string.len(originalReturn))
+
+                        --local correctedMsg = string.format("<RGB:1,1,1> %s %s <SPACE> %s %s", forename, surname, statusEffectsString, separatedMsg)
+                        local correctedMsg = string.format("%s %s", statusEffectsString, separatedMsg)
+                        
+                        
+                        
+                        self:setOverHeadSpeech(false)
+                        return correctedMsg
                     end
                 end
 
@@ -63,23 +71,6 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
             --local plDescriptor = getPlayer():getDescriptor()
 
 
-
-
-
-        self:setOverHeadSpeech(true)    -- TODO Test this with general message
-        if DiceSystem_ChatOverride.currentMsg ~= "" then
-
-            local plDescriptor = getPlayer():getDescriptor()
-            local forename = plDescriptor:getForename()
-            local surname = plDescriptor:getSurname()
-
-            local statusEffectsString = GetStatusEffectsString(getPlayer():getUsername())
-            local correctedMsg = string.format("<RGB:1,1,1> %s %s <SPACE> %s %s", forename, surname, statusEffectsString, DiceSystem_ChatOverride.currentMsg )
-            DiceSystem_ChatOverride.currentMsg = ""
-            self:setOverHeadSpeech(false)
-            return correctedMsg
-
-        end
         -- DiceSystem_Common.Roll("Deft", 19)
         --local role = getStatusEffectForMessage(self) or ""
         --     line = line:gsub("%[" .. escape_pattern(message:getAuthor()) .. "%]" .. "%:", "");

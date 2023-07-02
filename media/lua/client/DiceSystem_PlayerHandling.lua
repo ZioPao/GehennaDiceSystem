@@ -173,6 +173,7 @@ end
 
 PlayerStatsHandler.SetOccupation = function(occupation)
     local diceData = statsTable[PlayerStatsHandler.username]
+    if diceData == nil then return end
 
     --print("Setting occupation => " .. occupation)
     diceData.occupation = occupation
@@ -359,7 +360,13 @@ end
 --- Returns the current value of armor bonus
 ---@return number
 PlayerStatsHandler.GetArmorBonus = function()
-    return statsTable[PlayerStatsHandler.username].armorBonus
+    if statsTable and statsTable[PlayerStatsHandler.username] then
+        return statsTable[PlayerStatsHandler.username].armorBonus
+    else
+        return 0
+    end
+
+
 end
 
 
