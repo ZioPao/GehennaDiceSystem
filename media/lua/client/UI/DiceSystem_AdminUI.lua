@@ -3,8 +3,7 @@ require "ISUI/ISScrollingListBox"
 
 
 --**************--
--- Helper funcs
-
+-- Various utilities
 local function FetchPlayers()
     local players
     if isClient() then
@@ -16,6 +15,31 @@ local function FetchPlayers()
 
     return players
 end
+
+
+local os_time = os.time
+local eTime = 0
+
+local function WaitAndFetchPlayersLoop()
+
+    local cTime = os_time()
+
+    if cTime > eTime then
+        local players = FetchPlayers()
+        if DiceMenuAdminViewer and DiceMenuAdminViewer.instance and DiceMenuAdminViewer.instance.mainCategory then
+            DiceMenuAdminViewer.instance.mainCategory:initList(players)
+        end
+
+        Events.OnTick.Remove(WaitAndFetchPlayersLoop)
+    end
+
+end
+
+local function WaitAndFetchPlayers(_eTime)
+    eTime = _eTime + os_time()
+    Events.OnTick.Add(WaitAndFetchPlayersLoop)
+end
+
 
 
 
@@ -90,7 +114,7 @@ function DiceMenuAdminViewer:initialise()
 
     local openIco = getTexture("media/ui/openPanelIcon.png")       -- Document icons created by Freepik - Flaticon - Document
     local refreshListIco = getTexture("media/ui/refreshIcon.png")  -- Refresh icons created by Dave Gandy - Flaticon - Refresh
-    local deleteDataIco = getTexture("media/ui/deleteDataIcon.png")  -- <a href="https://www.flaticon.com/free-icons/delete" title="delete icons">Delete icons created by Kiranshastry - Flaticon</a>
+    local deleteDataIco = getTexture("media/ui/deleteDataIcon.png")  -- www.flaticon.com/free-icons/delete Delete icons created by Kiranshastry - Flaticon
 
     -- Middle button
     self.btnRefreshList = ISButton:new(btnX, btnY, btnSize, btnSize/1.5,"", self, DiceMenuAdminViewer.onClick)
@@ -101,8 +125,7 @@ function DiceMenuAdminViewer:initialise()
     self.btnRefreshList.anchorBottom = true
     self.btnRefreshList:initialise()
     self.btnRefreshList:instantiate()
-    self.btnRefreshList.borderColor = { r = 0.5, g = 0.5, b = 0.5, a = 1 }
-    self.btnRefreshList.backgroundColor = { r = 1, g = 1, b = 1, a = 1}
+    self.btnRefreshList.borderColor = { r = 1, g = 1, b = 1, a = 0.5 }
     self:addChild(self.btnRefreshList)
 
     self.btnOpenPanel = ISButton:new(btnX, btnY - self.btnRefreshList:getHeight() - 10, btnSize, btnSize/1.5, "", self, DiceMenuAdminViewer.onClick)
@@ -113,67 +136,22 @@ function DiceMenuAdminViewer:initialise()
     self.btnOpenPanel.anchorBottom = true
     self.btnOpenPanel:initialise()
     self.btnOpenPanel:instantiate()
-    self.btnOpenPanel.borderColor = { r = 1, g = 1, b = 1, a = 0.1 }
-    self.btnOpenPanel.backgroundColor = { r = 1, g = 1, b = 1, a = 1}
+    self.btnOpenPanel.borderColor = { r = 1, g = 1, b = 1, a = 0.5 }
     self:addChild(self.btnOpenPanel)
 
     self.btnDeleteData = ISButton:new(btnX, btnY + self.btnRefreshList:getHeight() + 10, btnSize, btnSize/1.5, "", self, DiceMenuAdminViewer.onClick)
     self.btnDeleteData.internal = "DELETE_DATA"
     self.btnDeleteData:setTooltip(getText("IGUI_Dice_DeleteDataTooltip"))
     self.btnDeleteData:setImage(deleteDataIco)
+    self.btnDeleteData:setBorderRGBA(1,1,1,1)
+    self.btnDeleteData:setTextureRGBA(1,1,1,1)
     self.btnDeleteData.anchorTop = false
     self.btnDeleteData.anchorBottom = true
     self.btnDeleteData:initialise()
     self.btnDeleteData:instantiate()
-    self.btnDeleteData.borderColor = { r = 1, g = 1, b = 1, a = 0.1 }
-    self.btnDeleteData.backgroundColor = { r = 1, g = 1, b = 1, a = 1}
+    self.btnDeleteData.borderColor = { r = 1, g = 1, b = 1, a = 0.5 }
     self:addChild(self.btnDeleteData)
 
-
-
-
-
-
-    -- self.btnOpenPanel = ISButton:new(btnX, btnY, btnSize, btnSize, "", self, DiceMenuAdminViewer.onClick)
-    -- self.btnOpenPanel.internal = "OPEN"
-    -- self.btnOpenPanel:setTooltip(getText("IGUI_Dice_OpenPanelTooltip"))
-    -- self.btnOpenPanel:setImage(openIco)
-    -- self.btnOpenPanel.anchorTop = false
-    -- self.btnOpenPanel.anchorBottom = true
-    -- self.btnOpenPanel:initialise()
-    -- self.btnOpenPanel:instantiate()
-    -- self.btnOpenPanel.borderColor = { r = 1, g = 1, b = 1, a = 0.1 }
-    -- self.btnOpenPanel.backgroundColor = { r = 1, g = 1, b = 1, a = 1}
-    -- self:addChild(self.btnOpenPanel)
-
-    -- btnY = btnY + self.btnOpenPanel:getHeight() + 10
-
-    -- self.btnRefreshList = ISButton:new(btnX, btnY, btnSize, btnSize,"", self, DiceMenuAdminViewer.onClick)
-    -- self.btnRefreshList.internal = "REFRESH"
-    -- self.btnRefreshList:setTooltip(getText("IGUI_Dice_RefreshPlayersListTooltip"))
-    -- self.btnRefreshList:setImage(refreshListIco)
-    -- self.btnRefreshList.anchorTop = false
-    -- self.btnRefreshList.anchorBottom = true
-    -- self.btnRefreshList:initialise()
-    -- self.btnRefreshList:instantiate()
-    -- self.btnRefreshList.borderColor = { r = 0.5, g = 0.5, b = 0.5, a = 1 }
-    -- self.btnRefreshList.backgroundColor = { r = 1, g = 1, b = 1, a = 1}
-    -- self:addChild(self.btnRefreshList)
-
-    -- btnY = btnY + self.btnRefreshList:getHeight() + 10
-
-
-    -- self.btnDeleteData = ISButton:new(btnX, btnY, btnSize, btnSize, "", self, DiceMenuAdminViewer.onClick)
-    -- self.btnDeleteData.internal = "DELETE_DATA"
-    -- self.btnDeleteData:setTooltip(getText("IGUI_Dice_DeleteDataTooltip"))
-    -- self.btnDeleteData:setImage(deleteDataIco)
-    -- self.btnDeleteData.anchorTop = false
-    -- self.btnDeleteData.anchorBottom = true
-    -- self.btnDeleteData:initialise()
-    -- self.btnDeleteData:instantiate()
-    -- self.btnDeleteData.borderColor = { r = 1, g = 1, b = 1, a = 0.1 }
-    -- self.btnDeleteData.backgroundColor = { r = 1, g = 1, b = 1, a = 1}
-    -- self:addChild(self.btnDeleteData)
 
     self.mainCategory = DiceMenuAdminScrollingTable:new(0, 0, self.panel.width, self.panel.height, self)
     self.mainCategory:initialise()
@@ -182,6 +160,8 @@ function DiceMenuAdminViewer:initialise()
 
     local players = FetchPlayers()
     self.mainCategory:initList(players)
+
+    Events.OnTick.Add(DiceMenuAdminViewer.OnTick)
 end
 
 function DiceMenuAdminViewer:prerender()
@@ -218,10 +198,8 @@ function DiceMenuAdminViewer:onClick(button)
         local playerID = player:getOnlineID()
         PlayerHandler.CleanModData(playerID)
         processAdminChatMessage("Reset " .. player:getUsername() .. " data")
-
-
-        local players = FetchPlayers()
-        self.mainCategory:initList(players)
+        
+        WaitAndFetchPlayers(1)      -- 1 second of delay
     end
 
 end
@@ -233,9 +211,19 @@ function DiceMenuAdminViewer:setKeyboardFocus()
     --view.filterWidgetMap.Type:focus()
 end
 
+function DiceMenuAdminViewer.OnTick()
+
+    local selection = DiceMenuAdminViewer.instance.mainCategory.datas.selected
+
+    DiceMenuAdminViewer.instance.btnOpenPanel:setEnable(selection ~= 0)
+    DiceMenuAdminViewer.instance.btnDeleteData:setEnable(selection ~= 0)
+end
+
 function DiceMenuAdminViewer:close()
     self:setVisible(false)
     self:removeFromUIManager()
+    Events.OnTick.Remove(DiceMenuAdminViewer.OnTick)
+
 end
 
 --************************************************************************--
@@ -270,7 +258,6 @@ function DiceMenuAdminScrollingTable:createChildren()
     self.datas.font = UIFont.NewSmall
     self.datas.doDrawItem = self.drawDatas
     self.datas.drawBorder = true
-    --self.datas:setOnMouseDoubleClick(self, DiceMenuAdminScrollingTable.openPlayerDiceMenu)
     self.datas:addColumn("", 0)
     self:addChild(self.datas)
 end
@@ -281,27 +268,11 @@ function DiceMenuAdminScrollingTable:initList(module)
         local pl = module:get(i)
         local username = pl:getUsername()
         --check if there are dice data for that specific player
-        if PlayerHandler.CheckDataPresence(username) then
+        if PlayerHandler.CheckInitializedStatus(username) then
             self.datas:addItem(username, pl)
         end
     end
 end
-
--- function DiceMenuAdminScrollingTable:openPlayerDiceMenu(pl)
---     --print("Selected " .. tostring(pl))
-
---     -- TODO This could have some problems, we're bypassing PlayersHandler.
-
---     ModData.request(DICE_SYSTEM_MOD_STRING)
---     local globalModData = ModData.get(DICE_SYSTEM_MOD_STRING)
---     local diceData = globalModData[pl:getUsername()]
-
---     if diceData then
---         --print("Found dice data for " ..tostring(pl))
---         PlayerHandler.SetUser(pl:getUsername())
---         DiceMenu.OpenPanel()
---     end
--- end
 
 function DiceMenuAdminScrollingTable:update()
     self.datas.doDrawItem = self.drawDatas

@@ -509,9 +509,15 @@ PlayerStatsHandler.SetUser = function(user)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
 end
 
-PlayerStatsHandler.CheckDataPresence = function(username)
+---Check if player is initialized and ready to use the system
+---@param username any
+---@return boolean
+PlayerStatsHandler.CheckInitializedStatus = function(username)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
-    if statsTable[username] then return true else return false end
+    if statsTable[username] then
+
+        return statsTable[username].isInitialized
+    else return false end
 end
 ---------------
 
