@@ -1,8 +1,9 @@
 id=PandemoniumDiceSystem
 name=Pandemonium Dice System
-description=This Mod is Commissioned to Team Orbit. You are not allowed to reupload this mod.
+description=A Dice System made specifically for Pandemonium RP
 poster=poster.png
-authors=TeamOrbit
+authors=Pao
 icon=icon.png
 tags=Build 41
 versionMin=41.0
+modversion=0.9
