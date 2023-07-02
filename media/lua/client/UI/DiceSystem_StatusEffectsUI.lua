@@ -94,11 +94,6 @@ end
 -- Setup Status Effects UI
 if isClient() then
     local function InitStatusEffectsUI()
-        if ModOptions and ModOptions.getInstance then
-            ModOptions:getInstance(SETTINGS)
-        end
-
-
         StatusEffectsUI.renderDistance = SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
         StatusEffectsUI:new()
     end

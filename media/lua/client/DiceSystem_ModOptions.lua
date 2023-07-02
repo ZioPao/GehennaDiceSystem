@@ -11,7 +11,7 @@ local SETTINGS = {
 
 local function CheckOptions()
     --* Color blindness check
-    if not SETTINGS.options.enableColorBlind then
+    if SETTINGS.options.enableColorBlind then
         print("Color Blind colors")
         DiceSystem_Common.SetStatusEffectsColorsTable(STATUS_EFFECTS_COLORS_TABLE_ALT)
     else
