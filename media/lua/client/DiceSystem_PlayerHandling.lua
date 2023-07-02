@@ -492,5 +492,6 @@ end
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
 Events.OnPlayerDeath.Add(PlayerStatsHandler.CleanModData)
 Events.OnClothingUpdated.Add(PlayerStatsHandler.CalculateArmorBonus)
+Events.OnGameStart.Add(PlayerStatsHandler.CalculateArmorBonus)
 
 return PlayerStatsHandler

@@ -196,13 +196,21 @@ function DiceMenu.OnTick()
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local skillPoints = PlayerHandler.GetSkillPoints(skill)
         local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
-        local skillPointsString
-        if bonusSkillPoints ~= 0 then
-            skillPointsString = string.format(" <RIGHT> %d <SPACE> <SPACE> <RGB:0.94,0.82,0.09> + %d", skillPoints, bonusSkillPoints)
+        local armorBonusPoints = PlayerHandler.GetArmorBonus()
 
-        else
-            skillPointsString = string.format(" <RIGHT> %d", skillPoints)
+
+        local skillPointsString = string.format(" <RIGHT> %d", skillPoints)
+
+        --local skillPointsString
+        if bonusSkillPoints ~= 0 then
+            skillPointsString = string.format(skillPointsString .. " <SPACE> <SPACE> <RGB:0.94,0.82,0.09> + %d", bonusSkillPoints)
         end
+        -- Specific case for Resolve, it should scale on armor bonus
+        if skill == "Resolve" and armorBonusPoints ~= 0 then
+            skillPointsString = string.format(skillPointsString .. " <SPACE> <SPACE> <RGB:1,0,0> + %d", armorBonusPoints)
+        end
+
+
         DiceMenu.instance["labelSkillPoints" .. skill]:setText(skillPointsString)
         DiceMenu.instance["labelSkillPoints" .. skill].textDirty = true
 
