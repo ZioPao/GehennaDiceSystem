@@ -279,11 +279,19 @@ end
 
 --* Health *--
 PlayerStatsHandler.GetCurrentHealth = function()
-    return statsTable[PlayerStatsHandler.username].currentHealth
+    if statsTable and PlayerStatsHandler.username and statsTable[PlayerStatsHandler.username] then
+        return statsTable[PlayerStatsHandler.username].currentHealth
+    end
+
+    return -1
 end
 
 PlayerStatsHandler.GetMaxHealth = function()
-    return statsTable[PlayerStatsHandler.username].maxHealth
+    if statsTable and PlayerStatsHandler.username and statsTable[PlayerStatsHandler.username] then
+        return statsTable[PlayerStatsHandler.username].maxHealth
+    end
+
+    return -1
 end
 
 PlayerStatsHandler.HandleCurrentHealth = function(operation)
@@ -354,16 +362,28 @@ PlayerStatsHandler.DecrementCurrentMovement = function()
     return false
 end
 
+---Returns current movmenet
+---@return number
 PlayerStatsHandler.GetCurrentMovement = function()
-    return statsTable[PlayerStatsHandler.username].currentMovement
+    if statsTable and PlayerStatsHandler.username and statsTable[PlayerStatsHandler.username] then
+        return statsTable[PlayerStatsHandler.username].currentMovement
+    end
+
+    return -1
 end
 
 PlayerStatsHandler.SetCurrentMovement = function(movement)
     statsTable[PlayerStatsHandler.username].currentMovement = movement
 end
 
+---Returns the max movement value
+---@return number
 PlayerStatsHandler.GetMaxMovement = function()
-    return statsTable[PlayerStatsHandler.username].maxMovement
+    if statsTable and PlayerStatsHandler.username and statsTable[PlayerStatsHandler.username] then
+        return statsTable[PlayerStatsHandler.username].maxMovement
+    end
+
+    return -1
 end
 
 PlayerStatsHandler.ApplyMovementBonus = function(deftPoints, deftBonusPoints)
@@ -381,7 +401,7 @@ PlayerStatsHandler.GetMovementBonus = function()
         return statsTable[PlayerStatsHandler.username].movementBonus
     end
 
-    return 0
+    return -1
 end
 
 local function AdjustCurrentMovement()
@@ -441,9 +461,9 @@ end
 PlayerStatsHandler.GetArmorBonus = function()
     if statsTable and statsTable[PlayerStatsHandler.username] then
         return statsTable[PlayerStatsHandler.username].armorBonus
-    else
-        return 0
     end
+
+    return -1
 end
 
 
@@ -575,13 +595,5 @@ end
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
 Events.OnPlayerDeath.Add(PlayerStatsHandler.CleanModData)
 Events.OnClothingUpdated.Add(PlayerStatsHandler.CalculateArmorBonus)
-
--- A bit of an hack to be sure that it gets calculated at startup
--- local function ForceCalculateArmorBonus()
---     if PlayerStatsHandler.CalculateArmorBonus(getPlayer()) == true then
---         Events.OnTick.Remove(ForceCalculateArmorBonus)
---     end
--- end
---Events.OnTick.Add(ForceCalculateArmorBonus)
 
 return PlayerStatsHandler
