@@ -4,7 +4,7 @@ local PlayerStatsHandler = {}
 -- Different naming style 'cause of IGUI crap and I don't wanna manage two naming styles
 local occupationsBonusData = {
     Unemployed      = { Brutal = 1, Luck = 1, Wit = 1 },
-    Artist          = { Charm = 2, Sharp = 2 },
+    Artist          = { Charm = 2, Sharp = 1 },
     WageSlave       = { Charm = 2, Resolve = 1 },
     Soldier         = { Brutal = 2, Resolve = 1 },
     Frontiersmen    = { Brutal = 2, Deft = 1 },
