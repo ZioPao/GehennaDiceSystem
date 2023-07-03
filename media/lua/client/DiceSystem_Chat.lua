@@ -21,16 +21,35 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
         local originalReturn = originalFunc(self, ...)
         self:setOverHeadSpeech(true)
 
+        --print(originalReturn)
         if string.find(originalReturn, '(||DICE_SYSTEM_MESSAGE||)') then
+            --print("Entered")
             -- Fixes how the messages are being sent.
             local correctedOgMsg = string.gsub(originalReturn, "&lt;", "<")
             correctedOgMsg = string.gsub(correctedOgMsg, "&gt;", ">")
 
-            -- Find name
-            local usernameMatch = "%[.+%]:"
+            -- Check for timestamp
+            local timeStampMatch = "%[%d%d:%d%d]"
+            local timeStamp = string.match(correctedOgMsg, timeStampMatch)
+
+
+            local usernameMatch
+            local usernameStart
+
+            if timeStamp == nil then
+                timeStamp = ""
+                usernameMatch = "%[%a+%]:"
+                usernameStart = 2
+            else
+                usernameMatch = "%]%[%a+%]:"
+                usernameStart = 3
+            end
+
+
             local found = string.sub(correctedOgMsg, string.find(correctedOgMsg, usernameMatch))
             if found then
-                local correctUsername = string.sub(found, 2, string.len(found) - 2)
+                --print("Found username")
+                local correctUsername = string.sub(found, usernameStart, string.len(found) - 2)
                 --print(correctUsername)
 
                 local onlinePlayers = getOnlinePlayers()
@@ -47,13 +66,15 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
                         local _, endMatch = string.find(correctedOgMsg, '(||DICE_SYSTEM_MESSAGE||)')
 
                         local separatedMsg = string.sub(correctedOgMsg, endMatch + 2, string.len(correctedOgMsg))
-                        local correctedMsg = string.format("<RGB:1,1,1> %s %s <SPACE> %s %s", forename, surname,
+                        local correctedMsg = string.format("<RGB:1,1,1> %s %s %s <SPACE> %s %s", timeStamp, forename, surname,
                             statusEffectsString, separatedMsg)
 
                         self:setOverHeadSpeech(false)
                         return correctedMsg
                     end
                 end
+
+                error("Couldn't find user! Chat message is gonna be broken")
             end
         end
 
@@ -61,27 +82,6 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
 
 
 
-
-
-        -- if DiceSystem_ChatOverride.currentMsg ~= "" then
-
-        --     local plDescriptor = getPlayer():getDescriptor()
-        --     local forename = plDescriptor:getForename()
-        --     local surname = plDescriptor:getSurname()
-
-        --     local statusEffectsString = GetStatusEffectsString(getPlayer():getUsername())
-        --     local correctedMsg = string.format("<RGB:1,1,1> %s %s <SPACE> %s %s", forename, surname, statusEffectsString, DiceSystem_ChatOverride.currentMsg )
-        --     print(DiceSystem_ChatOverride.currentMsg)
-        --     DiceSystem_ChatOverride.currentMsg = ""
-        --     self:setOverHeadSpeech(false)
-        --     return correctedMsg
-
-        -- end
-        -- DiceSystem_Common.Roll("Deft", 19)
-        --local role = getStatusEffectForMessage(self) or ""
-        --     line = line:gsub("%[" .. escape_pattern(message:getAuthor()) .. "%]" .. "%:", "");
-
-        --print(originalReturn)
         return originalReturn
     end
 end
