@@ -1,9 +1,9 @@
 id=PandemoniumDiceSystem
 name=Pandemonium Dice System
-description=A Dice System made specifically for Pandemonium RP
+description=A Dice System specifically made for Pandemonium RP
 poster=poster.png
 authors=Pao
 icon=icon.png
 tags=Build 41
 versionMin=41.0
-modversion=0.9.2
+modversion=0.9.3

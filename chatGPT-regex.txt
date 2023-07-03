@@ -1,0 +1,31 @@
+local inputString1 = "<RGB:1.0,1.0,1.0> <SIZE:medium> [23:00][Local][test2]: (||DICE_SYSTEM_MESSAGE||) rolled Brutal &lt;SPACE&gt; &lt;RGB:0,1,0&gt; CRITICAL SUCCESS! 20+5=25"
+local inputString2 = "<RGB:1.0,1.0,1.0> <SIZE:medium> [test2]: (||DICE_SYSTEM_MESSAGE||) rolled Brutal 17+5=22"
+
+local pattern = "%[([^%]]+)%]:"
+
+local match1 = string.match(inputString1, pattern)
+local match2 = string.match(inputString2, pattern)
+
+if match1 then
+  print("Match 1:", match1)  -- Output: test2
+else
+  print("No match found in inputString1")
+end
+
+if match2 then
+  print("Match 2:", match2)  -- Output: test2
+else
+  print("No match found in inputString2")
+end
+
+---------------------------------------
+
+Certainly! Let's break down the pattern "%[([^%]]+)%]:" and explain each component:
+
+    "%[" and "%]": These are literal characters that match the opening and closing square brackets, respectively. The % is an escape character used to match the literal square brackets.
+
+    ([^%]]+): This part is a capture group (...) that captures the text inside the square brackets. Let's break it down further:
+        [^%]]: This is a character class [^...] that matches any character that is not a closing bracket (]). The % before the closing bracket is an escape character to match the literal closing bracket.
+        +: The + quantifier matches one or more occurrences of the preceding pattern. In this case, it matches one or more characters inside the square brackets.
+
+    ":": This is a literal character that matches the colon symbol : in the input string.
