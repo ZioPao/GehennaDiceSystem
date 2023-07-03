@@ -120,8 +120,8 @@ PlayerStatsHandler.HandleSkillPoint = function(skill, operation)
 
     -- Movement Bonus scales in Deft
     if skill == 'Deft' then
-        local actualPoints = diceData.skills[skill]
-        local bonusPoints = diceData.bonusSkillPoints[skill]
+        local actualPoints = PlayerStatsHandler.GetSkillPoints(skill)
+        local bonusPoints = PlayerStatsHandler.GetBonusSkillPoints(skill)
         PlayerStatsHandler.ApplyMovementBonus(actualPoints, bonusPoints)
     end
 
