@@ -23,7 +23,7 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
     ---@return string
     local function FixOriginalMessage(message)
         local correctedMessage = string.gsub(message, "&lt;", "<")
-        correctedMessage = string.gsub(message, "&gt;", ">")
+        correctedMessage = string.gsub(correctedMessage, "&gt;", ">")
 
         return correctedMessage
     end
@@ -66,6 +66,11 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
 
         if player == nil then error("Player not found!") end
 
+        if timestamp == nil then
+            timestamp = ""
+        end
+
+
         local plDescriptor = player:getDescriptor()
         local forename = plDescriptor:getForename()
         local surname = plDescriptor:getSurname()
@@ -82,6 +87,7 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
     return function(self, ...)
         local originalMsg = originalFunc(self, ...)
         self:setOverHeadSpeech(true)
+        print(originalMsg)
 
         if string.find(originalMsg, '(||DICE_SYSTEM_MESSAGE||)') == nil then return originalMsg end
 
@@ -90,6 +96,7 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
         local username = GetUsername(correctedMsg, timestamp ~= nil)
 
         local rollMsg = GetAssembledMessage(correctedMsg, timestamp, username)
+        print(rollMsg)
         self:setOverHeadSpeech(false)
         return rollMsg
     end
