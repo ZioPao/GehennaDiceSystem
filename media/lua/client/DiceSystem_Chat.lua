@@ -17,13 +17,16 @@ local function GetStatusEffectsString(username)
 end
 
 function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
+
+
+
     return function(self, ...)
         local originalReturn = originalFunc(self, ...)
         self:setOverHeadSpeech(true)
 
-        --print(originalReturn)
+        print(originalReturn)
         if string.find(originalReturn, '(||DICE_SYSTEM_MESSAGE||)') then
-            --print("Entered")
+            print("Entered")
             -- Fixes how the messages are being sent.
             local correctedOgMsg = string.gsub(originalReturn, "&lt;", "<")
             correctedOgMsg = string.gsub(correctedOgMsg, "&gt;", ">")
@@ -32,55 +35,45 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
             local timeStampMatch = "%[%d%d:%d%d]"
             local timeStamp = string.match(correctedOgMsg, timeStampMatch)
 
-
             local usernameMatch
             local usernameStart
 
             if timeStamp == nil then
+                print("Timestamp was nil")
                 timeStamp = ""
                 usernameMatch = "%[%a+%]:"
                 usernameStart = 2
             else
+                print("timestamp was not nil")
                 usernameMatch = "%]%[%a+%]:"
                 usernameStart = 3
             end
 
+            local username = string.match(correctedOgMsg, usernameMatch)
 
-            local found = string.sub(correctedOgMsg, string.find(correctedOgMsg, usernameMatch))
-            if found then
-                --print("Found username")
-                local correctUsername = string.sub(found, usernameStart, string.len(found) - 2)
-                --print(correctUsername)
+            if username then
+                print("Found username")
+                local correctUsername = string.sub(username, usernameStart, string.len(username) - 2)
+                print(correctUsername)
+                local player = getPlayerFromUsername(correctUsername)
+                if player then
+                    local plDescriptor = player:getDescriptor()
+                    local forename = plDescriptor:getForename()
+                    local surname = plDescriptor:getSurname()
 
-                local onlinePlayers = getOnlinePlayers()
+                    local statusEffectsString = GetStatusEffectsString(correctUsername)
+                    local _, endMatch = string.find(correctedOgMsg, '(||DICE_SYSTEM_MESSAGE||)')
 
-                for i = 0, onlinePlayers:size() - 1 do
-                    local player = onlinePlayers:get(i)
+                    local separatedMsg = string.sub(correctedOgMsg, endMatch + 2, string.len(correctedOgMsg))
+                    local correctedMsg = string.format("<RGB:1,1,1> %s %s %s <SPACE> %s %s", timeStamp, forename, surname,
+                        statusEffectsString, separatedMsg)
 
-                    if player:getUsername() == correctUsername then
-                        local plDescriptor = player:getDescriptor()
-                        local forename = plDescriptor:getForename()
-                        local surname = plDescriptor:getSurname()
-
-                        local statusEffectsString = GetStatusEffectsString(correctUsername)
-                        local _, endMatch = string.find(correctedOgMsg, '(||DICE_SYSTEM_MESSAGE||)')
-
-                        local separatedMsg = string.sub(correctedOgMsg, endMatch + 2, string.len(correctedOgMsg))
-                        local correctedMsg = string.format("<RGB:1,1,1> %s %s %s <SPACE> %s %s", timeStamp, forename, surname,
-                            statusEffectsString, separatedMsg)
-
-                        self:setOverHeadSpeech(false)
-                        return correctedMsg
-                    end
+                    self:setOverHeadSpeech(false)
+                    return correctedMsg
                 end
-
                 error("Couldn't find user! Chat message is gonna be broken")
             end
         end
-
-
-
-
 
         return originalReturn
     end
