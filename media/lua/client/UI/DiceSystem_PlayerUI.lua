@@ -471,13 +471,13 @@ end
 
 function DiceMenu:onOptionMouseDown(btn)
     if btn.internal == 'PLUS_HEALTH' then
-        PlayerHandler.IncrementCurrentHealth()
+        PlayerHandler.HandleCurrentHealth("+")
     elseif btn.internal == 'MINUS_HEALTH' then
-        PlayerHandler.DecrementCurrentHealth()
+        PlayerHandler.HandleCurrentHealth("-")
     elseif btn.internal == 'PLUS_MOVEMENT' then
-        PlayerHandler.IncrementCurrentMovement()
+        PlayerHandler.HandleCurrentMovement("+")
     elseif btn.internal == 'MINUS_MOVEMENT' then
-        PlayerHandler.DecrementCurrentMovement()
+        PlayerHandler.HandleCurrentMovement("-")
     elseif btn.internal == 'PLUS_SKILL' then
         PlayerHandler.HandleSkillPoint(btn.skill, "+")
     elseif btn.internal == 'MINUS_SKILL' then

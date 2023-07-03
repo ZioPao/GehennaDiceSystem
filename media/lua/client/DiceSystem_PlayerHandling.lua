@@ -286,11 +286,24 @@ PlayerStatsHandler.GetMaxHealth = function()
     return statsTable[PlayerStatsHandler.username].maxHealth
 end
 
+PlayerStatsHandler.HandleCurrentHealth = function(operation)
+    local result = false
+    if operation == "+" then
+        result = PlayerStatsHandler.IncrementCurrentHealth()
+    elseif operation == "-" then
+        result = PlayerStatsHandler.DecrementCurrentHealth()
+    end
+
+    if result then
+        SyncTable(PlayerStatsHandler.username)
+    end
+end
+
+
 PlayerStatsHandler.IncrementCurrentHealth = function()
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentHealth < diceData.maxHealth then
         diceData.currentHealth = diceData.currentHealth + 1
-        SyncTable(PlayerStatsHandler.username)
         return true
     end
 
@@ -301,7 +314,6 @@ PlayerStatsHandler.DecrementCurrentHealth = function()
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentHealth > 0 then
         diceData.currentHealth = diceData.currentHealth - 1
-        SyncTable(PlayerStatsHandler.username)
         return true
     end
 
@@ -309,11 +321,24 @@ PlayerStatsHandler.DecrementCurrentHealth = function()
 end
 
 --* Movement *--
+
+PlayerStatsHandler.HandleCurrentMovement = function(operation)
+    local result = false
+    if operation == "+" then
+        result = PlayerStatsHandler.IncrementCurrentMovement()
+    elseif operation == "-" then
+        result = PlayerStatsHandler.DecrementCurrentMovement()
+    end
+
+    if result then
+        SyncTable(PlayerStatsHandler.username)
+    end
+end
+
 PlayerStatsHandler.IncrementCurrentMovement = function()
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentMovement < diceData.maxMovement + diceData.movementBonus then
         diceData.currentMovement = diceData.currentMovement + 1
-        SyncTable(PlayerStatsHandler.username)
         return true
     end
 
@@ -324,10 +349,8 @@ PlayerStatsHandler.DecrementCurrentMovement = function()
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData.currentMovement > 0 then
         diceData.currentMovement = diceData.currentMovement - 1
-        SyncTable(PlayerStatsHandler.username)
         return true
     end
-
     return false
 end
 
@@ -347,7 +370,6 @@ PlayerStatsHandler.ApplyMovementBonus = function(deftPoints, deftBonusPoints)
     local movBonus = math.floor((deftPoints + deftBonusPoints) / 2)
     statsTable[PlayerStatsHandler.username].movementBonus = movBonus
 end
-
 
 PlayerStatsHandler.SetMovementBonus = function(deftPoints)
     local addedBonus = math.floor(deftPoints / 2)
