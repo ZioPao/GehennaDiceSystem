@@ -34,25 +34,15 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
 
     end
 
-    local function GetUsername(message, isTimestamp)
-        local usernamePattern
-        local usernameStart
-        if isTimestamp then
-            usernamePattern = "%]%[%a+%]:"
-            usernameStart = 3
-        else
-            usernamePattern = "%[%a+%]:"
-            usernameStart = 2
-        end
+    local function GetUsername(message)
+        local pattern = "%[([^%]]+)%]:"     -- love you chatgpt
+        local matchedUsername = string.match(message, pattern)
 
-        local matchedUsername = string.match(message, usernamePattern)
-        
         if matchedUsername then
-            return string.sub(matchedUsername, usernameStart, string.len(matchedUsername) - 2)
+            return matchedUsername
         else
-            error("Couldn't match username")
+            error("Couldn't find username!")
         end
-
 
     end
 
@@ -93,7 +83,7 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
 
         local correctedMsg = FixOriginalMessage(originalMsg)
         local timestamp = GetTimestamp(correctedMsg)
-        local username = GetUsername(correctedMsg, timestamp ~= nil)
+        local username = GetUsername(correctedMsg)
 
         local rollMsg = GetAssembledMessage(correctedMsg, timestamp, username)
         print(rollMsg)
