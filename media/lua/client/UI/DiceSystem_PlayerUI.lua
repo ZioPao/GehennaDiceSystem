@@ -446,7 +446,8 @@ function DiceMenu:createChildren()
     --------
 
     if not PlayerHandler.IsPlayerInitialized() then
-        self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Dice_Save"), self, self.onOptionMouseDown)
+        self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Dice_Save"), self,
+            self.onOptionMouseDown)
         self.btnConfirm.internal = "SAVE"
         self.btnConfirm:initialise()
         self.btnConfirm:instantiate()
@@ -478,11 +479,9 @@ function DiceMenu:onOptionMouseDown(btn)
     elseif btn.internal == 'MINUS_MOVEMENT' then
         PlayerHandler.DecrementCurrentMovement()
     elseif btn.internal == 'PLUS_SKILL' then
-        --print(btn.skill)
-        PlayerHandler.IncrementSkillPoint(btn.skill)
+        PlayerHandler.HandleSkillPoint(btn.skill, "+")
     elseif btn.internal == 'MINUS_SKILL' then
-        --print(btn.skill)
-        PlayerHandler.DecrementSkillPoint(btn.skill)
+        PlayerHandler.HandleSkillPoint(btn.skill, "-")
     elseif btn.internal == 'SKILL_ROLL' then
         --print(btn.skill)
         local points = PlayerHandler.GetFullSkillPoints(btn.skill)

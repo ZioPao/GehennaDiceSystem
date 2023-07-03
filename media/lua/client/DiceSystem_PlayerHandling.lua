@@ -103,39 +103,61 @@ PlayerStatsHandler.GetSkillPoints = function(skill)
     end
 end
 
-PlayerStatsHandler.IncrementSkillPoint = function(skill)
-    --print("DiceSystem: adding to skill " .. skill)
+PlayerStatsHandler.HandleSkillPoint = function(skill, operation)
     local diceData = statsTable[PlayerStatsHandler.username]
+    local result = false
+
+    if operation == "+" then
+        result = PlayerStatsHandler.IncrementSkillPoint(diceData, skill)
+    elseif operation == "-" then
+        result = PlayerStatsHandler.DecrementSkillPoint(diceData, skill)
+    end
+
+    -- In case of failure, just return.
+    if not result then return end
+
+    --* Special cases
+
+    -- Movement Bonus scales in Deft
+    if skill == 'Deft' then
+        local actualPoints = diceData.skills[skill]
+        local bonusPoints = diceData.bonusSkillPoints[skill]
+        PlayerStatsHandler.ApplyMovementBonus(actualPoints, bonusPoints)
+    end
+
+    return result
+end
+
+
+---Increment a specific skillpoint
+---@param diceData table
+---@param skill string
+---@return boolean
+PlayerStatsHandler.IncrementSkillPoint = function(diceData, skill)
     local result = false
 
     if diceData.allocatedPoints < 20 and diceData.skills[skill] < 5 then
         diceData.skills[skill] = diceData.skills[skill] + 1
         diceData.allocatedPoints = diceData.allocatedPoints + 1
-
-        -- TODO I don't like this
-        if skill == 'Deft' then
-            PlayerStatsHandler.SetMovementBonus(diceData.skills[skill])
-        end
         result = true
     end
 
     return result
 end
 
-PlayerStatsHandler.DecrementSkillPoint = function(skill)
-    local diceData = statsTable[PlayerStatsHandler.username]
-
+---Decrement a specific skillpoint
+---@param diceData table
+---@param skill string
+---@return boolean
+PlayerStatsHandler.DecrementSkillPoint = function(diceData, skill)
+    local result = false
     if diceData.skills[skill] > 0 then
         diceData.skills[skill] = diceData.skills[skill] - 1
         diceData.allocatedPoints = diceData.allocatedPoints - 1
-        if skill == 'Deft' then
-            PlayerStatsHandler.SetMovementBonus(diceData.skills[skill])
-        end
-
-        return true
-    else
-        return false
+        result = true
     end
+
+    return result
 end
 
 PlayerStatsHandler.GetBonusSkillPoints = function(skill)
@@ -321,9 +343,13 @@ PlayerStatsHandler.GetMaxMovement = function()
     return statsTable[PlayerStatsHandler.username].maxMovement
 end
 
+PlayerStatsHandler.ApplyMovementBonus = function(deftPoints, deftBonusPoints)
+    local movBonus = math.floor((deftPoints + deftBonusPoints) / 2)
+    statsTable[PlayerStatsHandler.username].movementBonus = movBonus
+end
+
+
 PlayerStatsHandler.SetMovementBonus = function(deftPoints)
-    -- Movement starts at 5
-    --print("Setting bonus")
     local addedBonus = math.floor(deftPoints / 2)
     statsTable[PlayerStatsHandler.username].movementBonus = addedBonus
 end
@@ -515,9 +541,10 @@ end
 PlayerStatsHandler.CheckInitializedStatus = function(username)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)
     if statsTable[username] then
-
         return statsTable[username].isInitialized
-    else return false end
+    else
+        return false
+    end
 end
 ---------------
 
