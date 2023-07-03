@@ -11,7 +11,7 @@ local function GetStatusEffectsString(username)
         local effect = effectsTable[i]
         local color = DiceSystem_Common.statusEffectsColors[effect]
         formattedString = formattedString ..
-        string.format(" <RGB:%.2f,%.2f,%.2f> [%s] <SPACE> <RGB:1,1,1> ", color.r, color.g, color.b, effect)
+            string.format(" <RGB:%.2f,%.2f,%.2f> [%s] <SPACE> <RGB:1,1,1> ", color.r, color.g, color.b, effect)
     end
     return formattedString
 end
@@ -19,11 +19,10 @@ end
 function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
     return function(self, ...)
         local originalReturn = originalFunc(self, ...)
-        self:setOverHeadSpeech(true) -- TODO Test this with general message
-        --print(originalReturn)
+        self:setOverHeadSpeech(true)
 
         if string.find(originalReturn, '(||DICE_SYSTEM_MESSAGE||)') then
-            -- Fix how the messages are being sent.
+            -- Fixes how the messages are being sent.
             local correctedOgMsg = string.gsub(originalReturn, "&lt;", "<")
             correctedOgMsg = string.gsub(correctedOgMsg, "&gt;", ">")
 

@@ -441,10 +441,6 @@ function DiceMenu:createChildren()
     self:addChild(self.panelSkills)
     self:fillSkillPanel()
 
-    Events.OnTick.Add(self.OnTick)
-
-    --------
-
     if not PlayerHandler.IsPlayerInitialized() then
         self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Dice_Save"), self,
             self.onOptionMouseDown)
@@ -462,6 +458,9 @@ function DiceMenu:createChildren()
     self.btnClose:instantiate()
     self.btnClose:setEnable(true)
     self:addChild(self.btnClose)
+
+    -- Starts the function which updates the data in the interface
+    Events.OnTick.Add(self.OnTick)
 end
 
 function DiceMenu:onChangeStatusEffect()
