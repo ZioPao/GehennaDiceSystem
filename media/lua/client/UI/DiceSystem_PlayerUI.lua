@@ -212,7 +212,7 @@ function DiceMenu.OnTick()
         DiceMenu.instance["labelSkillPoints" .. skill].textDirty = true
 
         -- Handles buttons to assign skill points
-        if not isInit then
+        if not isInit or DiceMenu.instance.isAdminMode then
             DiceMenu.instance["btnMinus" .. skill]:setEnable(skillPoints ~= 0)
             DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
         end

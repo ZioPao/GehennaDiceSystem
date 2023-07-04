@@ -24,6 +24,6 @@ function ISCharacterScreen.onOpenDiceMenu()
     local PlayerHandler = require("DiceSystem_PlayerHandling")
     PlayerHandler.SetUser(getPlayer():getUsername())
 
-    local DiceMenu = require("DiceSystem_PlayerUI")
+    local DiceMenu = require("UI/DiceSystem_PlayerUI")
     DiceMenu.OpenPanel(false)
 end
