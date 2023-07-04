@@ -42,7 +42,7 @@ end
 
 local PlayerHandler = require("DiceSystem_PlayerHandling")
 
-DiceMenu = ISCollapsableWindow:derive("DiceMenu")
+local DiceMenu = ISCollapsableWindow:derive("DiceMenu")
 DiceMenu.instance = nil
 
 function DiceMenu:new(x, y, width, height)
@@ -151,7 +151,6 @@ function DiceMenu.OnTick()
 
     -- Show allocated points during init
     if not isInit or DiceMenu.instance.isAdminMode then
-
         -- Points allocated label
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
         DiceMenu.instance.labelSkillPointsAllocated:setName(pointsAllocatedString)
@@ -225,12 +224,6 @@ function DiceMenu.OnTick()
     DiceMenu.instance.panelMovementBonus.textDirty = true
 
     local currentHealth = PlayerHandler.GetCurrentHealth()
-    
-    -- if currentHealth ~= 5 then
-    --     print(currentHealth)
-    --     print("YES")
-    -- end
-
     local maxHealth = PlayerHandler.GetMaxHealth()
     DiceMenu.instance.panelHealth:setText(getText("IGUI_Health", PlayerHandler.GetCurrentHealth(),
         PlayerHandler.GetMaxHealth()))
@@ -244,7 +237,6 @@ function DiceMenu.OnTick()
     DiceMenu.instance.panelMovement.textDirty = true
     DiceMenu.instance.btnPlusMovement:setEnable(currMovement < totMovement)
     DiceMenu.instance.btnMinusMovement:setEnable(currMovement > 0)
-
 end
 
 function DiceMenu:createChildren()
@@ -479,7 +471,6 @@ function DiceMenu:onOptionMouseDown(btn)
     elseif btn.internal == 'MINUS_SKILL' then
         PlayerHandler.HandleSkillPoint(btn.skill, "-")
     elseif btn.internal == 'SKILL_ROLL' then
-        --print(btn.skill)
         local points = PlayerHandler.GetFullSkillPoints(btn.skill)
         DiceSystem_Common.Roll(btn.skill, points)
     elseif btn.internal == 'SAVE' then
@@ -536,4 +527,4 @@ end
 --****************************--
 
 
---return DiceMenu
+return DiceMenu

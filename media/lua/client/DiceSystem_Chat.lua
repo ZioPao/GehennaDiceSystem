@@ -17,7 +17,6 @@ local function GetStatusEffectsString(username)
 end
 
 function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
-
     ---Correct the message which has been fucked by zomboid chat handling
     ---@param message string
     ---@return string
@@ -31,11 +30,10 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
     local function GetTimestamp(message)
         local timestampPattern = "%[%d%d:%d%d]"
         return string.match(message, timestampPattern)
-
     end
 
     local function GetUsername(message)
-        local pattern = "%[([^%]]+)%]:"     -- love you chatgpt
+        local pattern = "%[([^%]]+)%]:" -- love you chatgpt
         local matchedUsername = string.match(message, pattern)
 
         if matchedUsername then
@@ -43,7 +41,6 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
         else
             error("Couldn't find username!")
         end
-
     end
 
     ---Assemble the final roll message
@@ -70,7 +67,6 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
         local finalMsg = string.format("<RGB:1,1,1> %s %s %s <SPACE> %s %s", timestamp, forename, surname,
             statusEffectsString, separatedMsg)
         return finalMsg
-
     end
 
 

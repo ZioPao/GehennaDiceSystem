@@ -21,7 +21,6 @@ local os_time = os.time
 local eTime = 0
 
 local function WaitAndFetchPlayersLoop()
-
     local cTime = os_time()
 
     if cTime > eTime then
@@ -32,7 +31,6 @@ local function WaitAndFetchPlayersLoop()
 
         Events.OnTick.Remove(WaitAndFetchPlayersLoop)
     end
-
 end
 
 local function WaitAndFetchPlayers(_eTime)
@@ -41,12 +39,7 @@ local function WaitAndFetchPlayers(_eTime)
 end
 
 
-
-
-
 --*****************
-
-
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
@@ -56,6 +49,7 @@ local HEADER_HGT = FONT_HGT_MEDIUM + 2 * 2
 local ENTRY_HGT = FONT_HGT_MEDIUM + 2 * 2
 
 local PlayerHandler = require("DiceSystem_PlayerHandling")
+local DiceMenu = require("DiceSystem_PlayerUI")
 
 DiceMenuAdminViewer = ISCollapsableWindow:derive("DiceMenuAdminViewer")
 DiceMenuAdminViewer.messages = {}
@@ -65,9 +59,8 @@ function DiceMenuAdminViewer.OnOpenPanel()
         DiceMenuAdminViewer.instance:close()
     end
 
-
-    local x = getCore():getScreenWidth()/2
-    local y = getCore():getScreenHeight()/2
+    local x = getCore():getScreenWidth() / 2
+    local y = getCore():getScreenHeight() / 2
 
     local modal = DiceMenuAdminViewer:new(x, y, 350, 500)
     modal:initialise()
@@ -97,7 +90,7 @@ end
 function DiceMenuAdminViewer:initialise()
     local top = 50
 
-    self.panel = ISTabPanel:new(10, top, (self.width - 10 * 2)/1.5, self.height + top - 10)
+    self.panel = ISTabPanel:new(10, top, (self.width - 10 * 2) / 1.5, self.height + top - 10)
     self.panel:initialise()
     self.panel.borderColor = { r = 0, g = 0, b = 0, a = 0 }
     self.panel.target = self
@@ -106,18 +99,18 @@ function DiceMenuAdminViewer:initialise()
     self.panel.tabHeight = 0
     self:addChild(self.panel)
 
-    local btnY = self.panel:getHeight()/2 - top
+    local btnY = self.panel:getHeight() / 2 - top
     local btnX = self.panel:getRight() + 10
 
-    local btnSize = (self:getWidth() - self.panel:getWidth()) - 30      -- You must account for the padding, 10 and -20
+    local btnSize = (self:getWidth() - self.panel:getWidth()) - 30 -- You must account for the padding, 10 and -20
 
 
-    local openIco = getTexture("media/ui/openPanelIcon.png")       -- Document icons created by Freepik - Flaticon - Document
-    local refreshListIco = getTexture("media/ui/refreshIcon.png")  -- Refresh icons created by Dave Gandy - Flaticon - Refresh
-    local deleteDataIco = getTexture("media/ui/deleteDataIcon.png")  -- www.flaticon.com/free-icons/delete Delete icons created by Kiranshastry - Flaticon
+    local openIco = getTexture("media/ui/openPanelIcon.png")        -- Document icons created by Freepik - Flaticon - Document
+    local refreshListIco = getTexture("media/ui/refreshIcon.png")   -- Refresh icons created by Dave Gandy - Flaticon - Refresh
+    local deleteDataIco = getTexture("media/ui/deleteDataIcon.png") -- www.flaticon.com/free-icons/delete Delete icons created by Kiranshastry - Flaticon
 
     -- Middle button
-    self.btnRefreshList = ISButton:new(btnX, btnY, btnSize, btnSize/1.5,"", self, DiceMenuAdminViewer.onClick)
+    self.btnRefreshList = ISButton:new(btnX, btnY, btnSize, btnSize / 1.5, "", self, DiceMenuAdminViewer.onClick)
     self.btnRefreshList.internal = "REFRESH"
     self.btnRefreshList:setTooltip(getText("IGUI_Dice_RefreshPlayersListTooltip"))
     self.btnRefreshList:setImage(refreshListIco)
@@ -128,7 +121,8 @@ function DiceMenuAdminViewer:initialise()
     self.btnRefreshList.borderColor = { r = 1, g = 1, b = 1, a = 0.5 }
     self:addChild(self.btnRefreshList)
 
-    self.btnOpenPanel = ISButton:new(btnX, btnY - self.btnRefreshList:getHeight() - 10, btnSize, btnSize/1.5, "", self, DiceMenuAdminViewer.onClick)
+    self.btnOpenPanel = ISButton:new(btnX, btnY - self.btnRefreshList:getHeight() - 10, btnSize, btnSize / 1.5, "", self,
+        DiceMenuAdminViewer.onClick)
     self.btnOpenPanel.internal = "OPEN"
     self.btnOpenPanel:setTooltip(getText("IGUI_Dice_OpenPanelTooltip"))
     self.btnOpenPanel:setImage(openIco)
@@ -139,12 +133,13 @@ function DiceMenuAdminViewer:initialise()
     self.btnOpenPanel.borderColor = { r = 1, g = 1, b = 1, a = 0.5 }
     self:addChild(self.btnOpenPanel)
 
-    self.btnDeleteData = ISButton:new(btnX, btnY + self.btnRefreshList:getHeight() + 10, btnSize, btnSize/1.5, "", self, DiceMenuAdminViewer.onClick)
+    self.btnDeleteData = ISButton:new(btnX, btnY + self.btnRefreshList:getHeight() + 10, btnSize, btnSize / 1.5, "", self,
+        DiceMenuAdminViewer.onClick)
     self.btnDeleteData.internal = "DELETE_DATA"
     self.btnDeleteData:setTooltip(getText("IGUI_Dice_DeleteDataTooltip"))
     self.btnDeleteData:setImage(deleteDataIco)
-    self.btnDeleteData:setBorderRGBA(1,1,1,1)
-    self.btnDeleteData:setTextureRGBA(1,1,1,1)
+    self.btnDeleteData:setBorderRGBA(1, 1, 1, 1)
+    self.btnDeleteData:setTextureRGBA(1, 1, 1, 1)
     self.btnDeleteData.anchorTop = false
     self.btnDeleteData.anchorBottom = true
     self.btnDeleteData:initialise()
@@ -174,12 +169,9 @@ function DiceMenuAdminViewer:prerender()
     local title = getText("IGUI_DiceAdminMenu")
     self:drawText(title, self.width / 2 - (getTextManager():MeasureStringX(UIFont.Medium, title) / 2), z, 1, 1, 1, 1,
         UIFont.Medium)
-
-
 end
 
 function DiceMenuAdminViewer:onClick(button)
-
     if button.internal == "OPEN" then
         ModData.request(DICE_SYSTEM_MOD_STRING)
         local player = self.mainCategory.datas.items[self.mainCategory.datas.selected].item
@@ -193,15 +185,12 @@ function DiceMenuAdminViewer:onClick(button)
         ModData.request(DICE_SYSTEM_MOD_STRING)
         local player = self.mainCategory.datas.items[self.mainCategory.datas.selected].item
 
-
-        --PlayerHandler.CleanModData(player:getUsername())
         local playerID = player:getOnlineID()
         PlayerHandler.CleanModData(playerID)
         processAdminChatMessage("Reset " .. player:getUsername() .. " data")
-        
-        WaitAndFetchPlayers(1)      -- 1 second of delay
-    end
 
+        WaitAndFetchPlayers(1) -- 1 second of delay
+    end
 end
 
 function DiceMenuAdminViewer:setKeyboardFocus()
@@ -212,7 +201,6 @@ function DiceMenuAdminViewer:setKeyboardFocus()
 end
 
 function DiceMenuAdminViewer.OnTick()
-
     local selection = DiceMenuAdminViewer.instance.mainCategory.datas.selected
 
     DiceMenuAdminViewer.instance.btnOpenPanel:setEnable(selection ~= 0)
@@ -223,7 +211,6 @@ function DiceMenuAdminViewer:close()
     self:setVisible(false)
     self:removeFromUIManager()
     Events.OnTick.Remove(DiceMenuAdminViewer.OnTick)
-
 end
 
 --************************************************************************--

@@ -1,7 +1,7 @@
 DiceSystem_ComboBox = ISComboBox:derive("DiceSystem_ComboBox")
 DiceSystem_ComboBoxOccupationPopup = ISComboBoxPopup:derive("DiceSystem_ComboBoxOccupationPopup")
 DiceSystem_ComboBoxStatusPopup = ISComboBoxPopup:derive("DiceSystem_ComboBoxStatusPopup")
-local playerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandling")
 
 
 
@@ -37,15 +37,6 @@ function DiceSystem_ComboBoxOccupationPopup:doDrawItem(y, item, alt)
 
     -- #ffde16
     local color = { r = 1, g = 0.871, b = 0.086, a = 1 }
-    --print(item.text)
-    -- if playerHandler.GetOccupation() == item.text then
-    --     --print("Active!")
-    --     color.r = 0
-    --     color.g = 1
-    --     color.b = 0
-    -- end
-
-
     self:drawText(item.text, 10, y + itemPadY, color.r, color.g, color.b, color.a, self.font)
     y = y + item.height
     return y
@@ -92,7 +83,7 @@ function DiceSystem_ComboBoxStatusPopup:doDrawItem(y, item, alt)
     local itemPadY = self.itemPadY or (item.height - self.fontHgt) / 2
     local color = { r = 1, b = 1, g = 1, a = 1 }
     --print(item.text)
-    if playerHandler.GetStatusEffectValue(item.text) then
+    if PlayerHandler.GetStatusEffectValue(item.text) then
         --print("Active!")
         color.r = 0
         color.g = 1
@@ -177,7 +168,7 @@ function DiceSystem_ComboBox:prerender()
     local boxLabelString
     local boxLabelColor = { r = 1, b = 1, g = 1 }
     if self.contents == "OCCUPATIONS" then
-        boxLabelString = getText("IGUI_Ocptn_" .. playerHandler.GetOccupation())
+        boxLabelString = getText("IGUI_Ocptn_" .. PlayerHandler.GetOccupation())
         boxLabelColor.r = 1
         boxLabelColor.g = 0.871
         boxLabelColor.b = 0.086

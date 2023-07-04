@@ -50,7 +50,8 @@ local function SyncTable(username)
     ModData.request(DICE_SYSTEM_MOD_STRING)
     local syncedTable = ModData.get(DICE_SYSTEM_MOD_STRING)
     syncedTable[username] = statsTable[username]
-    sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", { data = statsTable[username], username = username})
+    sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
+        { data = statsTable[username], username = username })
 end
 
 local function ReceiveGlobalModData(key, data)
