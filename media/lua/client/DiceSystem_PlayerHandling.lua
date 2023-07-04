@@ -429,7 +429,6 @@ end
 ---@param pl IsoPlayer
 ---@return boolean
 PlayerStatsHandler.CalculateArmorBonus = function(pl)
-
     -- !!! This could be run on any client.
     if pl == nil then return false end
     if pl ~= getPlayer() then return false end
@@ -532,7 +531,7 @@ PlayerStatsHandler.InitModData = function(force)
 
         PlayerStatsHandler.CalculateArmorBonus(getPlayer())
         sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
-            { data = statsTable[PlayerStatsHandler.username], username = PlayerStatsHandler.username})
+            { data = statsTable[PlayerStatsHandler.username], username = PlayerStatsHandler.username })
         --print("DiceSystem: initialized player")
     elseif statsTable[PlayerStatsHandler.username] ~= nil then
         -- Armor bonus will be recalculated when it's the actual player that's opening the panel, not an admin
