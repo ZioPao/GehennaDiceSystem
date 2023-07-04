@@ -46,7 +46,7 @@ local function copyTable(tableA, tableB)
 end
 
 local function SyncTable(username)
-    print("Syncing table for " .. username)
+    --print("Syncing table for " .. username)
     ModData.request(DICE_SYSTEM_MOD_STRING)
     local syncedTable = ModData.get(DICE_SYSTEM_MOD_STRING)
     syncedTable[username] = statsTable[username]
@@ -429,8 +429,13 @@ end
 ---@param pl IsoPlayer
 ---@return boolean
 PlayerStatsHandler.CalculateArmorBonus = function(pl)
-    if statsTable == nil or statsTable[PlayerStatsHandler.username] == nil then return false end
+
+    -- !!! This could be run on any client.
     if pl == nil then return false end
+    if pl ~= getPlayer() then return false end
+
+
+    if statsTable == nil or statsTable[PlayerStatsHandler.username] == nil then return false end
 
     --getBulletDefense()
     local wornItems = pl:getWornItems()
@@ -527,7 +532,7 @@ PlayerStatsHandler.InitModData = function(force)
 
         PlayerStatsHandler.CalculateArmorBonus(getPlayer())
         sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
-            { data = statsTable[PlayerStatsHandler.username] })
+            { data = statsTable[PlayerStatsHandler.username], username = PlayerStatsHandler.username})
         --print("DiceSystem: initialized player")
     elseif statsTable[PlayerStatsHandler.username] ~= nil then
         -- Armor bonus will be recalculated when it's the actual player that's opening the panel, not an admin
@@ -594,6 +599,9 @@ PlayerStatsHandler.CheckInitializedStatus = function(username)
 end
 ---------------
 
+local function HandleOnClothingUpdate()
+
+end
 
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
