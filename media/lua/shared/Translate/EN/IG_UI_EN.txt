@@ -42,7 +42,7 @@ IG_UI_EN = {
     IGUI_Dice_Close = "Close",
 
     IGUI_Dice_OpenPanel = "Open Panel",
-    IGUI_Dice_OpenPanelTooltip = Open the selected player dice panel",
+    IGUI_Dice_OpenPanelTooltip = "Open the selected player dice panel",
 
     IGUI_Dice_DeleteData = "Delete Data",
     IGUI_Dice_DeleteDataTooltip = "Delete the selected player dice data",

@@ -98,24 +98,14 @@ function DiceMenu:fillSkillPanel()
         local btnWidth = 100
 
         -- Check if is initialized
-        if isInitialized then
-            -- ROLL
-            local btnRoll = ISButton:new(self.width - btnWidth * 2, 0, btnWidth * 2, frameHeight - 2, "Roll", self,
-                self.onOptionMouseDown)
-            btnRoll.internal = "SKILL_ROLL"
-            btnRoll:initialise()
-            btnRoll:instantiate()
-            btnRoll.skill = PLAYER_DICE_VALUES.SKILLS[i]
-            btnRoll:setEnable(plUsername == PlayerHandler.username)
-            panel:addChild(btnRoll)
-        else
+        if not isInitialized or self.isAdminMode then
             local btnPlus = ISButton:new(self.width - btnWidth, 0, btnWidth, frameHeight - 2, "+", self,
                 self.onOptionMouseDown)
             btnPlus.internal = "PLUS_SKILL"
             btnPlus.skill = PLAYER_DICE_VALUES.SKILLS[i]
             btnPlus:initialise()
             btnPlus:instantiate()
-            btnPlus:setEnable(plUsername == PlayerHandler.username)
+            btnPlus:setEnable(true)
             self["btnPlus" .. PLAYER_DICE_VALUES.SKILLS[i]] = btnPlus
             panel:addChild(btnPlus)
 
@@ -125,10 +115,21 @@ function DiceMenu:fillSkillPanel()
             btnMinus.skill = PLAYER_DICE_VALUES.SKILLS[i]
             btnMinus:initialise()
             btnMinus:instantiate()
-            btnMinus:setEnable(plUsername == PlayerHandler.username)
+            btnMinus:setEnable(true)
             self["btnMinus" .. PLAYER_DICE_VALUES.SKILLS[i]] = btnMinus
             panel:addChild(btnMinus)
+        elseif isInitialized then
+            -- ROLL
+            local btnRoll = ISButton:new(self.width - btnWidth * 2, 0, btnWidth * 2, frameHeight - 2, "Roll", self,
+                self.onOptionMouseDown)
+            btnRoll.internal = "SKILL_ROLL"
+            btnRoll:initialise()
+            btnRoll:instantiate()
+            btnRoll.skill = PLAYER_DICE_VALUES.SKILLS[i]
+            btnRoll:setEnable(plUsername == PlayerHandler.username)
+            panel:addChild(btnRoll)
         end
+
 
         -- Added - 60 to account for eventual armor bonus
         local skillPointsPanel = ISRichTextPanel:new(self.width - btnWidth * 2 - 60, 0, 100, 25)
@@ -149,17 +150,22 @@ function DiceMenu.OnTick()
     local plUsername = getPlayer():getUsername() -- TODO optimize this
 
     -- Show allocated points during init
-    if not isInit then
+    if not isInit or DiceMenu.instance.isAdminMode then
+
+        -- Points allocated label
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
         DiceMenu.instance.labelSkillPointsAllocated:setName(pointsAllocatedString)
 
-        DiceMenu.instance.btnConfirm:setEnable(allocatedPoints == 20)
-
+        -- Occupations
         local comboOcc = DiceMenu.instance.comboOccupation
         local selectedOccupation = comboOcc:getOptionData(comboOcc.selected)
         PlayerHandler.SetOccupation(selectedOccupation)
 
-        DiceMenu.instance.comboStatusEffects.disabled = true
+        -- Status effects
+        DiceMenu.instance.comboStatusEffects.disabled = not DiceMenu.instance.isAdminMode
+
+        -- Save button
+        DiceMenu.instance.btnConfirm:setEnable(allocatedPoints == 20)
     else
         -- disable occupation choice and allocated skill points label if it's already initialized
         DiceMenu.instance.comboOccupation.disabled = true
@@ -191,9 +197,6 @@ function DiceMenu.OnTick()
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local skillPoints = PlayerHandler.GetSkillPoints(skill)
         local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
-
-
-
         local skillPointsString = string.format(" <RIGHT> %d <SPACE> ", skillPoints)
 
         --local skillPointsString
@@ -222,6 +225,12 @@ function DiceMenu.OnTick()
     DiceMenu.instance.panelMovementBonus.textDirty = true
 
     local currentHealth = PlayerHandler.GetCurrentHealth()
+    
+    -- if currentHealth ~= 5 then
+    --     print(currentHealth)
+    --     print("YES")
+    -- end
+
     local maxHealth = PlayerHandler.GetMaxHealth()
     DiceMenu.instance.panelHealth:setText(getText("IGUI_Health", PlayerHandler.GetCurrentHealth(),
         PlayerHandler.GetMaxHealth()))
@@ -236,28 +245,16 @@ function DiceMenu.OnTick()
     DiceMenu.instance.btnPlusMovement:setEnable(currMovement < totMovement)
     DiceMenu.instance.btnMinusMovement:setEnable(currMovement > 0)
 
-
-
-    ---------------------------
-    -- Since it's gonna be read only for admins, we're gonna disable every possible interactive button
-
-    if plUsername ~= PlayerHandler.username then
-        DiceMenu.instance.btnPlusHealth:setEnable(false)
-        DiceMenu.instance.btnMinusHealth:setEnable(false)
-
-        DiceMenu.instance.btnMinusMovement:setEnable(false)
-        DiceMenu.instance.btnPlusMovement:setEnable(false)
-    end
 end
 
 function DiceMenu:createChildren()
     local yOffset = 40
 
-    local pl = getPlayer()
+    local pl = getPlayerFromUsername(PlayerHandler.username)
     local playerName = pl:getDescriptor():getForename() .. " " .. pl:getDescriptor():getSurname()
 
-    if getPlayer():getUsername() ~= PlayerHandler.username then
-        playerName = "Other user - " .. PlayerHandler.username
+    if self.isAdminMode then
+        playerName = "ADMIN MODE - " .. playerName
     end
 
     self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset,
@@ -286,7 +283,7 @@ function DiceMenu:createChildren()
 
 
     --* Occupation *--
-    self.panelOccupation = ISPanel:new(0, yOffset, self.width / 2, frameHeight) -- y = 25, test only
+    self.panelOccupation = ISPanel:new(0, yOffset, self.width / 2, frameHeight)
     self.panelOccupation.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self:addChild(self.panelOccupation)
 
@@ -441,7 +438,7 @@ function DiceMenu:createChildren()
     self:addChild(self.panelSkills)
     self:fillSkillPanel()
 
-    if not PlayerHandler.IsPlayerInitialized() then
+    if not PlayerHandler.IsPlayerInitialized() or self.isAdminMode then
         self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Dice_Save"), self,
             self.onOptionMouseDown)
         self.btnConfirm.internal = "SAVE"
@@ -492,11 +489,14 @@ function DiceMenu:onOptionMouseDown(btn)
     elseif btn.internal == 'CLOSE' then
         self:closeMenu()
     end
-    --local scriptName = self.comboAddModel:getOptionText(self.comboAddModel.selected)
 end
 
 function DiceMenu:setVisible(visible)
     self.javaObject:setVisible(visible)
+end
+
+function DiceMenu:setAdminMode(val)
+    self.isAdminMode = val
 end
 
 function DiceMenu:closeMenu()
@@ -504,14 +504,23 @@ function DiceMenu:closeMenu()
     self.instance:close()
 end
 
-function DiceMenu.OpenPanel()
+---Open the Dice Menu panel
+---@param isAdminMode boolean set admin mode, admins will be able to edit a specific user stats
+---@return ISCollapsableWindow
+function DiceMenu.OpenPanel(isAdminMode)
     --local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
     PlayerHandler.InitModData(false)
 
     if DiceMenu.instance then
         DiceMenu.instance:closeMenu()
     end
+
+    if isAdminMode == nil then
+        isAdminMode = false
+    end
+
     local pnl = DiceMenu:new(50, 200, 400, 700)
+    pnl:setAdminMode(isAdminMode)
     pnl:initialise()
     pnl:addToUIManager()
     pnl:bringToTop()

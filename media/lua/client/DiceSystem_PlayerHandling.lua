@@ -46,10 +46,11 @@ local function copyTable(tableA, tableB)
 end
 
 local function SyncTable(username)
+    print("Syncing table for " .. username)
     ModData.request(DICE_SYSTEM_MOD_STRING)
     local syncedTable = ModData.get(DICE_SYSTEM_MOD_STRING)
     syncedTable[username] = statsTable[username]
-    sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", { data = statsTable[username] })
+    sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats", { data = statsTable[username], username = username})
 end
 
 local function ReceiveGlobalModData(key, data)
@@ -199,6 +200,8 @@ PlayerStatsHandler.GetOccupation = function()
 end
 
 PlayerStatsHandler.SetOccupation = function(occupation)
+    --print("Setting occupation")
+    --print(PlayerStatsHandler.username)
     local diceData = statsTable[PlayerStatsHandler.username]
     if diceData == nil then return end
 

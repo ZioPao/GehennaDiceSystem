@@ -7,11 +7,12 @@ local function OnClientCommand(module, command, playerObj, args)
 		if PlayersDiceData == nil then return end
 		if args == nil then
 			args = {
-				data = nil
+				data = nil,
+				username = playerObj:getUsername()
 			}
 		end
 
-		PlayersDiceData[playerObj:getUsername()] = args.data
+		PlayersDiceData[args.username] = args.data
 		ModData.add(DICE_SYSTEM_MOD_STRING, PlayersDiceData)
 		ModData.transmit(DICE_SYSTEM_MOD_STRING)
 	elseif command == "resetDiceData" then
