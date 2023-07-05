@@ -127,6 +127,10 @@ PlayerStatsHandler.HandleSkillPoint = function(skill, operation)
         PlayerStatsHandler.ApplyMovementBonus(actualPoints, bonusPoints)
     end
 
+    -- Sync it, even when it's not initialized, to prevent issues when other players
+    -- send an updated mod data and our local player hasn't been initialized yet
+    SyncTable(PlayerStatsHandler.username)
+
     return result
 end
 
@@ -597,10 +601,6 @@ PlayerStatsHandler.CheckInitializedStatus = function(username)
     end
 end
 ---------------
-
-local function HandleOnClothingUpdate()
-
-end
 
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
