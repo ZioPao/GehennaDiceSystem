@@ -144,7 +144,8 @@ function DiceMenu:fillSkillPanel()
     end
 end
 
-function DiceMenu.OnTick()
+function DiceMenu:update()
+    ISCollapsableWindow.update(self)
     local isInit = PlayerHandler.IsPlayerInitialized()
     local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
     local plUsername = getPlayer():getUsername() -- TODO optimize this
@@ -449,7 +450,7 @@ function DiceMenu:createChildren()
     self:addChild(self.btnClose)
 
     -- Starts the function which updates the data in the interface
-    Events.OnTick.Add(self.OnTick)
+    --Events.OnTick.Add(self.OnTick)
 end
 
 function DiceMenu:onChangeStatusEffect()
@@ -491,7 +492,7 @@ function DiceMenu:setAdminMode(val)
 end
 
 function DiceMenu:closeMenu()
-    Events.OnTick.Remove(self.OnTick)
+    --Events.OnTick.Remove(self.OnTick)
     self.instance:close()
 end
 
