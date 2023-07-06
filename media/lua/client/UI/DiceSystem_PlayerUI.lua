@@ -448,9 +448,6 @@ function DiceMenu:createChildren()
     self.btnClose:instantiate()
     self.btnClose:setEnable(true)
     self:addChild(self.btnClose)
-
-    -- Starts the function which updates the data in the interface
-    --Events.OnTick.Add(self.OnTick)
 end
 
 function DiceMenu:onChangeStatusEffect()
@@ -477,7 +474,7 @@ function DiceMenu:onOptionMouseDown(btn)
     elseif btn.internal == 'SAVE' then
         PlayerHandler.SetIsInitialized(true)
         DiceMenu.instance.btnConfirm:setEnable(false)
-        self:closeMenu()
+        self:close()
     elseif btn.internal == 'CLOSE' then
         self:closeMenu()
     end
@@ -491,11 +488,6 @@ function DiceMenu:setAdminMode(val)
     self.isAdminMode = val
 end
 
-function DiceMenu:closeMenu()
-    --Events.OnTick.Remove(self.OnTick)
-    self.instance:close()
-end
-
 ---Open the Dice Menu panel
 ---@param isAdminMode boolean set admin mode, admins will be able to edit a specific user stats
 ---@return ISCollapsableWindow
@@ -504,7 +496,7 @@ function DiceMenu.OpenPanel(isAdminMode)
     PlayerHandler.InitModData(false)
 
     if DiceMenu.instance then
-        DiceMenu.instance:closeMenu()
+        DiceMenu.instance:close()
     end
 
     if isAdminMode == nil then
@@ -521,7 +513,7 @@ end
 
 function DiceMenu.ClosePanel()
     if DiceMenu.instance then
-        DiceMenu.instance:closeMenu()
+        DiceMenu.instance:close()
     end
 end
 
