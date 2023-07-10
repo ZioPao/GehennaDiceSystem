@@ -6,7 +6,7 @@ local ModDataServerCommands = {}
 
 function ModDataServerCommands.ReceiveResetDiceData(args)
     DiceMenu.ClosePanel()
-    ModData.request(DICE_SYSTEM_MOD_STRING)
+    -- Even if it's not updated, I don't care
     PlayerHandler.data = ModData.get(DICE_SYSTEM_MOD_STRING)
     PlayerHandler.data[PlayerHandler.username] = nil
     PlayerHandler.InitModData(true)
