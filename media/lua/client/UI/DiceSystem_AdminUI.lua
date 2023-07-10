@@ -1,7 +1,6 @@
 require "ISUI/ISPanel"
 require "ISUI/ISScrollingListBox"
 
-
 --**************--
 -- Various utilities
 local function FetchPlayers()
@@ -16,28 +15,12 @@ local function FetchPlayers()
     return players
 end
 
-
-local os_time = os.time
-local eTime = 0
-
-local function WaitAndFetchPlayersLoop()
-    local cTime = os_time()
-
-    if cTime > eTime then
-        local players = FetchPlayers()
-        if DiceMenuAdminViewer and DiceMenuAdminViewer.instance and DiceMenuAdminViewer.instance.mainCategory then
-            DiceMenuAdminViewer.instance.mainCategory:initList(players)
-        end
-
-        Events.OnTick.Remove(WaitAndFetchPlayersLoop)
+local function FetchAndInitList()
+    local players = FetchPlayers()
+    if DiceMenuAdminViewer and DiceMenuAdminViewer.instance and DiceMenuAdminViewer.instance.mainCategory then
+        DiceMenuAdminViewer.instance.mainCategory:initList(players)
     end
 end
-
-local function WaitAndFetchPlayers(_eTime)
-    eTime = _eTime + os_time()
-    Events.OnTick.Add(WaitAndFetchPlayersLoop)
-end
-
 
 --*****************
 
@@ -81,9 +64,8 @@ function DiceMenuAdminViewer:new(x, y, width, height)
     o.height = height
     o.resizable = false
     o.moveWithMouse = true
+
     DiceMenuAdminViewer.instance = o
-    -- x = getCore():getScreenWidth() / 2 - (width / 2)
-    -- y = getCore():getScreenHeight() / 2 - (height / 2)
     return o
 end
 
@@ -187,7 +169,9 @@ function DiceMenuAdminViewer:onClick(button)
         PlayerHandler.CleanModData(playerID)
         processAdminChatMessage("Reset " .. player:getUsername() .. " data")
 
-        WaitAndFetchPlayers(1) -- 1 second of delay
+
+        -- Updates the list after 1 sec to be sure that it's been synced with the server
+        DelayHandler.RunAfterDelay(FetchAndInitList, 1)
     end
 end
 
