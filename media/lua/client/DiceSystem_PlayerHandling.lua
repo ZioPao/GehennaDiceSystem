@@ -365,7 +365,7 @@ PlayerStatsHandler.HandleCurrentMovement = function(operation)
         result = PlayerStatsHandler.DecrementCurrentMovement()
     end
 
-    if result and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].isInitializedthen
+    if result and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].isInitializedthen then
         sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateCurrentMovement', {currentMovement = PlayerStatsHandler.GetCurrentMovement(), username = PlayerStatsHandler.username})
     end
 end
