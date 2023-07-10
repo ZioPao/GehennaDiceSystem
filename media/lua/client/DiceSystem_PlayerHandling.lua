@@ -45,12 +45,17 @@ local function copyTable(tableA, tableB)
     end
 end
 
-local function SyncTable(username)
+
+
+
+
+local function SyncPlayerTable(username)
+    -- TODO Too aggressive, will cause massive lag
     --print("Syncing table for " .. username)
     ModData.request(DICE_SYSTEM_MOD_STRING)
     local syncedTable = ModData.get(DICE_SYSTEM_MOD_STRING)
     syncedTable[username] = statsTable[username]
-    sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
+    sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "UpdatePlayerStats",
         { data = statsTable[username], username = username })
 end
 
@@ -127,9 +132,12 @@ PlayerStatsHandler.HandleSkillPoint = function(skill, operation)
         PlayerStatsHandler.ApplyMovementBonus(actualPoints, bonusPoints)
     end
 
+    -- DO NOT SYNC THIS!
     -- Sync it, even when it's not initialized, to prevent issues when other players
     -- send an updated mod data and our local player hasn't been initialized yet
-    SyncTable(PlayerStatsHandler.username)
+   -- statsTable[PlayerStatsHandler.username].
+    --sendClientCommand(DICE_SYSTEM_MOD_STRING, '')
+    --SyncTable(PlayerStatsHandler.username)
 
     return result
 end
@@ -224,6 +232,7 @@ PlayerStatsHandler.SetOccupation = function(occupation)
     end
 end
 
+-- TODO This shouldn't be here, we shuold be able to calculate it on the server directly
 PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
     if occupationsBonusData[occupation][skill] ~= nil then
         return occupationsBonusData[occupation][skill]
@@ -240,7 +249,11 @@ PlayerStatsHandler.ToggleStatusEffectValue = function(status)
     end
 
     -- We need to force set an update since this is gonna be visible to all players!
-    SyncTable(PlayerStatsHandler.username)
+
+    -- TODO Request ONLY Status effects
+
+    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects', {username = PlayerStatsHandler.username})
+    --SyncPlayerTable(PlayerStatsHandler.username)
     
     --print("Setting occupation => " .. occupation)
 end
@@ -311,7 +324,8 @@ PlayerStatsHandler.HandleCurrentHealth = function(operation)
     end
 
     if result then
-        SyncTable(PlayerStatsHandler.username)
+        sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateCurrentHealth', {currentHealth = PlayerStatsHandler.GetCurrentHealth()})
+        --SyncPlayerTable(PlayerStatsHandler.username)
     end
 end
 
@@ -347,7 +361,8 @@ PlayerStatsHandler.HandleCurrentMovement = function(operation)
     end
 
     if result then
-        SyncTable(PlayerStatsHandler.username)
+        sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateCurrentMovement', {currentMovement = PlayerStatsHandler.GetCurrentMovement()})
+        --SyncPlayerTable(PlayerStatsHandler.username)
     end
 end
 
@@ -425,7 +440,6 @@ end
 PlayerStatsHandler.SetMaxMovement = function(maxMov)
     statsTable[PlayerStatsHandler.username].maxMovement = maxMov
     AdjustCurrentMovement()
-    SyncTable(PlayerStatsHandler.username)
 end
 
 -- * Armor Bonus
@@ -459,12 +473,19 @@ PlayerStatsHandler.CalculateArmorBonus = function(pl)
     --print(scaledProtection)
     if scaledProtection < 0 then scaledProtection = 0 end
 
+    -- TODO Cache old armor bonus before updating it
+
     -- Set the correct amount of armor bonus
     statsTable[PlayerStatsHandler.username].armorBonus = scaledProtection
+    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateArmorBonus', {armorBonus = scaledProtection})
 
     -- We need to scale the movement accordingly
-    PlayerStatsHandler.SetMaxMovement(PLAYER_DICE_VALUES.DEFAULT_MOVEMENT - scaledProtection)
-    SyncTable(PlayerStatsHandler.username)
+    local maxMov = PLAYER_DICE_VALUES.DEFAULT_MOVEMENT - scaledProtection
+    PlayerStatsHandler.SetMaxMovement(maxMov)
+
+    -- TODO Cache old max movement before updating it
+    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateMaxMovement', {maxMovement = maxMov})
+
     return true
 end
 
@@ -534,8 +555,12 @@ PlayerStatsHandler.InitModData = function(force)
 
 
         PlayerStatsHandler.CalculateArmorBonus(getPlayer())
-        sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "updatePlayerStats",
-            { data = statsTable[PlayerStatsHandler.username], username = PlayerStatsHandler.username })
+
+
+
+        -- NO SYNC NOW!
+        -- sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "UpdatePlayerStats",
+        --     { data = statsTable[PlayerStatsHandler.username], username = PlayerStatsHandler.username })
         --print("DiceSystem: initialized player")
     elseif statsTable[PlayerStatsHandler.username] ~= nil then
         -- Armor bonus will be recalculated when it's the actual player that's opening the panel, not an admin
@@ -549,12 +574,14 @@ PlayerStatsHandler.InitModData = function(force)
 end
 
 ---Set if player has finished their setup via the UI
----@param val boolean
-PlayerStatsHandler.SetIsInitialized = function(val)
+---@param isInitialized boolean
+PlayerStatsHandler.SetIsInitialized = function(isInitialized)
     -- Syncs it with server
-    statsTable[PlayerStatsHandler.username].isInitialized = val
-    if val then
-        SyncTable(PlayerStatsHandler.username)
+    statsTable[PlayerStatsHandler.username].isInitialized = isInitialized
+
+    -- Maybe the unique case where this is valid
+    if isInitialized then
+        SyncPlayerTable(PlayerStatsHandler.username)
     end
 end
 
@@ -579,7 +606,7 @@ end
 ---Start cleaning process for a specific user
 ---@param userID number
 PlayerStatsHandler.CleanModData = function(userID)
-    sendClientCommand(DICE_SYSTEM_MOD_STRING, "resetDiceData", { userID = userID })
+    sendClientCommand(DICE_SYSTEM_MOD_STRING, "ResetDiceData", { userID = userID })
     --statsTable[username] = nil
     --SyncTable(username)
 end
