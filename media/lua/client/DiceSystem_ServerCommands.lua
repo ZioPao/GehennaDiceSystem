@@ -15,7 +15,7 @@ end
 
 function ModDataServerCommands.ReceiveUpdatedStatusEffects(args)
     -- TODO Sync them in a table somewhere instead of relying on the global mod data one
-
+    --print("Receive Updated Status Effects")
     local statusEffectsTable = args.statusEffectsTable
     StatusEffectsUI.UpdateLocalStatusEffectsTable(args.userID, statusEffectsTable)
 end

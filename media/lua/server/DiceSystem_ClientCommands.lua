@@ -6,7 +6,7 @@ local ModDataCommands = {}
 ---@param playerObj any
 ---@param args any
 function ModDataCommands.UpdatePlayerStats(playerObj, args)
-	print("Syncing player data for " .. args.username)
+	--print("Syncing player data for " .. args.username)
 	if PlayersDiceData == nil then return end
 	if args == nil then
 		args = {
@@ -35,6 +35,13 @@ function ModDataCommands.RequestUpdatedStatusEffects(playerObj, args)
 
 	-- TODO Search in MOD DATA
 	local statusEffectsTable = PlayersDiceData[args.username].statusEffects
+	-- for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+    --     local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+	-- 	if statusEffectsTable[x] then
+	-- 		print("Found status effect active => " .. x)
+	-- 	end
+
+	-- end
 	local userID = args.userID
 
 	sendServerCommand(playerObj, DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects', {userID = userID, statusEffectsTable=statusEffectsTable})
@@ -111,9 +118,16 @@ function ModDataCommands.UpdateArmorBonus(_, args)
 end
 
 function ModDataCommands.UpdateStatusEffect(_, args)
+
+	--print("Update status effect")
+
 	local isActive = args.isActive
 	local statusEffect = args.statusEffect
+	-- print(statusEffect)
+	-- print(isActive)
 	PlayersDiceData[args.username].statusEffects[statusEffect] = isActive
+
+	--print(PlayersDiceData[args.username].statusEffects[statusEffect])
 end
 
 

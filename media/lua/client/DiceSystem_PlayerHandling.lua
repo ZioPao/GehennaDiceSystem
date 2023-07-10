@@ -59,13 +59,13 @@ end
 
 local function SyncPlayerTable(username)
     -- TODO Too aggressive, will cause massive lag
-    print("Syncing table for " .. username)
+    --print("Syncing table for " .. username)
     sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "UpdatePlayerStats",
         { data = DICE_CLIENT_MOD_DATA[username], username = username })
 end
 
 local function ReceiveGlobalModData(key, data)
-    print("Received global mod data")
+    --print("Received global mod data")
     if key == DICE_SYSTEM_MOD_STRING then
         --Creating a deep copy of recieved data and storing it in local store CLIENT_GLOBALMODDATA table
         copyTable(DICE_CLIENT_MOD_DATA, data)
@@ -246,17 +246,17 @@ PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
 end
 
 --* Status Effect *--
-PlayerStatsHandler.ToggleStatusEffectValue = function(status)
+PlayerStatsHandler.ToggleStatusEffectValue = function(statusEffect)
     -- Add a check in the UI to make it clear that we have selected them or something
     local diceData = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username]
-    if diceData.statusEffects[status] ~= nil then
-        diceData.statusEffects[status] = not diceData.statusEffects[status]
+    if diceData.statusEffects[statusEffect] ~= nil then
+        diceData.statusEffects[statusEffect] = not diceData.statusEffects[statusEffect]
     end
 
     -- We need to force set an update since this is gonna be visible to all players!
-    local isActive = diceData.statusEffects[status]
+    local isActive = diceData.statusEffects[statusEffect]
     -- TODO Request ONLY Status effects
-    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateStatusEffect', {username = PlayerStatsHandler.username, status = status, isActive = isActive })
+    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateStatusEffect', {username = PlayerStatsHandler.username, statusEffect = statusEffect, isActive = isActive })
     --SyncPlayerTable(PlayerStatsHandler.username)
     
     --print("Setting occupation => " .. occupation)
@@ -511,7 +511,7 @@ end
 ---@param force boolean Force initializiation for the current player
 PlayerStatsHandler.InitModData = function(force)
 
-    print("[DiceSystem] Initializing!")
+    --print("[DiceSystem] Initializing!")
 
 
 
@@ -520,11 +520,11 @@ PlayerStatsHandler.InitModData = function(force)
     end
 
     local referenceTable = DICE_CLIENT_MOD_DATA
-    print(referenceTable)
+    --print(referenceTable)
 
     -- This should happen only from that specific player, not an admin
     if (DICE_CLIENT_MOD_DATA ~= nil and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] == nil) or force then
-        print("[DiceSystem] Initializing new player dice data")
+        --print("[DiceSystem] Initializing new player dice data")
         local tempTable = {}
         tempTable = {
             isInitialized = false,
@@ -569,25 +569,26 @@ PlayerStatsHandler.InitModData = function(force)
         -- sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "UpdatePlayerStats",
         --     { data = statsTable[PlayerStatsHandler.username], username = PlayerStatsHandler.username })
         --print("DiceSystem: initialized player")
-    elseif DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] ~= nil then
+    elseif DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] == nil then
+        error("DiceSystem: Global mod data is broken")
+
         -- Armor bonus will be recalculated when it's the actual player that's opening the panel, not an admin
-        print("[DiceSystem] Found player in data. Loading it")
+        --print("[DiceSystem] Found player in data. Loading it")
 
         --!!! JUST FOR DEBUG PRINT STUFF FROM THE TABLE
-        local tab = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username]
+        --local tab = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username]
         
-        print(tab.isInitialized)
-        print(tab.occupation)
-        print(tab.skills.Charm)
-        print(tab.skills.Brutal)
-        print(tab.currentHealth)
+        -- print(tab.isInitialized)
+        -- print(tab.occupation)
+        -- print(tab.skills.Charm)
+        -- print(tab.skills.Brutal)
+        -- print(tab.currentHealth)
 
         -- local localPlayer = getPlayer()
         -- if localPlayer:getUsername() == PlayerStatsHandler.username then
         --     PlayerStatsHandler.CalculateArmorBonus(localPlayer)
         -- end
-    else
-        error("DiceSystem: Global mod data is broken")
+    
     end
 end
 
