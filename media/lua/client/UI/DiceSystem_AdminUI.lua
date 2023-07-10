@@ -29,7 +29,7 @@ local function WaitAndFetchPlayersLoop()
             DiceMenuAdminViewer.instance.mainCategory:initList(players)
         end
 
-        --Events.OnTick.Remove(WaitAndFetchPlayersLoop)
+        Events.OnTick.Remove(WaitAndFetchPlayersLoop)
     end
 end
 
@@ -155,8 +155,6 @@ function DiceMenuAdminViewer:initialise()
 
     local players = FetchPlayers()
     self.mainCategory:initList(players)
-
-    --Events.OnTick.Add(DiceMenuAdminViewer.OnTick)
 end
 
 function DiceMenuAdminViewer:prerender()
@@ -212,7 +210,6 @@ end
 function DiceMenuAdminViewer:close()
     self:setVisible(false)
     self:removeFromUIManager()
-    --Events.OnTick.Remove(DiceMenuAdminViewer.OnTick)
 end
 
 --************************************************************************--
