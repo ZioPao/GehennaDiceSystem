@@ -32,6 +32,12 @@ end
 
 function ModDataCommands.RequestUpdatedStatusEffects(playerObj, args)
 
+
+	-- TODO Search in MOD DATA
+	local statusEffectsTable = PlayersDiceData[args.username].statusEffects
+	local userID = args.userID
+
+	sendServerCommand(playerObj, DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects', {userID = userID, statusEffectsTable=statusEffectsTable})
 	-- TODO Check players near playerObj, fetch ONLY those status effects
 	-- base it on SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
 
@@ -64,11 +70,13 @@ function ModDataCommands.SetSkills(_, args)
 	PlayersDiceData[args.username].skills = skillsTable
 end
 
+---Set occupation and related bonus points
+---@param _ any
+---@param args any
 function ModDataCommands.SetOccupation(_, args)
 	local occupation = args.occupation
 	local skillsBonus = args.skillsBonus
 
-	-- TODO Set bonuses here
 	PlayersDiceData[args.username].occupation = occupation
 	PlayersDiceData[args.username].skillsBonus = skillsBonus
 
@@ -102,9 +110,10 @@ function ModDataCommands.UpdateArmorBonus(_, args)
 	PlayersDiceData[args.username].armorBonus = armorBonus
 end
 
-function ModDataCommands.UpdateStatusEffects(_, args)
-	local statusEffects = args.statusEffects
-	PlayersDiceData[args.username].statusEffects = statusEffects
+function ModDataCommands.UpdateStatusEffect(_, args)
+	local isActive = args.isActive
+	local statusEffect = args.statusEffect
+	PlayersDiceData[args.username].statusEffects[statusEffect] = isActive
 end
 
 

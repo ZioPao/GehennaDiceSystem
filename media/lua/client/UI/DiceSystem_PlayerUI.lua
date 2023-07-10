@@ -28,7 +28,7 @@ Admin utilities
 --* Helper functions
 
 ---Get a string for ISRichTextPanel containing a colored status effect string
----@param value string
+---@param status string
 ---@return string
 local function GetColoredStatusEffect(status)
     -- Pick from table colors

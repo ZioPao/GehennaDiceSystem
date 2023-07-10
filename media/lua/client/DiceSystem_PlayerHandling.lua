@@ -254,10 +254,9 @@ PlayerStatsHandler.ToggleStatusEffectValue = function(status)
     end
 
     -- We need to force set an update since this is gonna be visible to all players!
-
+    local isActive = diceData.statusEffects[status]
     -- TODO Request ONLY Status effects
-
-    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects', {username = PlayerStatsHandler.username})
+    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateStatusEffect', {username = PlayerStatsHandler.username, status = status, isActive = isActive })
     --SyncPlayerTable(PlayerStatsHandler.username)
     
     --print("Setting occupation => " .. occupation)
