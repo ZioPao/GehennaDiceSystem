@@ -186,7 +186,7 @@ function DiceMenuAdminViewer:onClick(button)
 
 
         -- Updates the list after 1 sec to be sure that it's been synced with the server
-        DelayHandler.RunAfterDelay(FetchAndInitList, 1)
+        WaitAndFetchPlayers(1)
     end
 end
 
