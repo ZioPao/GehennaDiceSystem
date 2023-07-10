@@ -243,7 +243,13 @@ end
 function DiceMenu:createChildren()
     local yOffset = 40
 
-    local pl = getPlayerFromUsername(PlayerHandler.username)
+    local pl
+    if isClient() then
+        pl = getPlayerFromUsername(PlayerHandler.username)
+    else
+        pl = getPlayer()        -- ONLY FOR SP TESTING!
+    end
+
     local playerName = pl:getDescriptor():getForename() .. " " .. pl:getDescriptor():getSurname()
 
     if self.isAdminMode then
@@ -476,7 +482,7 @@ function DiceMenu:onOptionMouseDown(btn)
         DiceMenu.instance.btnConfirm:setEnable(false)
         self:close()
     elseif btn.internal == 'CLOSE' then
-        self:closeMenu()
+        self:close()
     end
 end
 
