@@ -53,6 +53,7 @@ DiceMenuAdminViewer = ISCollapsableWindow:derive("DiceMenuAdminViewer")
 DiceMenuAdminViewer.messages = {}
 
 function DiceMenuAdminViewer.OnOpenPanel()
+    ModData.request(DICE_SYSTEM_MOD_STRING)     -- Request it again
     if DiceMenuAdminViewer.instance then
         DiceMenuAdminViewer.instance:close()
     end
