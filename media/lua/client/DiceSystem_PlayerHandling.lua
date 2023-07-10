@@ -469,14 +469,13 @@ PlayerStatsHandler.CalculateArmorBonus = function(pl)
 end
 
 --- Returns the current value of armor bonus
----@return number armorBonus
+---@return number
 PlayerStatsHandler.GetArmorBonus = function()
-    local armorBonus = -1
     if statsTable and statsTable[PlayerStatsHandler.username] then
-        armorBonus = statsTable[PlayerStatsHandler.username].armorBonus
+        return statsTable[PlayerStatsHandler.username].armorBonus
     end
 
-    return armorBonus
+    return -1
 end
 
 
@@ -550,11 +549,11 @@ PlayerStatsHandler.InitModData = function(force)
 end
 
 ---Set if player has finished their setup via the UI
----@param isInitialized boolean
-PlayerStatsHandler.SetIsInitialized = function(isInitialized)
+---@param val boolean
+PlayerStatsHandler.SetIsInitialized = function(val)
     -- Syncs it with server
-    statsTable[PlayerStatsHandler.username].isInitialized = isInitialized
-    if isInitialized then
+    statsTable[PlayerStatsHandler.username].isInitialized = val
+    if val then
         SyncTable(PlayerStatsHandler.username)
     end
 end
@@ -578,7 +577,7 @@ end
 --* Admin functions *--
 
 ---Start cleaning process for a specific user
----@param userID number
+---@param userID any
 PlayerStatsHandler.CleanModData = function(userID)
     sendClientCommand(DICE_SYSTEM_MOD_STRING, "resetDiceData", { userID = userID })
     --statsTable[username] = nil
@@ -591,7 +590,7 @@ PlayerStatsHandler.SetUser = function(user)
 end
 
 ---Check if player is initialized and ready to use the system
----@param username string
+---@param username any
 ---@return boolean
 PlayerStatsHandler.CheckInitializedStatus = function(username)
     statsTable = ModData.get(DICE_SYSTEM_MOD_STRING)

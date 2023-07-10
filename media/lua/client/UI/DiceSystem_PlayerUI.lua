@@ -241,9 +241,6 @@ function DiceMenu:update()
 end
 
 function DiceMenu:createChildren()
-    -- TODO Swap out our shitty close button with the default one
-    --ISCollapsableWindow.createChildren(self)
-
     local yOffset = 40
 
     local pl = getPlayerFromUsername(PlayerHandler.username)

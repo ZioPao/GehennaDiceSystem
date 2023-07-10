@@ -15,11 +15,26 @@ local function FetchPlayers()
     return players
 end
 
-local function FetchAndInitList()
-    local players = FetchPlayers()
-    if DiceMenuAdminViewer and DiceMenuAdminViewer.instance and DiceMenuAdminViewer.instance.mainCategory then
-        DiceMenuAdminViewer.instance.mainCategory:initList(players)
+
+local os_time = os.time
+local eTime = 0
+
+local function WaitAndFetchPlayersLoop()
+    local cTime = os_time()
+
+    if cTime > eTime then
+        local players = FetchPlayers()
+        if DiceMenuAdminViewer and DiceMenuAdminViewer.instance and DiceMenuAdminViewer.instance.mainCategory then
+            DiceMenuAdminViewer.instance.mainCategory:initList(players)
+        end
+
+        Events.OnTick.Remove(WaitAndFetchPlayersLoop)
     end
+end
+
+local function WaitAndFetchPlayers(_eTime)
+    eTime = _eTime + os_time()
+    Events.OnTick.Add(WaitAndFetchPlayersLoop)
 end
 
 --*****************
@@ -182,13 +197,11 @@ function DiceMenuAdminViewer:setKeyboardFocus()
     --view.filterWidgetMap.Type:focus()
 end
 
-function DiceMenuAdminViewer:update()
-    ISCollapsableWindow.update(self)
-    local selection = self.mainCategory.datas.selected
-    local isBtnActive = self.mainCategory.datas:size() > 0 and selection ~= 0
-    self.btnOpenPanel:setEnable(isBtnActive)
-    self.btnDeleteData:setEnable(isBtnActive)
+function DiceMenuAdminViewer.OnTick()
+    local selection = DiceMenuAdminViewer.instance.mainCategory.datas.selected
 
+    DiceMenuAdminViewer.instance.btnOpenPanel:setEnable(selection ~= 0)
+    DiceMenuAdminViewer.instance.btnDeleteData:setEnable(selection ~= 0)
 end
 
 function DiceMenuAdminViewer:close()
