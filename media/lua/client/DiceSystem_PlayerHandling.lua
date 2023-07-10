@@ -328,9 +328,9 @@ PlayerStatsHandler.HandleCurrentHealth = function(operation)
         result = PlayerStatsHandler.DecrementCurrentHealth()
     end
 
-    if result then
-        sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateCurrentHealth', {currentHealth = PlayerStatsHandler.GetCurrentHealth(), username = PlayerStatsHandler.username})
-        --SyncPlayerTable(PlayerStatsHandler.username)
+    if result and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].isInitialized then
+        local currentHealth = PlayerStatsHandler.GetCurrentHealth()
+        sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateCurrentHealth', {currentHealth = currentHealth, username = PlayerStatsHandler.username})
     end
 end
 
@@ -365,9 +365,8 @@ PlayerStatsHandler.HandleCurrentMovement = function(operation)
         result = PlayerStatsHandler.DecrementCurrentMovement()
     end
 
-    if result then
+    if result and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].isInitializedthen
         sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateCurrentMovement', {currentMovement = PlayerStatsHandler.GetCurrentMovement(), username = PlayerStatsHandler.username})
-        --SyncPlayerTable(PlayerStatsHandler.username)
     end
 end
 
