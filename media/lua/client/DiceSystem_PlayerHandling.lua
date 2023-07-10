@@ -241,7 +241,7 @@ PlayerStatsHandler.ToggleStatusEffectValue = function(status)
 
     -- We need to force set an update since this is gonna be visible to all players!
     SyncTable(PlayerStatsHandler.username)
-
+    
     --print("Setting occupation => " .. occupation)
 end
 
@@ -577,7 +577,7 @@ end
 --* Admin functions *--
 
 ---Start cleaning process for a specific user
----@param userID any
+---@param userID number
 PlayerStatsHandler.CleanModData = function(userID)
     sendClientCommand(DICE_SYSTEM_MOD_STRING, "resetDiceData", { userID = userID })
     --statsTable[username] = nil

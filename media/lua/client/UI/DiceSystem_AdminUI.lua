@@ -197,11 +197,13 @@ function DiceMenuAdminViewer:setKeyboardFocus()
     --view.filterWidgetMap.Type:focus()
 end
 
-function DiceMenuAdminViewer.OnTick()
-    local selection = DiceMenuAdminViewer.instance.mainCategory.datas.selected
+function DiceMenuAdminViewer:update()
+    ISCollapsableWindow.update(self)
+    local selection = self.mainCategory.datas.selected
+    local isBtnActive = self.mainCategory.datas:size() > 0 and selection ~= 0
+    self.btnOpenPanel:setEnable(isBtnActive)
+    self.btnDeleteData:setEnable(isBtnActive)
 
-    DiceMenuAdminViewer.instance.btnOpenPanel:setEnable(selection ~= 0)
-    DiceMenuAdminViewer.instance.btnDeleteData:setEnable(selection ~= 0)
 end
 
 function DiceMenuAdminViewer:close()

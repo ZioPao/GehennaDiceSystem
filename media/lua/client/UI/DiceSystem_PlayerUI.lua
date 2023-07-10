@@ -146,32 +146,37 @@ end
 
 function DiceMenu:update()
     ISCollapsableWindow.update(self)
+
+
+    -- Test if the panel is present... but this doesn't make any fucking sense
+
+
     local isInit = PlayerHandler.IsPlayerInitialized()
     local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
     local plUsername = getPlayer():getUsername() -- TODO optimize this
 
     -- Show allocated points during init
-    if not isInit or DiceMenu.instance.isAdminMode then
+    if not isInit or self.isAdminMode then
         -- Points allocated label
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
-        DiceMenu.instance.labelSkillPointsAllocated:setName(pointsAllocatedString)
+        self.labelSkillPointsAllocated:setName(pointsAllocatedString)
 
         -- Occupations
-        local comboOcc = DiceMenu.instance.comboOccupation
+        local comboOcc = self.comboOccupation
         local selectedOccupation = comboOcc:getOptionData(comboOcc.selected)
         PlayerHandler.SetOccupation(selectedOccupation)
 
         -- Status effects
-        DiceMenu.instance.comboStatusEffects.disabled = not DiceMenu.instance.isAdminMode
+        self.comboStatusEffects.disabled = not self.isAdminMode
 
         -- Save button
-        DiceMenu.instance.btnConfirm:setEnable(allocatedPoints == 20)
+        self.btnConfirm:setEnable(allocatedPoints == 20)
     else
         -- disable occupation choice and allocated skill points label if it's already initialized
-        DiceMenu.instance.comboOccupation.disabled = true
-        DiceMenu.instance.labelSkillPointsAllocated:setName("")
+        self.comboOccupation.disabled = true
+        self.labelSkillPointsAllocated:setName("")
 
-        DiceMenu.instance.comboStatusEffects.disabled = (plUsername ~= PlayerHandler.username)
+        self.comboStatusEffects.disabled = (plUsername ~= PlayerHandler.username)
         local statusEffectsText = ""
 
         local activeStatusEffects = PlayerHandler.GetActiveStatusEffects()
@@ -186,8 +191,8 @@ function DiceMenu:update()
                 statusEffectsText = statusEffectsText .. " <SPACE> - <SPACE> " .. singleStatus
             end
         end
-        DiceMenu.instance.labelStatusEffectsList:setText(statusEffectsText)
-        DiceMenu.instance.labelStatusEffectsList.textDirty = true
+        self.labelStatusEffectsList:setText(statusEffectsText)
+        self.labelStatusEffectsList.textDirty = true
     end
 
     local armorBonusPoints = PlayerHandler.GetArmorBonus()
@@ -209,35 +214,35 @@ function DiceMenu:update()
         end
 
 
-        DiceMenu.instance["labelSkillPoints" .. skill]:setText(skillPointsString)
-        DiceMenu.instance["labelSkillPoints" .. skill].textDirty = true
+        self["labelSkillPoints" .. skill]:setText(skillPointsString)
+        self["labelSkillPoints" .. skill].textDirty = true
 
         -- Handles buttons to assign skill points
-        if not isInit or DiceMenu.instance.isAdminMode then
-            DiceMenu.instance["btnMinus" .. skill]:setEnable(skillPoints ~= 0)
-            DiceMenu.instance["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
+        if not isInit or self.isAdminMode then
+            self["btnMinus" .. skill]:setEnable(skillPoints ~= 0)
+            self["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
         end
     end
 
-    DiceMenu.instance.panelArmorBonus:setText(getText("IGUI_ArmorBonus", armorBonusPoints))
-    DiceMenu.instance.panelArmorBonus.textDirty = true
-    DiceMenu.instance.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler.GetMovementBonus()))
-    DiceMenu.instance.panelMovementBonus.textDirty = true
+    self.panelArmorBonus:setText(getText("IGUI_ArmorBonus", armorBonusPoints))
+    self.panelArmorBonus.textDirty = true
+    self.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler.GetMovementBonus()))
+    self.panelMovementBonus.textDirty = true
 
     local currentHealth = PlayerHandler.GetCurrentHealth()
     local maxHealth = PlayerHandler.GetMaxHealth()
-    DiceMenu.instance.panelHealth:setText(getText("IGUI_Health", PlayerHandler.GetCurrentHealth(),
+    self.panelHealth:setText(getText("IGUI_Health", PlayerHandler.GetCurrentHealth(),
         PlayerHandler.GetMaxHealth()))
-    DiceMenu.instance.panelHealth.textDirty = true
-    DiceMenu.instance.btnPlusHealth:setEnable(currentHealth < maxHealth)
-    DiceMenu.instance.btnMinusHealth:setEnable(currentHealth > 0)
+    self.panelHealth.textDirty = true
+    self.btnPlusHealth:setEnable(currentHealth < maxHealth)
+    self.btnMinusHealth:setEnable(currentHealth > 0)
 
     local totMovement = PlayerHandler.GetMaxMovement() + PlayerHandler.GetMovementBonus()
     local currMovement = PlayerHandler.GetCurrentMovement()
-    DiceMenu.instance.panelMovement:setText(getText("IGUI_Movement", currMovement, totMovement))
-    DiceMenu.instance.panelMovement.textDirty = true
-    DiceMenu.instance.btnPlusMovement:setEnable(currMovement < totMovement)
-    DiceMenu.instance.btnMinusMovement:setEnable(currMovement > 0)
+    self.panelMovement:setText(getText("IGUI_Movement", currMovement, totMovement))
+    self.panelMovement.textDirty = true
+    self.btnPlusMovement:setEnable(currMovement < totMovement)
+    self.btnMinusMovement:setEnable(currMovement > 0)
 end
 
 function DiceMenu:createChildren()
@@ -518,6 +523,7 @@ function DiceMenu.OpenPanel(isAdminMode)
 end
 
 function DiceMenu.ClosePanel()
+    -- TODO This can create problems
     if DiceMenu.instance then
         DiceMenu.instance:close()
     end
