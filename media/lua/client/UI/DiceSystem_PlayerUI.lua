@@ -499,6 +499,11 @@ function DiceMenu:setAdminMode(val)
     self.isAdminMode = val
 end
 
+function DiceMenu:close()
+    self:removeFromUIManager()
+    ISCollapsableWindow.close(self)
+end
+
 ---Open the Dice Menu panel
 ---@param isAdminMode boolean set admin mode, admins will be able to edit a specific user stats
 ---@return ISCollapsableWindow

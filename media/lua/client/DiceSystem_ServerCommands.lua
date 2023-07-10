@@ -4,7 +4,7 @@ local DiceMenu = require("UI/DiceSystem_PlayerUI")
 local ModDataServerCommands = {}
 
 
-function ModDataServerCommands.ReceiveResetData(args)
+function ModDataServerCommands.ReceiveResetDiceData(args)
     DiceMenu.ClosePanel()
     PlayerHandler.InitModData(true)
 end

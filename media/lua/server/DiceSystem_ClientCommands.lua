@@ -7,10 +7,11 @@ local ModDataCommands = {}
 ---@param playerObj any
 ---@param args any
 function ModDataCommands.UpdatePlayerStats(playerObj, args)
+	print("Syncing player data for " .. args.username)
 	if PlayersDiceData == nil then return end
 	if args == nil then
 		args = {
-			data = nil,
+			data = {},
 			username = playerObj:getUsername()
 		}
 	end
@@ -34,7 +35,7 @@ function ModDataCommands.RequestUpdatedStatusEffects(playerObj, args)
 
 	-- TODO Check players near playerObj, fetch ONLY those status effects
 	-- base it on SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
-	
+
 
 
 	--PlayersDiceData[args.username].statusEffects
@@ -114,7 +115,7 @@ end
 
 local function OnClientCommand(module, command, playerObj, args)
 	if module ~= DICE_SYSTEM_MOD_STRING then return end
-
+	print("Received ModData command " .. command)
 	if ModDataCommands[command] and PlayersDiceData ~= nil then
 		ModDataCommands[command](playerObj, args)
 		ModData.add(DICE_SYSTEM_MOD_STRING, PlayersDiceData)
