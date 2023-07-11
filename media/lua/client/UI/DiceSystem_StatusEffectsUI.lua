@@ -1,9 +1,3 @@
-
--- FIX Players with previously set status effects won't show their status effects until they update it themselves
-
-
-
-
 -- Caching stuff
 local getOnlinePlayers = getOnlinePlayers
 
@@ -20,10 +14,8 @@ local isoToScreenY = isoToScreenY
 
 -----------------
 
-
 StatusEffectsUI = ISPanel:derive("StatusEffectsUI")
 StatusEffectsUI.nearPlayersStatusEffects = {}
---StatusEffectsUI.nearPlayersUserIds = {}
 
 function StatusEffectsUI:drawStatusEffect(pl, statusEffectsTable)
     local plNum = getNum(pl)
@@ -58,7 +50,6 @@ end
 
 function StatusEffectsUI:render()
     self.zoom = getCore():getZoom(self.player:getPlayerNum())
-    local userIdsTable = StatusEffectsUI.nearPlayersUserIds
     local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
 
     --self:drawStatusEffect(self.player, PlayerHandler.GetActiveStatusEffectsByUsername(getUsername(self.player)))
@@ -66,13 +57,14 @@ function StatusEffectsUI:render()
 
     for i=0, onlinePlayers:size() - 1 do
         local pl = onlinePlayers:get(i)
-        if pl and StatusEffectsUI.mainPlayer:DistTo(pl) < StatusEffectsUI.renderDistance and StatusEffectsUI.mainPlayer:checkCanSeeClient(pl) then
-            local onlineID = pl:getOnlineID()
-            -- TODO Check local table
-            if statusEffectsTable[onlineID] == nil then
-                sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects', {onlineID = onlineID})
+        if pl and self.player:DistTo(pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
+            local userID = pl:getOnlineID()
+            if statusEffectsTable[userID] == nil or statusEffectsTable[userID] == {} then
+                --print("Requesting update!")
+                local username = pl:getUsername()
+                sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects', {username = username, userID = userID})
             else
-                self:drawStatusEffect(pl, statusEffectsTable[onlineID])
+                self:drawStatusEffect(pl, statusEffectsTable[userID])
             end
 
         end
@@ -80,30 +72,6 @@ function StatusEffectsUI:render()
 
 
 
-
-
-
-    -- for i = 1, #userIdsTable do
-    --     local id = userIdsTable[i]
-    --     if id ~= nil then
-    --         local pl = getPlayerByOnlineID(id)
-    --         if pl and StatusEffectsUI.mainPlayer:DistTo(pl) < StatusEffectsUI.renderDistance and StatusEffectsUI.mainPlayer:checkCanSeeClient(pl) then
-    --             self:drawStatusEffect(pl, statusEffectsTable[id])
-    --         end
-    --     end
-    -- end
-
-
-
-    -- local players = getOnlinePlayers()
-    -- for i = 0, players:size() - 1 do
-    --     local pl = players:get(i)
-    --     if pl and PlayerHandler.CheckInitializedStatus(pl:getUsername()) then
-    --         if self.player:getDistanceSq(pl) < StatusEffectsUI.renderDistance then
-    --             self:drawStatusEffect(pl)
-    --         end
-    --     end
-    -- end
 end
 
 function StatusEffectsUI:initialise()
@@ -113,7 +81,6 @@ function StatusEffectsUI:initialise()
 end
 
 function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffectsTable)
-    
     StatusEffectsUI.mainPlayer = getPlayer()
     local receivedPlayer = getPlayerByOnlineID(userID)
     local dist = StatusEffectsUI.mainPlayer:DistTo(receivedPlayer)
@@ -134,7 +101,6 @@ function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffectsTabl
         else
             print("Same effects! No change needed")
         end
-        --table.insert(StatusEffectsUI.nearPlayersUserIds, userID)
     else
         StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
 
@@ -176,33 +142,4 @@ if isClient() then
         StatusEffectsUI:new()
     end
     Events.OnGameStart.Add(InitStatusEffectsUI)
-
-
-    -- Handler that manages syncing between clients
-    local function HandleStatusEffectsSyncing()
-        --StatusEffectsUI.nearPlayersStatusEffects = {} -- Clean
-        StatusEffectsUI.nearPlayersUserIds = {}
-        local currPlayer = getPlayer()
-        local players = getOnlinePlayers()
-        for i = 0, players:size() - 1 do
-            local pl = players:get(i)
-            if currPlayer ~= pl then
-                local dist = currPlayer:DistTo(pl)
-                if dist < StatusEffectsUI.renderDistance then
-                    local username = pl:getUsername()
-                    local userID = pl:getOnlineID()
-
-
-
-                    -- TODO This should be more like a listener. It should send a request to other players
-
-                    --print(username)
-                    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
-                        { username = username, userID = userID })
-                end
-            end
-        end
-    end
-
-    --Events.EveryOneMinute.Add(HandleStatusEffectsSyncing)
 end
