@@ -1,4 +1,8 @@
--- TODO We should use some kind of asynchronous event so that we don't have to use a for in the render func
+
+-- FIX Players with previously set status effects won't show their status effects until they update it themselves
+
+
+
 
 -- Caching stuff
 local getOnlinePlayers = getOnlinePlayers
@@ -19,7 +23,7 @@ local isoToScreenY = isoToScreenY
 
 StatusEffectsUI = ISPanel:derive("StatusEffectsUI")
 StatusEffectsUI.nearPlayersStatusEffects = {}
-StatusEffectsUI.nearPlayersUserIds = {}
+--StatusEffectsUI.nearPlayersUserIds = {}
 
 function StatusEffectsUI:drawStatusEffect(pl, statusEffectsTable)
     local plNum = getNum(pl)
@@ -58,16 +62,36 @@ function StatusEffectsUI:render()
     local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
 
     --self:drawStatusEffect(self.player, PlayerHandler.GetActiveStatusEffectsByUsername(getUsername(self.player)))
+    local onlinePlayers = getOnlinePlayers()        -- TODO How heavy is it?
 
-    for i = 1, #userIdsTable do
-        local id = userIdsTable[i]
-        if id ~= nil then
-            local pl = getPlayerByOnlineID(id)
-            if pl and StatusEffectsUI.mainPlayer:DistTo(pl) < StatusEffectsUI.renderDistance and StatusEffectsUI.mainPlayer:checkCanSeeClient(pl) then
-                self:drawStatusEffect(pl, statusEffectsTable[id])
+    for i=0, onlinePlayers:size() - 1 do
+        local pl = onlinePlayers:get(i)
+        if pl and StatusEffectsUI.mainPlayer:DistTo(pl) < StatusEffectsUI.renderDistance and StatusEffectsUI.mainPlayer:checkCanSeeClient(pl) then
+            local onlineID = pl:getOnlineID()
+            -- TODO Check local table
+            if statusEffectsTable[onlineID] == nil then
+                sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects', {onlineID = onlineID})
+            else
+                self:drawStatusEffect(pl, statusEffectsTable[onlineID])
             end
+
         end
     end
+
+
+
+
+
+
+    -- for i = 1, #userIdsTable do
+    --     local id = userIdsTable[i]
+    --     if id ~= nil then
+    --         local pl = getPlayerByOnlineID(id)
+    --         if pl and StatusEffectsUI.mainPlayer:DistTo(pl) < StatusEffectsUI.renderDistance and StatusEffectsUI.mainPlayer:checkCanSeeClient(pl) then
+    --             self:drawStatusEffect(pl, statusEffectsTable[id])
+    --         end
+    --     end
+    -- end
 
 
 
@@ -91,10 +115,7 @@ end
 function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffectsTable)
     
     StatusEffectsUI.mainPlayer = getPlayer()
-
-
     local receivedPlayer = getPlayerByOnlineID(userID)
-
     local dist = StatusEffectsUI.mainPlayer:DistTo(receivedPlayer)
     if dist < StatusEffectsUI.renderDistance then
         StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
@@ -113,17 +134,17 @@ function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffectsTabl
         else
             print("Same effects! No change needed")
         end
-        table.insert(StatusEffectsUI.nearPlayersUserIds, userID)
+        --table.insert(StatusEffectsUI.nearPlayersUserIds, userID)
     else
         StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
 
-        for i=1, #StatusEffectsUI.nearPlayersUserIds do
-            local idInTable = StatusEffectsUI.nearPlayersUserIds[i]
-            if idInTable == userID then
-                table.remove(StatusEffectsUI.nearPlayersUserIds, i)
-                break
-            end
-        end
+        -- for i=1, #StatusEffectsUI.nearPlayersUserIds do
+        --     local idInTable = StatusEffectsUI.nearPlayersUserIds[i]
+        --     if idInTable == userID then
+        --         table.remove(StatusEffectsUI.nearPlayersUserIds, i)
+        --         break
+        --     end
+        -- end
 
     end
 end

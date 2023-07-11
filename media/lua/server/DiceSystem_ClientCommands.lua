@@ -31,22 +31,11 @@ end
 
 
 function ModDataCommands.RequestUpdatedStatusEffects(playerObj, args)
-
-
-	-- TODO This should be a listener!
-
-	-- TODO Search in MOD DATA
 	local statusEffectsTable = PlayersDiceData[args.username].statusEffects
 	local userID = args.userID
 
 	sendServerCommand(playerObj, DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects', {userID = userID, statusEffectsTable=statusEffectsTable})
-	-- TODO Check players near playerObj, fetch ONLY those status effects
-	-- base it on SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
 
-
-
-	--PlayersDiceData[args.username].statusEffects
-	-- todo send updated values of status effects... in form of enum to lessen the load maybe
 end
 
 

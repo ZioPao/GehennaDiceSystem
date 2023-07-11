@@ -13,8 +13,10 @@ function ModDataServerCommands.ReceiveResetDiceData(args)
 end
 
 
+---Sync status effects in a table somewhere instead of relying on the global mod data one
+---@param args table
 function ModDataServerCommands.ReceiveUpdatedStatusEffects(args)
-    -- TODO Sync them in a table somewhere instead of relying on the global mod data one
+    -- TODO 
     --print("Receive Updated Status Effects")
     local statusEffectsTable = args.statusEffectsTable
     StatusEffectsUI.UpdateLocalStatusEffectsTable(args.userID, statusEffectsTable)
