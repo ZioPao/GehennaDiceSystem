@@ -49,14 +49,18 @@ function StatusEffectsUI:render()
 
     for i = 0, onlinePlayers:size() - 1 do
         local pl = onlinePlayers:get(i)
-        if pl and self.player:DistTo(pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
+        -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
+        -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
+        if pl and pl:getCurrentSquare() ~= nil and self.player:DistTo(pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
             local userID = getOnlineID(pl)
             if statusEffectsTable[userID] == nil or statusEffectsTable[userID] == {} then
+                -- Table needs an update
                 --print("Requesting update!")
                 local username = getUsername(pl)
                 sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
                     { username = username, userID = userID })
             else
+                -- Table already present (maybe not complete)
                 self:drawStatusEffect(pl, statusEffectsTable[userID])
             end
         end
