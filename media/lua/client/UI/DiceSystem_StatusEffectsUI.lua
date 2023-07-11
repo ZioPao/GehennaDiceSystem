@@ -43,6 +43,7 @@ end
 
 ---Render loop
 function StatusEffectsUI:render()
+
     self.zoom = getCore():getZoom(self.player:getPlayerNum())
     local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
     local onlinePlayers = getOnlinePlayers() -- TODO How heavy is it?
@@ -75,9 +76,19 @@ function StatusEffectsUI:drawStatusEffect(pl, statusEffects)
     local plX = getX(pl)
     local plY = getY(pl)
     local plZ = getZ(pl)
-
     local baseX = isoToScreenX(plNum, plX, plY, plZ) - 150
-    local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 + StatusEffectsUI.GetUserOffset() / self.zoom)
+    local baseY = isoToScreenY(plNum, plX, plY, plZ)
+
+    --print("BaseY = " .. tostring(baseY))
+    --print("Zoom = " .. tostring(self.zoom))
+    local modifierY = (150 + StatusEffectsUI.GetUserOffset()/self.zoom) --((200 + StatusEffectsUI.GetUserOffset())/ self.zoom) -- - 100 
+    baseY = baseY - modifierY - 100     -- Additional 100
+    --print(modifierY)
+
+    --print("Final baseY = " .. baseY)
+    --print(self.zoom)
+    --print("___________________________")
+    
     local x = baseX
     local y = baseY
 
@@ -165,7 +176,6 @@ if isClient() then
     local function InitStatusEffectsUI()
         StatusEffectsUI.renderDistance = SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
         StatusEffectsUI:new()
-
     end
     Events.OnGameStart.Add(InitStatusEffectsUI)
 end
