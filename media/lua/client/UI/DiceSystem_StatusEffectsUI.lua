@@ -63,7 +63,7 @@ function StatusEffectsUI:render()
         local id = userIdsTable[i]
         if id ~= nil then
             local pl = getPlayerByOnlineID(id)
-            if pl and StatusEffectsUI.mainPlayer:DistTo(pl) < StatusEffectsUI.renderDistance then
+            if pl and StatusEffectsUI.mainPlayer:DistTo(pl) < StatusEffectsUI.renderDistance and StatusEffectsUI.mainPlayer:checkCanSeeClient(pl) then
                 self:drawStatusEffect(pl, statusEffectsTable[id])
             end
         end
@@ -142,6 +142,7 @@ function StatusEffectsUI:new()
     o.player        = getPlayer()
     o.zoom          = 1
     o.visibleTarget = o
+    o:setAlwaysOnTop(false)
     o:initialise()
     return o
 end

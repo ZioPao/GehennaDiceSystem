@@ -103,3 +103,20 @@ TestFramework.registerTestModule("UI Tests", "Rolls", function()
 
     return Tests
 end)
+
+TestFramework.registerTestModule("Functionality Tests", "Status Effects", function()
+    local Tests = {}
+    local PlayerHandler = require("DiceSystem_PlayerHandling")
+
+    function Tests.SetRandomEffects()
+
+        for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+            local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+            if ZombRand(100) > 50 then
+                PlayerHandler.ToggleStatusEffectValue(x)
+            end
+        end
+    end
+  
+    return Tests
+end)
