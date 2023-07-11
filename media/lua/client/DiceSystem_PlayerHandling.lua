@@ -1,27 +1,8 @@
+-- Player data saved locally here
 DICE_CLIENT_MOD_DATA = {}
-
-
-
 
 local PlayerStatsHandler = {}
 
---This table will describe how much added bonus we should add to each skill.
--- Different naming style 'cause of IGUI crap and I don't wanna manage two naming styles
-local occupationsBonusData = {
-    Unemployed      = { Brutal = 1, Luck = 1, Wit = 1 },
-    Artist          = { Charm = 2, Sharp = 1 },
-    WageSlave       = { Charm = 2, Resolve = 1 },
-    Soldier         = { Brutal = 2, Resolve = 1 },
-    Frontiersmen    = { Brutal = 2, Deft = 1 },
-    LawEnforcement  = { Sharp = 2, Wit = 1 },
-    FirstResponders = { Sharp = 2, Resolve = 1 },
-    Criminal        = { Sharp = 2, Luck = 1 },
-    BlueCollar      = { Deft = 2, Sharp = 1 },
-    Engineer        = { Deft = 2, Wit = 1 },
-    WhiteCollar     = { Wit = 2, Resolve = 1 },
-    Clinician       = { Wit = 2, Sharp = 1 },
-    Academic        = { Wit = 2, Charm = 1 }
-}
 
 --------------------------------
 --* Global mod data *--
@@ -225,7 +206,7 @@ PlayerStatsHandler.SetOccupation = function(occupation)
 
     --print("Setting occupation => " .. occupation)
     diceData.occupation = occupation
-    local bonusData = occupationsBonusData[occupation]
+    local bonusData = PLAYER_DICE_VALUES.OCCUPATIONS_BONUS[occupation]
 
     -- Reset diceData.skillBonus
     for k, v in pairs(diceData.skillsBonus) do
@@ -239,8 +220,8 @@ end
 
 -- TODO This shouldn't be here, we shuold be able to calculate it on the server directly
 PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
-    if occupationsBonusData[occupation][skill] ~= nil then
-        return occupationsBonusData[occupation][skill]
+    if PLAYER_DICE_VALUES.OCCUPATIONS_BONUS[occupation][skill] ~= nil then
+        return PLAYER_DICE_VALUES.OCCUPATIONS_BONUS[occupation][skill]
     end
     return 0
 end

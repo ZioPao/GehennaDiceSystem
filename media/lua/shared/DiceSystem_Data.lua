@@ -7,28 +7,47 @@ PLAYER_DICE_VALUES = {
 
     DEFAULT_HEALTH = 5,
     DEFAULT_MOVEMENT = 5,
-}
-STATUS_EFFECTS_COLORS_TABLE = {
-    Stable = { r = 0, g = 0.68, b = 0.94 },
-    Wounded = { r = 0.95, g = 0.35, b = 0.16 },
-    Bleeding = { r = 0.66, g = 0.15, b = 0.18 },
-    Moderate = { r = 1, g = 1, b = 1 },
-    Severe = { r = 1, g = 1, b = 1 },
-    Prone = { r = 0.04, g = 0.58, b = 0.27 },
-    Unconscious = { r = 0.57, g = 0.15, b = 0.56 }
-}
 
--- Used for color blind users
-STATUS_EFFECTS_COLORS_TABLE_ALT = {
-    Stable = { r = 0.17, g = 0.94, b = 0.45 },     -- #2CF074
-    Wounded = { r = 0.46, g = 0.58, b = 0.23 },    -- #75943A
-    Bleeding = { r = 0.56, g = 0.15, b = 0.25 },   -- #8F263F
-    Moderate = { r = 1, g = 1, b = 1 },            -- only white
-    Severe = { r = 1, g = 1, b = 1 },              -- only white
-    Prone = { r = 0.35, g = 0.49, b = 0.64 },      -- #5A7EA3
-    Unconscious = { r = 0.96, g = 0.69, b = 0.81 } -- #F5B0CF
-}
 
+    OCCUPATIONS_BONUS = {
+        Unemployed      = { Brutal = 1, Luck = 1, Wit = 1 },
+        Artist          = { Charm = 2, Sharp = 1 },
+        WageSlave       = { Charm = 2, Resolve = 1 },
+        Soldier         = { Brutal = 2, Resolve = 1 },
+        Frontiersmen    = { Brutal = 2, Deft = 1 },
+        LawEnforcement  = { Sharp = 2, Wit = 1 },
+        FirstResponders = { Sharp = 2, Resolve = 1 },
+        Criminal        = { Sharp = 2, Luck = 1 },
+        BlueCollar      = { Deft = 2, Sharp = 1 },
+        Engineer        = { Deft = 2, Wit = 1 },
+        WhiteCollar     = { Wit = 2, Resolve = 1 },
+        Clinician       = { Wit = 2, Sharp = 1 },
+        Academic        = { Wit = 2, Charm = 1 }
+    }
+}
+COLORS_DICE_TABLES = {
+    -- Normal colors for status effects
+    STATUS_EFFECTS  = {
+        Stable = { r = 0, g = 0.68, b = 0.94 },
+        Wounded = { r = 0.95, g = 0.35, b = 0.16 },
+        Bleeding = { r = 0.66, g = 0.15, b = 0.18 },
+        Moderate = { r = 1, g = 1, b = 1 },
+        Severe = { r = 1, g = 1, b = 1 },
+        Prone = { r = 0.04, g = 0.58, b = 0.27 },
+        Unconscious = { r = 0.57, g = 0.15, b = 0.56 }
+    },
+
+    -- Used for color blind users
+    STATUS_EFFECTS_ALT =  {
+        Stable = { r = 0.17, g = 0.94, b = 0.45 },     -- #2CF074
+        Wounded = { r = 0.46, g = 0.58, b = 0.23 },    -- #75943A
+        Bleeding = { r = 0.56, g = 0.15, b = 0.25 },   -- #8F263F
+        Moderate = { r = 1, g = 1, b = 1 },            -- only white
+        Severe = { r = 1, g = 1, b = 1 },              -- only white
+        Prone = { r = 0.35, g = 0.49, b = 0.64 },      -- #5A7EA3
+        Unconscious = { r = 0.96, g = 0.69, b = 0.81 } -- #F5B0CF
+    }
+}
 
 --**************************************--
 
