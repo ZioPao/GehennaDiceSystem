@@ -4,7 +4,8 @@ local DiceMenu = require("UI/DiceSystem_PlayerUI")
 local ModDataServerCommands = {}
 
 
-function ModDataServerCommands.ReceiveResetDiceData(args)
+---Run on a client after successfully resetting their data. Will close their dice panel automatically
+function ModDataServerCommands.ReceiveResetDiceData(_)
     DiceMenu.ClosePanel()
     -- Even if it's not updated, I don't care
     PlayerHandler.data = ModData.get(DICE_SYSTEM_MOD_STRING)
@@ -12,27 +13,14 @@ function ModDataServerCommands.ReceiveResetDiceData(args)
     PlayerHandler.InitModData(true)
 end
 
-
----Sync status effects in a table somewhere instead of relying on the global mod data one
----@param args table
+---Sync status effects for a certain player in a table inside StatusEffectsUI
+---@param args table statusEffectsTable=table, userID=number
 function ModDataServerCommands.ReceiveUpdatedStatusEffects(args)
-    -- TODO 
-    --print("Receive Updated Status Effects")
     local statusEffectsTable = args.statusEffectsTable
     StatusEffectsUI.UpdateLocalStatusEffectsTable(args.userID, statusEffectsTable)
 end
 
-
-function ModDataServerCommands.SyncStatusEffects(args)
-    local statusEffectsTable = args.statusEffectsTable
-    local userID = args.userID
-    StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffectsTable)
-
-end
-
-
-
-
+--****************************************************-
 
 local function OnServerCommand(module, command, args)
     if module ~= DICE_SYSTEM_MOD_STRING then return end

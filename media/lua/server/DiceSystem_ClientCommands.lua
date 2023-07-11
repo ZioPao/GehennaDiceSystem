@@ -1,10 +1,12 @@
 local PlayersDiceData = {}
 local ModDataCommands = {}
 
+--***************************
+--* Main syncing functions
 
 ---Gets a FULL table from a client. Extremely heavy
----@param playerObj any
----@param args any
+---@param playerObj IsoPlayer
+---@param args table data=table, username=string
 function ModDataCommands.UpdatePlayerStats(playerObj, args)
 	--print("Syncing player data for " .. args.username)
 	if PlayersDiceData == nil then return end
@@ -20,63 +22,56 @@ function ModDataCommands.UpdatePlayerStats(playerObj, args)
 
 	-- NO NO NO NO NEVER DO THIS IF WE'RE GONNA USE IT ON BIG SERVERS!!!!
 	--ModData.transmit(DICE_SYSTEM_MOD_STRING)
-
 end
 
+---Force reset a certain player dice data
+---@param args table
 function ModDataCommands.ResetDiceData(_, args)
 	local receivingPl = getPlayerByOnlineID(args.userID)
 	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ReceiveResetDiceData", {})
 end
 
-
-
+---Send the full status effects table to a certain player
+---@param playerObj IsoPlayer The player that requested the update and whom shall receive the updated table
+---@param args table username=string, userID=number
 function ModDataCommands.RequestUpdatedStatusEffects(playerObj, args)
 	local statusEffectsTable = PlayersDiceData[args.username].statusEffects
 	local userID = args.userID
 
-	sendServerCommand(playerObj, DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects', {userID = userID, statusEffectsTable=statusEffectsTable})
-
+	sendServerCommand(playerObj, DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects',
+		{ userID = userID, statusEffectsTable = statusEffectsTable })
 end
 
+--***************************
+--* Player initialization methods
 
-
------------------------------------
-
-
-
-
---* Some stuff will be set in stone after initialization *--
-
-
-
-
-
-
+---Set the max health for a player
+---@param args table maxHealth=number, username=string
 function ModDataCommands.SetMaxHealth(_, args)
 	local maxHealth = args.maxHealth
 	PlayersDiceData[args.username].maxHealth = maxHealth
 end
 
-
+---Set the skills table
+---@param args table skillsTable=table, username=string
 function ModDataCommands.SetSkills(_, args)
 	local skillsTable = args.skillsTable
 	PlayersDiceData[args.username].skills = skillsTable
 end
 
 ---Set occupation and related bonus points
----@param _ any
----@param args any
+---@param args table occupation=string, skillsBonus=table
 function ModDataCommands.SetOccupation(_, args)
 	local occupation = args.occupation
 	local skillsBonus = args.skillsBonus
 
 	PlayersDiceData[args.username].occupation = occupation
 	PlayersDiceData[args.username].skillsBonus = skillsBonus
-
 end
 
---------------------------------
---* Stuff that can be updated during the game, after init *--
+--***************************
+--* Player updates functions
+-- These can be run after a player has been initialized
 
 function ModDataCommands.UpdateCurrentHealth(_, args)
 	local currentHealth = args.currentHealth
@@ -104,7 +99,6 @@ function ModDataCommands.UpdateArmorBonus(_, args)
 end
 
 function ModDataCommands.UpdateStatusEffect(_, args)
-
 	--print("Update status effect")
 
 	local isActive = args.isActive
@@ -113,26 +107,24 @@ function ModDataCommands.UpdateStatusEffect(_, args)
 	-- print(statusEffect)
 	-- print(isActive)
 	PlayersDiceData[args.username].statusEffects[statusEffect] = isActive
-	
+
 	if userID then
-		sendServerCommand(DICE_SYSTEM_MOD_STRING, 'SyncStatusEffects', {statusEffectsTable = PlayersDiceData[args.username].statusEffects, userID = userID})
+		sendServerCommand(DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects',
+			{ statusEffectsTable = PlayersDiceData[args.username].statusEffects, userID = userID })
 	else
 		print("Couldn't find " .. args.username)
 	end
-	
+
 
 
 	--print(PlayersDiceData[args.username].statusEffects[statusEffect])
 end
 
-
-
-
-
+--****************************************************-
 
 local function OnClientCommand(module, command, playerObj, args)
 	if module ~= DICE_SYSTEM_MOD_STRING then return end
-	print("Received ModData command " .. command)
+	--print("Received ModData command " .. command)
 	if ModDataCommands[command] and PlayersDiceData ~= nil then
 		ModDataCommands[command](playerObj, args)
 		ModData.add(DICE_SYSTEM_MOD_STRING, PlayersDiceData)

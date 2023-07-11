@@ -1,4 +1,6 @@
-local function CleanModData(playerIndex, item)
+---Reset a player mod data and sync it with the server
+---@param playerIndex number
+local function HandleResetTool(playerIndex)
     local PlayerHandler = require("DiceSystem_PlayerHandling")
     PlayerHandler.CleanModData(playerIndex)
 
@@ -6,9 +8,9 @@ local function CleanModData(playerIndex, item)
     pl:Say("Cleaning data")
 
     local plInv = pl:getInventory()
-    local diceTool = plInv:FindAndReturn("DiceResetTool")
-    if diceTool then
-        plInv:Remove(diceTool) -- Don't worry about the warning, umbrella must be wrong. This returns a inventoryitem
+    local diceResetTool = plInv:FindAndReturn("DiceResetTool")
+    if diceResetTool then
+        plInv:Remove(diceResetTool) -- Don't worry about the warning, umbrella must be wrong. This returns a inventoryitem
     end
 end
 
@@ -18,7 +20,7 @@ local function OnFillInventoryObjectContextMenu(playerIndex, context, items)
         local item = items[1]
 
         if item.name == 'Dice System - Reset Tool' then
-            context:addOption("Reset Dice Data", playerIndex, CleanModData, item)
+            context:addOption("Reset Dice Data", playerIndex, HandleResetTool)
         end
     end
 end
