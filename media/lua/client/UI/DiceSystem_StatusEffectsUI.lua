@@ -77,7 +77,7 @@ function StatusEffectsUI:drawStatusEffect(pl, statusEffects)
     local plZ = getZ(pl)
 
     local baseX = isoToScreenX(plNum, plX, plY, plZ) - 150
-    local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 / self.zoom)
+    local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 + StatusEffectsUI.GetUserOffset() / self.zoom)
     local x = baseX
     local y = baseY
 
@@ -149,12 +149,23 @@ function StatusEffectsUI.SetColorsTable(colors)
     StatusEffectsUI.colorsTable = colors
 end
 
+function StatusEffectsUI.SetUserOffset(offset)
+    StatusEffectsUI.userOffset = offset
+end
+
+---Returns the y offset for status effects
+---@return any
+function StatusEffectsUI.GetUserOffset()
+    return StatusEffectsUI.userOffset
+end
+
 --************************************--
 -- Setup Status Effects UI
 if isClient() then
     local function InitStatusEffectsUI()
         StatusEffectsUI.renderDistance = SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
         StatusEffectsUI:new()
+
     end
     Events.OnGameStart.Add(InitStatusEffectsUI)
 end
