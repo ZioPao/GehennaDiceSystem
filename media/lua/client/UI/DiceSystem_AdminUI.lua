@@ -6,6 +6,7 @@ require "ISUI/ISScrollingListBox"
 local function FetchPlayers()
     local players
     if isClient() then
+        ModData.request(DICE_SYSTEM_MOD_STRING)     -- Request it again
         players = getOnlinePlayers()
     else
         players = ArrayList.new()
@@ -187,6 +188,7 @@ function DiceMenuAdminViewer:onClick(button)
 
 
         -- Updates the list after 1 sec to be sure that it's been synced with the server
+        -- TODO This would make sense if we were syncing everything with the server constantly, not anymore.
         WaitAndFetchPlayers(1)
     end
 end

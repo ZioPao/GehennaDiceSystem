@@ -610,8 +610,8 @@ end
 
 ---Start cleaning process for a specific user
 ---@param userID number
-PlayerStatsHandler.CleanModData = function(userID)
-    sendClientCommand(DICE_SYSTEM_MOD_STRING, "ResetDiceData", { userID = userID })
+PlayerStatsHandler.CleanModData = function(userID, username)
+    sendClientCommand(DICE_SYSTEM_MOD_STRING, "ResetServerDiceData", { userID = userID, username = username })
     --statsTable[username] = nil
     --SyncTable(username)
 end
@@ -634,7 +634,6 @@ end
 
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
-Events.OnPlayerDeath.Add(PlayerStatsHandler.CleanModData)
 Events.OnClothingUpdated.Add(PlayerStatsHandler.CalculateArmorBonus)
 
 return PlayerStatsHandler

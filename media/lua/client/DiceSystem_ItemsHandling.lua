@@ -2,9 +2,10 @@
 ---@param playerIndex number
 local function HandleResetTool(playerIndex)
     local PlayerHandler = require("DiceSystem_PlayerHandling")
-    PlayerHandler.CleanModData(playerIndex)
-
     local pl = getPlayer()
+    local username = pl:getUsername()
+    PlayerHandler.CleanModData(playerIndex, username)
+
     pl:Say("Cleaning data")
 
     local plInv = pl:getInventory()

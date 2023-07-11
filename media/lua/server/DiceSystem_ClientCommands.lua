@@ -24,11 +24,14 @@ function ModDataCommands.UpdatePlayerStats(playerObj, args)
 	--ModData.transmit(DICE_SYSTEM_MOD_STRING)
 end
 
----Force reset a certain player dice data
+---Force reset a certain player dice data on the server and send a force reset on the selected client
 ---@param args table
-function ModDataCommands.ResetDiceData(_, args)
+function ModDataCommands.ResetServerDiceData(_, args)
 	local receivingPl = getPlayerByOnlineID(args.userID)
-	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ReceiveResetDiceData", {})
+
+	PlayersDiceData[args.username] = {}
+	ModData.add(DICE_SYSTEM_MOD_STRING, PlayersDiceData)		-- Force update just to be sure that it's synced
+	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", {})
 end
 
 ---Send the full status effects table to a certain player
