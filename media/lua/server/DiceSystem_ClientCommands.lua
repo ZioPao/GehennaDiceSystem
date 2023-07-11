@@ -33,15 +33,10 @@ end
 function ModDataCommands.RequestUpdatedStatusEffects(playerObj, args)
 
 
+	-- TODO This should be a listener!
+
 	-- TODO Search in MOD DATA
 	local statusEffectsTable = PlayersDiceData[args.username].statusEffects
-	-- for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
-    --     local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-	-- 	if statusEffectsTable[x] then
-	-- 		print("Found status effect active => " .. x)
-	-- 	end
-
-	-- end
 	local userID = args.userID
 
 	sendServerCommand(playerObj, DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects', {userID = userID, statusEffectsTable=statusEffectsTable})
@@ -53,6 +48,8 @@ function ModDataCommands.RequestUpdatedStatusEffects(playerObj, args)
 	--PlayersDiceData[args.username].statusEffects
 	-- todo send updated values of status effects... in form of enum to lessen the load maybe
 end
+
+
 
 -----------------------------------
 
@@ -123,9 +120,18 @@ function ModDataCommands.UpdateStatusEffect(_, args)
 
 	local isActive = args.isActive
 	local statusEffect = args.statusEffect
+	local userID = args.userID
 	-- print(statusEffect)
 	-- print(isActive)
 	PlayersDiceData[args.username].statusEffects[statusEffect] = isActive
+	
+	if userID then
+		sendServerCommand(DICE_SYSTEM_MOD_STRING, 'SyncStatusEffects', {statusEffectsTable = PlayersDiceData[args.username].statusEffects, userID = userID})
+	else
+		print("Couldn't find " .. args.username)
+	end
+	
+
 
 	--print(PlayersDiceData[args.username].statusEffects[statusEffect])
 end

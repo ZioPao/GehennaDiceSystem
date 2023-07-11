@@ -21,7 +21,12 @@ function ModDataServerCommands.ReceiveUpdatedStatusEffects(args)
 end
 
 
+function ModDataServerCommands.SyncStatusEffects(args)
+    local statusEffectsTable = args.statusEffectsTable
+    local userID = args.userID
+    StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffectsTable)
 
+end
 
 
 

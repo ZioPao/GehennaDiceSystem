@@ -10,6 +10,7 @@ local getX = playerBase.getX
 local getY = playerBase.getY
 local getZ = playerBase.getZ
 
+
 local isoToScreenX = isoToScreenX
 local isoToScreenY = isoToScreenY
 
@@ -19,9 +20,6 @@ local isoToScreenY = isoToScreenY
 StatusEffectsUI = ISPanel:derive("StatusEffectsUI")
 StatusEffectsUI.nearPlayersStatusEffects = {}
 StatusEffectsUI.nearPlayersUserIds = {}
-
-
-local PlayerHandler = require("DiceSystem_PlayerHandling")
 
 function StatusEffectsUI:drawStatusEffect(pl, statusEffectsTable)
     local plNum = getNum(pl)
@@ -54,51 +52,20 @@ function StatusEffectsUI:drawStatusEffect(pl, statusEffectsTable)
     end
 end
 
--- local plNum = getNum(pl)
--- local plX = getX(pl)
--- local plY = getY(pl)
--- local plZ = getZ(pl)
-
--- local list = PlayerHandler.GetActiveStatusEffectsByUsername(getUsername(pl))
-
--- local baseX = isoToScreenX(plNum, plX, plY, plZ) - 150
--- local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 / self.zoom)
-
--- local x = baseX
--- local y = baseY
-
--- local isSecondLine = false
-
--- for k = 1, #list do
---     local v = list[k]
---     local stringToPrint = string.format("[%s]", v)
---     if k > 3 and isSecondLine == false then
---         y = y + getTextManager():MeasureStringY(UIFont.NewMedium, stringToPrint)
---         x = baseX
---         isSecondLine = true
---     end
-
---     local color = DiceSystem_Common.statusEffectsColors[v]
-
---     -- The first DrawText is to simulate a drop shadow to help readability
---     self:drawText(stringToPrint, x - 2, y - 2, 0, 0, 0, 0.5, UIFont.NewMedium)
---     self:drawText(stringToPrint, x, y, color.r, color.g, color.b, 1, UIFont.NewMedium)
---     x = x + getTextManager():MeasureStringX(UIFont.NewMedium, stringToPrint) + 10
--- end
--- end
-
 function StatusEffectsUI:render()
     self.zoom = getCore():getZoom(self.player:getPlayerNum())
     local userIdsTable = StatusEffectsUI.nearPlayersUserIds
     local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
 
-    self:drawStatusEffect(self.player, PlayerHandler.GetActiveStatusEffectsByUsername(getUsername(self.player)))
+    --self:drawStatusEffect(self.player, PlayerHandler.GetActiveStatusEffectsByUsername(getUsername(self.player)))
 
     for i = 1, #userIdsTable do
         local id = userIdsTable[i]
-        local pl = getPlayerByOnlineID(id)
-        if pl then
-            self:drawStatusEffect(pl, statusEffectsTable[id])
+        if id ~= nil then
+            local pl = getPlayerByOnlineID(id)
+            if pl and StatusEffectsUI.mainPlayer:DistTo(pl) < StatusEffectsUI.renderDistance then
+                self:drawStatusEffect(pl, statusEffectsTable[id])
+            end
         end
     end
 
@@ -121,32 +88,44 @@ function StatusEffectsUI:initialise()
     self:bringToTop()
 end
 
-local function SetupPlayerStatusEffectsTable(username)
-    StatusEffectsUI.nearPlayersStatusEffects[username] = {}
-    local tableRef = StatusEffectsUI.nearPlayersStatusEffects[username]
-
-    for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
-        local statusEffect = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-        tableRef[statusEffect] = false
-    end
-end
 function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffectsTable)
-    -- if StatusEffectsUI.nearPlayersStatusEffects[username] == nil then
-    --     SetupPlayerStatusEffectsTable(username)
-    -- end
+    
+    StatusEffectsUI.mainPlayer = getPlayer()
 
-    -- StatusEffectsUI.nearPlayersStatusEffects[username][status] = isActive
-    StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
-    for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
-        local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-        if statusEffectsTable[x] ~= nil and statusEffectsTable[x] == true then
-            --print(x)
-            table.insert(StatusEffectsUI.nearPlayersStatusEffects[userID], x)
+
+    local receivedPlayer = getPlayerByOnlineID(userID)
+
+    local dist = StatusEffectsUI.mainPlayer:DistTo(receivedPlayer)
+    if dist < StatusEffectsUI.renderDistance then
+        StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
+        local newStatusEffectsTable = {}
+        for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+            local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+            if statusEffectsTable[x] ~= nil and statusEffectsTable[x] == true then
+                print(x)
+                table.insert(newStatusEffectsTable, x)
+            end
         end
-    end
 
-    --  = statusEffectsTable
-    table.insert(StatusEffectsUI.nearPlayersUserIds, userID)
+        if table.concat(newStatusEffectsTable) ~= table.concat(StatusEffectsUI.nearPlayersStatusEffects[userID]) then
+            print("Changing table! Some stuff is different")
+            StatusEffectsUI.nearPlayersStatusEffects[userID] = newStatusEffectsTable
+        else
+            print("Same effects! No change needed")
+        end
+        table.insert(StatusEffectsUI.nearPlayersUserIds, userID)
+    else
+        StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
+
+        for i=1, #StatusEffectsUI.nearPlayersUserIds do
+            local idInTable = StatusEffectsUI.nearPlayersUserIds[i]
+            if idInTable == userID then
+                table.remove(StatusEffectsUI.nearPlayersUserIds, i)
+                break
+            end
+        end
+
+    end
 end
 
 function StatusEffectsUI.SetColorsTable(table)
@@ -179,7 +158,7 @@ if isClient() then
 
     -- Handler that manages syncing between clients
     local function HandleStatusEffectsSyncing()
-        StatusEffectsUI.nearPlayersStatusEffects = {} -- Clean
+        --StatusEffectsUI.nearPlayersStatusEffects = {} -- Clean
         StatusEffectsUI.nearPlayersUserIds = {}
         local currPlayer = getPlayer()
         local players = getOnlinePlayers()
@@ -190,6 +169,11 @@ if isClient() then
                 if dist < StatusEffectsUI.renderDistance then
                     local username = pl:getUsername()
                     local userID = pl:getOnlineID()
+
+
+
+                    -- TODO This should be more like a listener. It should send a request to other players
+
                     --print(username)
                     sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
                         { username = username, userID = userID })
@@ -198,5 +182,5 @@ if isClient() then
         end
     end
 
-    Events.EveryOneMinute.Add(HandleStatusEffectsSyncing)
+    --Events.EveryOneMinute.Add(HandleStatusEffectsSyncing)
 end
