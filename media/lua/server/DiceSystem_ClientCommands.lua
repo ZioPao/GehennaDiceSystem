@@ -38,11 +38,12 @@ end
 ---@param playerObj IsoPlayer The player that requested the update and whom shall receive the updated table
 ---@param args table username=string, userID=number
 function ModDataCommands.RequestUpdatedStatusEffects(playerObj, args)
-	local statusEffectsTable = PlayersDiceData[args.username].statusEffects
-	local userID = args.userID
-
-	sendServerCommand(playerObj, DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects',
-		{ userID = userID, statusEffectsTable = statusEffectsTable })
+	if args.username and args.userID and PlayersDiceData[args.username] then
+		local statusEffectsTable = PlayersDiceData[args.username].statusEffects
+		local userID = args.userID
+		sendServerCommand(playerObj, DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects',
+			{ userID = userID, statusEffectsTable = statusEffectsTable })
+	end
 end
 
 --***************************
