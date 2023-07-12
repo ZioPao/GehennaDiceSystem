@@ -189,6 +189,8 @@ end
 
 --* Occupations *--
 
+---Returns the player's occupation
+---@return string
 PlayerStatsHandler.GetOccupation = function()
     -- This is used in the prerender for our special combobox. We'll add a bit of added logic to be sure that it doesn't break
     if DICE_CLIENT_MOD_DATA and PlayerStatsHandler.username and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] then
@@ -198,6 +200,8 @@ PlayerStatsHandler.GetOccupation = function()
     return ""
 end
 
+---Set an occupation and its related bonuses
+---@param occupation string
 PlayerStatsHandler.SetOccupation = function(occupation)
     --print("Setting occupation")
     --print(PlayerStatsHandler.username)
@@ -216,14 +220,6 @@ PlayerStatsHandler.SetOccupation = function(occupation)
     for key, bonus in pairs(bonusData) do
         diceData.skillsBonus[key] = bonus
     end
-end
-
--- TODO This shouldn't be here, we shuold be able to calculate it on the server directly
-PlayerStatsHandler.GetOccupationBonus = function(occupation, skill)
-    if PLAYER_DICE_VALUES.OCCUPATIONS_BONUS[occupation][skill] ~= nil then
-        return PLAYER_DICE_VALUES.OCCUPATIONS_BONUS[occupation][skill]
-    end
-    return 0
 end
 
 --* Status Effect *--

@@ -53,6 +53,17 @@ COLORS_DICE_TABLES = {
 
 DiceSystem_Common = {}
 
+-- ---Returns the occupation bonus for a certain skill
+-- ---@param occupation string
+-- ---@param skill string
+-- ---@return integer
+-- function DiceSystem_Common.GetOccupationBonus(occupation, skill)
+--     if PLAYER_DICE_VALUES.OCCUPATIONS_BONUS[occupation][skill] ~= nil then
+--         return PLAYER_DICE_VALUES.OCCUPATIONS_BONUS[occupation][skill]
+--     end
+--     return 0
+-- end
+
 ---Assign the correct color table for status effects
 ---@param colorsTable table
 function DiceSystem_Common.SetStatusEffectsColorsTable(colorsTable)

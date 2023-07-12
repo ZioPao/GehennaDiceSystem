@@ -31,7 +31,10 @@ TestFramework.registerTestModule("UI Tests", "Do initialization", function()
     end
 
     function Tests.SetRandomProfession()
-        -- TODO Do it or it will add a null profession. Doesn't really break anything, but it's wrong
+        -- TODO This is not really how th UI would work, so it's not really a correct test, but it'll have to do
+        local PlayerHandler = require("DiceSystem_PlayerHandling")
+        local randOcc = PLAYER_DICE_VALUES.OCCUPATIONS[ZombRand(1, #PLAYER_DICE_VALUES.OCCUPATIONS)]
+        PlayerHandler.SetOccupation(randOcc)
     end
 
     function Tests.SetRandomSkills()
@@ -90,7 +93,8 @@ TestFramework.registerTestModule("UI Tests", "Rolls", function()
     end
 
     function Tests.TryRoll()
-        local fakeBtn = { internal = 'SKILL_ROLL', skill = 'Charm' }
+        local randSkill = PLAYER_DICE_VALUES.SKILLS[ZombRand(1, #PLAYER_DICE_VALUES.SKILLS)]
+        local fakeBtn = { internal = 'SKILL_ROLL', skill = randSkill }
         Tests.pnl:onOptionMouseDown(fakeBtn)
     end
 
@@ -111,4 +115,15 @@ TestFramework.registerTestModule("Functionality Tests", "Status Effects", functi
     end
 
     return Tests
+end)
+
+TestFramework.registerTestModule("Functionality Tests", "Admin", function()
+    local Tests = {}
+
+    -- TODO Try to edit another player page
+
+
+    -- TODO Try to reset a random player
+    return Tests
+
 end)
