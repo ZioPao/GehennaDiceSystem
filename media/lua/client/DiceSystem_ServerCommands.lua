@@ -6,9 +6,17 @@ local ModDataServerCommands = {}
 
 
 ---Run on a client after successfully resetting or changing their data. Will close their dice panel automatically
-function ModDataServerCommands.ResetClientDiceData(_)
+---@param args table forceSync=boolean
+function ModDataServerCommands.ResetClientDiceData(args)
+    print("Resetting local data")
+
     DiceMenu.ClosePanel()
     -- Even if it's not updated, I don't care
+
+    if args.forceSync and args.forceSync == true then
+        ModData.request(DICE_SYSTEM_MOD_STRING)
+    end
+
     PlayerHandler.data = ModData.get(DICE_SYSTEM_MOD_STRING)
     PlayerHandler.data[PlayerHandler.username] = nil
 

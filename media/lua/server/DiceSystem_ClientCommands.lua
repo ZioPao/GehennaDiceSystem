@@ -37,8 +37,13 @@ end
 ---Similiar to ResetServerDiceData, but we'll skip the destroying part. We just notify the client that their data has been changed elsewhere
 ---@param args table userID=number
 function ModDataCommands.NotifyAdminChangedClientData(_, args)
-	local receivingPl = getPlayerFromUsername(args.username)
-	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", {})
+	print("NotifyAdminChangedClientData")
+	print(args.userID)
+	local receivingPl = getPlayerByOnlineID(args.userID)
+
+	if receivingPl == nil then print("Player is null") else
+		sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", {forceSync = true})
+	end
 end
 
 

@@ -488,7 +488,9 @@ function DiceMenu:onOptionMouseDown(btn)
         
         -- If we're editing stuff from the admin, we want to be able to notify the other client to update their stats from the server
         if self.isAdminMode then
-            sendClientCommand(DICE_SYSTEM_MOD_STRING, 'NotifyAdminChangedClientData', {username = PlayerHandler.username })
+            print("ADMIN MODE! Sending notification to other client")
+            local receivingPl = getPlayerFromUsername(PlayerHandler.username)
+            sendClientCommand(DICE_SYSTEM_MOD_STRING, 'NotifyAdminChangedClientData', {userID = receivingPl:getOnlineID() })
         end
 
         self:close()
