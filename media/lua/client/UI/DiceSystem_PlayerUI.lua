@@ -66,6 +66,18 @@ function DiceMenu:new(x, y, width, height)
     return o
 end
 
+--* Setters and getters*--
+
+function DiceMenu:setAdminMode(isAdminMode)
+    self.isAdminMode = isAdminMode
+end
+function DiceMenu:getIsAdminMode()
+     return self.isAdminMode
+end
+
+
+
+
 --- Fill the skill panel. The various buttons will be enabled ONLY for the actual player.
 function DiceMenu:fillSkillPanel()
     local yOffset = 0
@@ -98,7 +110,7 @@ function DiceMenu:fillSkillPanel()
         local btnWidth = 100
 
         -- Check if is initialized
-        if not isInitialized or self.isAdminMode then
+        if not isInitialized or self:getIsAdminMode() then
             local btnPlus = ISButton:new(self.width - btnWidth, 0, btnWidth, frameHeight - 2, "+", self,
                 self.onOptionMouseDown)
             btnPlus.internal = "PLUS_SKILL"
@@ -147,16 +159,13 @@ end
 function DiceMenu:update()
     ISCollapsableWindow.update(self)
 
-
-    -- Test if the panel is present... but this doesn't make any fucking sense
-
-
     local isInit = PlayerHandler.IsPlayerInitialized()
     local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
     local plUsername = getPlayer():getUsername() -- TODO optimize this
+    local isAdmin = self:getIsAdminMode()
 
     -- Show allocated points during init
-    if not isInit or self.isAdminMode then
+    if not isInit or isAdmin then
         -- Points allocated label
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
         self.labelSkillPointsAllocated:setName(pointsAllocatedString)
@@ -167,7 +176,7 @@ function DiceMenu:update()
         PlayerHandler.SetOccupation(selectedOccupation)
 
         -- Status effects
-        self.comboStatusEffects.disabled = not self.isAdminMode
+        self.comboStatusEffects.disabled = not isAdmin
 
         -- Save button
         self.btnConfirm:setEnable(allocatedPoints == 20)
@@ -219,7 +228,7 @@ function DiceMenu:update()
         self["labelSkillPoints" .. skill].textDirty = true
 
         -- Handles buttons to assign skill points
-        if not isInit or self.isAdminMode then
+        if not isInit or isAdmin then
             self["btnMinus" .. skill]:setEnable(skillPoints ~= 0)
             self["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
         end
@@ -248,17 +257,13 @@ end
 
 function DiceMenu:createChildren()
     local yOffset = 40
-
     local pl
-    if isClient() then
-        pl = getPlayerFromUsername(PlayerHandler.username)
-    else
-        pl = getPlayer() -- ONLY FOR SP TESTING!
-    end
-
+    if isClient() then pl = getPlayerFromUsername(PlayerHandler.username) else pl = getPlayer() end
     local playerName = pl:getDescriptor():getForename() .. " " .. pl:getDescriptor():getSurname()
 
-    if self.isAdminMode then
+    local isAdmin = self:getIsAdminMode()
+
+    if isAdmin then
         playerName = "ADMIN MODE - " .. playerName
     end
 
@@ -443,7 +448,7 @@ function DiceMenu:createChildren()
     self:addChild(self.panelSkills)
     self:fillSkillPanel()
 
-    if not PlayerHandler.IsPlayerInitialized() or self.isAdminMode then
+    if not PlayerHandler.IsPlayerInitialized() or isAdmin then
         self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Dice_Save"), self,
             self.onOptionMouseDown)
         self.btnConfirm.internal = "SAVE"
@@ -488,7 +493,7 @@ function DiceMenu:onOptionMouseDown(btn)
         DiceMenu.instance.btnConfirm:setEnable(false)
 
         -- If we're editing stuff from the admin, we want to be able to notify the other client to update their stats from the server
-        if self.isAdminMode then
+        if self:getIsAdminMode() then
             print("ADMIN MODE! Sending notification to other client")
             local receivingPl = getPlayerFromUsername(PlayerHandler.username)
             sendClientCommand(DICE_SYSTEM_MOD_STRING, 'NotifyAdminChangedClientData',
@@ -505,9 +510,6 @@ function DiceMenu:setVisible(visible)
     self.javaObject:setVisible(visible)
 end
 
-function DiceMenu:setAdminMode(val)
-    self.isAdminMode = val
-end
 
 -------------------------------------
 
