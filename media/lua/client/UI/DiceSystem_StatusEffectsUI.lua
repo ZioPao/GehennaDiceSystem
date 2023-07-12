@@ -11,9 +11,13 @@ local isoToScreenX = isoToScreenX
 local isoToScreenY = isoToScreenY
 local debugWriteLog = DiceSystem_Common.DebugWriteLog
 
+
+local REQUEST_LIMIT = 10
+
 -----------------
 
 StatusEffectsUI = ISPanel:derive("StatusEffectsUI")
+StatusEffectsUI.nearPlayersStatusEffects = {}
 
 --************************************--
 
@@ -30,7 +34,8 @@ function StatusEffectsUI:new()
 
     -- Init a table where we're gonna cache the status effects from nearby players
     StatusEffectsUI.nearPlayersStatusEffects = {}
-
+    o.requestsCounter = {}         -- TODO This is to prevent a spam of syncs from users who did not initialize the mod.
+    --StatusEffectsUI.instance = o
     return o
 end
 
@@ -40,31 +45,69 @@ end
 function StatusEffectsUI:initialise()
     ISPanel.initialise(self)
     self:addToUIManager()
+
+    self.currPlayerUsername = self.player:getUsername()
 end
+
+function StatusEffectsUI:checkPlayerForRequest(username)
+
+    -- TODO Add a timer, after a certain amount let's delete this user from the blacklist
+    if self.requestsCounter[username] and self.requestsCounter[username] > REQUEST_LIMIT then
+        return false
+    end
+
+    return true
+
+end
+
+
+function StatusEffectsUI:addRequestToCounter(username)
+    if self.requestsCounter[username] then
+        self.requestsCounter[username] = self.requestsCounter[username] + 1
+    else
+        self.requestsCounter[username] = 1
+    end
+
+end
+
 
 ---Render loop
 function StatusEffectsUI:render()
-    self.zoom = getCore():getZoom(self.player:getPlayerNum())
-    local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
-    local onlinePlayers = getOnlinePlayers() -- TODO How heavy is it?
+    -- TODO TEST THIS CHECK WITH A FRESH START!!!
 
-    for i = 0, onlinePlayers:size() - 1 do
-        local pl = onlinePlayers:get(i)
-        -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
-        -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
-        if pl and pl:getCurrentSquare() ~= nil and self.player:DistTo(pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
-            local userID = getOnlineID(pl)
-            if statusEffectsTable[userID] == nil or statusEffectsTable[userID] == {} then
-                -- Table needs an update
-                --print("Requesting update!")
-                local username = getUsername(pl)
-                sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
-                    { username = username, userID = userID })
-            else
-                -- Table already present (maybe not complete)
-                self:drawStatusEffect(pl, statusEffectsTable[userID])
+    if DICE_CLIENT_MOD_DATA and DICE_CLIENT_MOD_DATA[self.currPlayerUsername] and DICE_CLIENT_MOD_DATA[self.currPlayerUsername].isInitialized then
+        self.zoom = getCore():getZoom(self.player:getPlayerNum())
+        local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
+        local onlinePlayers = getOnlinePlayers() -- TODO How heavy is it?
+
+        for i = 0, onlinePlayers:size() - 1 do
+            local pl = onlinePlayers:get(i)
+            -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
+            -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
+            if pl and pl:getCurrentSquare() ~= nil and self.player:DistTo(pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
+                local userID = getOnlineID(pl)
+                if statusEffectsTable[userID] == nil then
+                    -- Table needs an update
+                    -- TODO Delete this before releasing it
+                    local username = getUsername(pl)
+
+                    if self:checkPlayerForRequest(username) then
+                        --print("Requesting update for " .. pl:getUsername())
+                        sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
+                        { username = username, userID = userID })
+                        self:addRequestToCounter(username)
+                    --else
+                        --print("Limit exceeded for " .. pl:getUsername())
+                    end
+                else
+                    --print("Table already present. Could be uncomplete")
+                    -- Table already present (maybe not complete)
+                    self:drawStatusEffect(pl, statusEffectsTable[userID])
+                end
             end
         end
+    --else
+        --print("Waiting for init")
     end
 end
 
@@ -120,16 +163,16 @@ function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffects)
         for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
             local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
             if statusEffects[x] ~= nil and statusEffects[x] == true then
-                print(x)
+                --print(x)
                 table.insert(newStatusEffectsTable, x)
             end
         end
 
         if table.concat(newStatusEffectsTable) ~= table.concat(StatusEffectsUI.nearPlayersStatusEffects[userID]) then
-            print("Changing table! Some stuff is different")
+            --print("Changing table! Some stuff is different")
             StatusEffectsUI.nearPlayersStatusEffects[userID] = newStatusEffectsTable
-        else
-            print("Same effects! No change needed")
+        --else
+            --print("Same effects! No change needed")
         end
     else
         StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
@@ -142,12 +185,14 @@ function StatusEffectsUI.SetColorsTable(colors)
     StatusEffectsUI.colorsTable = colors
 end
 
+---Set the Y offset for the status effects on top of the players heads
+---@param offset number
 function StatusEffectsUI.SetUserOffset(offset)
     StatusEffectsUI.userOffset = offset
 end
 
 ---Returns the y offset for status effects
----@return any
+---@return number
 function StatusEffectsUI.GetUserOffset()
     return StatusEffectsUI.userOffset
 end

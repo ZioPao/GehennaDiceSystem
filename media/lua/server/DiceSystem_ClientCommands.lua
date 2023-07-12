@@ -124,8 +124,8 @@ function ModDataCommands.UpdateStatusEffect(_, args)
 	if userID then
 		sendServerCommand(DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects',
 			{ statusEffectsTable = PlayersDiceData[args.username].statusEffects, userID = userID })
-	else
-		print("Couldn't find " .. args.username)
+	--else
+		--print("Couldn't find " .. args.username)
 	end
 
 

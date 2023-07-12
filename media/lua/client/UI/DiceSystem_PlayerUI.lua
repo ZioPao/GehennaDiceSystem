@@ -179,6 +179,7 @@ function DiceMenu:update()
         self.comboStatusEffects.disabled = (plUsername ~= PlayerHandler.username)
         local statusEffectsText = ""
 
+        -- TODO This is broken from the Admin Panel. You should force a sync
         local activeStatusEffects = PlayerHandler.GetActiveStatusEffects()
 
         for i = 1, #activeStatusEffects do

@@ -250,6 +250,9 @@ PlayerStatsHandler.GetStatusEffectValue = function(status)
     return val
 end
 
+-- TODO This should be deleted and we should use GetActiveStatusEffectsByUsername
+---Returns the currently active status effects 
+---@return table
 PlayerStatsHandler.GetActiveStatusEffects = function()
     local diceData = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username]
     local statusEffects = diceData.statusEffects
@@ -264,23 +267,33 @@ PlayerStatsHandler.GetActiveStatusEffects = function()
     return list
 end
 
--- TODO Cache this
----Get a certain player active status effects
+---Get a certain player active status effects from the cache
 ---@return table
 PlayerStatsHandler.GetActiveStatusEffectsByUsername = function(username)
-    local diceData = DICE_CLIENT_MOD_DATA[username]
-    --if diceData == nil then return {} end
-    local statusEffects = diceData.statusEffects
-    local list = {}
+    local pl = getPlayerFromUsername(username)
 
-    for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
-        local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-        if statusEffects[x] ~= nil and statusEffects[x] == true then
-            table.insert(list, x)
-        end
+    if pl then
+        local plID = pl:getOnlineID()
+        local effectsTable = StatusEffectsUI.nearPlayersStatusEffects[plID]
+        if effectsTable == nil then return {} else return effectsTable end
     end
 
-    return list
+    return {}
+    -- local diceData = DICE_CLIENT_MOD_DATA[username]
+
+    -- if diceData == nil then return {} end
+    -- --if diceData == nil then return {} end
+    -- local statusEffects = diceData.statusEffects
+    -- local list = {}
+
+    -- for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+    --     local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+    --     if statusEffects[x] ~= nil and statusEffects[x] == true then
+    --         table.insert(list, x)
+    --     end
+    -- end
+
+    -- return list
 end
 
 
@@ -501,8 +514,6 @@ PlayerStatsHandler.InitModData = function(force)
         PlayerStatsHandler.username = getPlayer():getUsername()
     end
 
-    local referenceTable = DICE_CLIENT_MOD_DATA
-    --print(referenceTable)
 
     -- This should happen only from that specific player, not an admin
     if (DICE_CLIENT_MOD_DATA ~= nil and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] == nil) or force then
