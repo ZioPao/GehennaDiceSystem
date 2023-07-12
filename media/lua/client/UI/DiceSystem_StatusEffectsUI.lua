@@ -49,24 +49,34 @@ function StatusEffectsUI:render()
     local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
     local onlinePlayers = getOnlinePlayers() -- TODO How heavy is it?
 
-    for i = 0, onlinePlayers:size() - 1 do
-        local pl = onlinePlayers:get(i)
-        -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
-        -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
-        if pl and pl:getCurrentSquare() ~= nil and self.player:DistTo(pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
-            local userID = getOnlineID(pl)
-            if statusEffectsTable[userID] == nil or statusEffectsTable[userID] == {} then
-                -- Table needs an update
-                --print("Requesting update!")
-                local username = getUsername(pl)
-                sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
-                    { username = username, userID = userID })
-            else
-                -- Table already present (maybe not complete)
-                self:drawStatusEffect(pl, statusEffectsTable[userID])
+    if not isClient() then
+        local PlayerHandler = require("DiceSystem_PlayerHandling")
+        local effectsTable = PlayerHandler.GetActiveStatusEffectsByUsername(self.player:getUsername())
+        self.zoom = getCore():getZoom(0)
+        self:drawStatusEffect(self.player, effectsTable)
+    else
+
+        for i = 0, onlinePlayers:size() - 1 do
+            local pl = onlinePlayers:get(i)
+            -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
+            -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
+            if pl and pl:getCurrentSquare() ~= nil and self.player:DistTo(pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
+                local userID = getOnlineID(pl)
+                if statusEffectsTable[userID] == nil or statusEffectsTable[userID] == {} then
+                    -- Table needs an update
+                    --print("Requesting update!")
+                    local username = getUsername(pl)
+                    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
+                        { username = username, userID = userID })
+                else
+                    -- Table already present (maybe not complete)
+                    self:drawStatusEffect(pl, statusEffectsTable[userID])
+                end
             end
         end
     end
+
+
 end
 
 ---Main function ran during the render loop
@@ -77,14 +87,18 @@ function StatusEffectsUI:drawStatusEffect(pl, statusEffects)
     local plX = getX(pl)
     local plY = getY(pl)
     local plZ = getZ(pl)
-    local baseX = isoToScreenX(plNum, plX, plY, plZ) - 150
+    local baseX = isoToScreenX(plNum, plX, plY, plZ) - 100
     local baseY = isoToScreenY(plNum, plX, plY, plZ)
     local log = "BaseY = " .. tostring(baseY)
 
-    local modifierY = (150 + StatusEffectsUI.GetUserOffset()/self.zoom) --((200 + StatusEffectsUI.GetUserOffset())/ self.zoom) -- - 100 
+    log = log .. ", Zoom = " .. tostring(self.zoom)
+
+    local modifierY = 150 /self.zoom --((200 + StatusEffectsUI.GetUserOffset())/ self.zoom) -- - 100 
     log = log .. " , ModifierY = " .. tostring(modifierY)
 
-    baseY = baseY - modifierY - 100     -- Additional 100
+
+    baseY = baseY - modifierY - 50 + StatusEffectsUI.GetUserOffset()
+    log = log .. ", userOffset = " .. tostring(StatusEffectsUI.GetUserOffset())
     log = log .. " , finalBaseY = " .. tostring(baseY)
 
     debugWriteLog(log)
@@ -164,10 +178,10 @@ end
 
 --************************************--
 -- Setup Status Effects UI
-if isClient() then
+--if isClient() then
     local function InitStatusEffectsUI()
         StatusEffectsUI.renderDistance = SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
         StatusEffectsUI:new()
     end
     Events.OnGameStart.Add(InitStatusEffectsUI)
-end
+--end
