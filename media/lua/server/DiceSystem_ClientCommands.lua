@@ -34,6 +34,15 @@ function ModDataCommands.ResetServerDiceData(_, args)
 	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", {})
 end
 
+---Similiar to ResetServerDiceData, but we'll skip the destroying part. We just notify the client that their data has been changed elsewhere
+---@param args table userID=number
+function ModDataCommands.NotifyAdminChangedClientData(_, args)
+	local receivingPl = getPlayerFromUsername(args.username)
+	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", {})
+end
+
+
+
 ---Send the full status effects table to a certain player
 ---@param playerObj IsoPlayer The player that requested the update and whom shall receive the updated table
 ---@param args table username=string, userID=number

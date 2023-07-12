@@ -485,6 +485,12 @@ function DiceMenu:onOptionMouseDown(btn)
     elseif btn.internal == 'SAVE' then
         PlayerHandler.SetIsInitialized(true)
         DiceMenu.instance.btnConfirm:setEnable(false)
+        
+        -- If we're editing stuff from the admin, we want to be able to notify the other client to update their stats from the server
+        if self.isAdminMode then
+            sendClientCommand(DICE_SYSTEM_MOD_STRING, 'NotifyAdminChangedClientData', {username = PlayerHandler.username })
+        end
+
         self:close()
     elseif btn.internal == 'CLOSE' then
         self:close()
