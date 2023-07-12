@@ -499,6 +499,9 @@ function DiceMenu:setAdminMode(val)
     self.isAdminMode = val
 end
 
+
+-------------------------------------
+
 function DiceMenu:close()
     self:removeFromUIManager()
     ISCollapsableWindow.close(self)

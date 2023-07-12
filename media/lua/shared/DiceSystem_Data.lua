@@ -89,7 +89,8 @@ if isDebugEnabled() then
     ---Writes a log in the console ONLY if debug is enabled
     ---@param text string   
     function DiceSystem_Common.DebugWriteLog(text)
-        writeLog("DiceSystem", text)
+        --writeLog("DiceSystem", text)
+        print("[DiceSystem] " .. text)
     end
 else
     ---Placeholder, to prevent non essential calls

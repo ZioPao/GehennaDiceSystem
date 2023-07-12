@@ -143,14 +143,6 @@ function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffects)
         end
     else
         StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
-
-        -- for i=1, #StatusEffectsUI.nearPlayersUserIds do
-        --     local idInTable = StatusEffectsUI.nearPlayersUserIds[i]
-        --     if idInTable == userID then
-        --         table.remove(StatusEffectsUI.nearPlayersUserIds, i)
-        --         break
-        --     end
-        -- end
     end
 end
 
