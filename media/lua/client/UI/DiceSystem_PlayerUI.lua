@@ -252,7 +252,7 @@ function DiceMenu:createChildren()
     if isClient() then
         pl = getPlayerFromUsername(PlayerHandler.username)
     else
-        pl = getPlayer()        -- ONLY FOR SP TESTING!
+        pl = getPlayer() -- ONLY FOR SP TESTING!
     end
 
     local playerName = pl:getDescriptor():getForename() .. " " .. pl:getDescriptor():getSurname()
@@ -485,12 +485,13 @@ function DiceMenu:onOptionMouseDown(btn)
     elseif btn.internal == 'SAVE' then
         PlayerHandler.SetIsInitialized(true)
         DiceMenu.instance.btnConfirm:setEnable(false)
-        
+
         -- If we're editing stuff from the admin, we want to be able to notify the other client to update their stats from the server
         if self.isAdminMode then
             print("ADMIN MODE! Sending notification to other client")
             local receivingPl = getPlayerFromUsername(PlayerHandler.username)
-            sendClientCommand(DICE_SYSTEM_MOD_STRING, 'NotifyAdminChangedClientData', {userID = receivingPl:getOnlineID() })
+            sendClientCommand(DICE_SYSTEM_MOD_STRING, 'NotifyAdminChangedClientData',
+                { userID = receivingPl:getOnlineID() })
         end
 
         self:close()
@@ -506,7 +507,6 @@ end
 function DiceMenu:setAdminMode(val)
     self.isAdminMode = val
 end
-
 
 -------------------------------------
 

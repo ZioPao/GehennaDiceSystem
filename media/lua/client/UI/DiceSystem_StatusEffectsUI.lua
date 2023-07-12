@@ -44,7 +44,6 @@ end
 
 ---Render loop
 function StatusEffectsUI:render()
-
     self.zoom = getCore():getZoom(self.player:getPlayerNum())
     local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
     local onlinePlayers = getOnlinePlayers() -- TODO How heavy is it?
@@ -78,7 +77,7 @@ function StatusEffectsUI:drawStatusEffect(pl, statusEffects)
     local plY = getY(pl)
     local plZ = getZ(pl)
     local baseX = isoToScreenX(plNum, plX, plY, plZ) - 100
-    local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150/self.zoom) - 50 + StatusEffectsUI.GetUserOffset()
+    local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 / self.zoom) - 50 + StatusEffectsUI.GetUserOffset()
 
     local x = baseX
     local y = baseY

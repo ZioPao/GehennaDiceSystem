@@ -30,23 +30,18 @@ function ModDataCommands.ResetServerDiceData(_, args)
 	local receivingPl = getPlayerByOnlineID(args.userID)
 
 	PlayersDiceData[args.username] = {}
-	ModData.add(DICE_SYSTEM_MOD_STRING, PlayersDiceData)		-- Force update just to be sure that it's synced
+	ModData.add(DICE_SYSTEM_MOD_STRING, PlayersDiceData) -- Force update just to be sure that it's synced
 	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", {})
 end
 
 ---Similiar to ResetServerDiceData, but we'll skip the destroying part. We just notify the client that their data has been changed elsewhere
 ---@param args table userID=number
 function ModDataCommands.NotifyAdminChangedClientData(_, args)
-	print("NotifyAdminChangedClientData")
-	print(args.userID)
+	--print("NotifyAdminChangedClientData")
+	--print(args.userID)
 	local receivingPl = getPlayerByOnlineID(args.userID)
-
-	if receivingPl == nil then print("Player is null") else
-		sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", {forceSync = true})
-	end
+	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", { forceSync = true })
 end
-
-
 
 ---Send the full status effects table to a certain player
 ---@param playerObj IsoPlayer The player that requested the update and whom shall receive the updated table

@@ -27,7 +27,7 @@ PLAYER_DICE_VALUES = {
 }
 COLORS_DICE_TABLES = {
     -- Normal colors for status effects
-    STATUS_EFFECTS  = {
+    STATUS_EFFECTS     = {
         Stable = { r = 0, g = 0.68, b = 0.94 },
         Wounded = { r = 0.95, g = 0.35, b = 0.16 },
         Bleeding = { r = 0.66, g = 0.15, b = 0.18 },
@@ -38,7 +38,7 @@ COLORS_DICE_TABLES = {
     },
 
     -- Used for color blind users
-    STATUS_EFFECTS_ALT =  {
+    STATUS_EFFECTS_ALT = {
         Stable = { r = 0.17, g = 0.94, b = 0.45 },     -- #2CF074
         Wounded = { r = 0.46, g = 0.58, b = 0.23 },    -- #75943A
         Bleeding = { r = 0.56, g = 0.15, b = 0.25 },   -- #8F263F
@@ -85,9 +85,10 @@ function DiceSystem_Common.Roll(skill, points)
 
     return finalValue
 end
+
 if isDebugEnabled() then
     ---Writes a log in the console ONLY if debug is enabled
-    ---@param text string   
+    ---@param text string
     function DiceSystem_Common.DebugWriteLog(text)
         --writeLog("DiceSystem", text)
         print("[DiceSystem] " .. text)

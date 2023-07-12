@@ -6,7 +6,7 @@ require "ISUI/ISScrollingListBox"
 local function FetchPlayers()
     local players
     if isClient() then
-        ModData.request(DICE_SYSTEM_MOD_STRING)     -- Request it again
+        ModData.request(DICE_SYSTEM_MOD_STRING) -- Request it again
         players = getOnlinePlayers()
     else
         players = ArrayList.new()
@@ -54,7 +54,7 @@ DiceMenuAdminViewer = ISCollapsableWindow:derive("DiceMenuAdminViewer")
 DiceMenuAdminViewer.messages = {}
 
 function DiceMenuAdminViewer.OnOpenPanel()
-    ModData.request(DICE_SYSTEM_MOD_STRING)     -- Request it again
+    ModData.request(DICE_SYSTEM_MOD_STRING) -- Request it again
     if DiceMenuAdminViewer.instance then
         DiceMenuAdminViewer.instance:close()
     end
@@ -206,7 +206,6 @@ function DiceMenuAdminViewer:update()
     local isBtnActive = self.mainCategory.datas:size() > 0 and selection ~= 0
     self.btnOpenPanel:setEnable(isBtnActive)
     self.btnDeleteData:setEnable(isBtnActive)
-
 end
 
 function DiceMenuAdminViewer:close()
