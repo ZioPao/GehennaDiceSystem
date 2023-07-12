@@ -16,6 +16,30 @@ local REQUEST_LIMIT = 10
 
 -----------------
 
+-- TODO Use a override instead of this
+
+---Zomboid doesn't really DistTo. So let's have a wrapper to prevent errors
+---@param localPlayer IsoPlayer
+---@param onlinePlayer IsoPlayer
+---@return number
+local function TryDistTo(localPlayer, onlinePlayer)
+
+    local dist = 10000000000     -- Fake number, just to prevent problems later.
+    if localPlayer and onlinePlayer then
+        if onlinePlayer:getCurrentSquare() ~= nil then
+            dist = localPlayer:DistTo(onlinePlayer)
+        end
+    end
+
+    return dist
+end
+
+
+
+
+
+------------------
+
 StatusEffectsUI = ISPanel:derive("StatusEffectsUI")
 StatusEffectsUI.nearPlayersStatusEffects = {}
 
@@ -84,7 +108,7 @@ function StatusEffectsUI:render()
             local pl = onlinePlayers:get(i)
             -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
             -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
-            if pl and pl:getCurrentSquare() ~= nil and self.player:DistTo(pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
+            if pl and TryDistTo(self.player, pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
                 local userID = getOnlineID(pl)
                 if statusEffectsTable[userID] == nil then
                     -- Table needs an update
@@ -156,7 +180,7 @@ end
 function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffects)
     StatusEffectsUI.mainPlayer = getPlayer()
     local receivedPlayer = getPlayerByOnlineID(userID)
-    local dist = StatusEffectsUI.mainPlayer:DistTo(receivedPlayer)
+    local dist = TryDistTo(StatusEffectsUI.mainPlayer, receivedPlayer)
     if dist < StatusEffectsUI.renderDistance then
         StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
         local newStatusEffectsTable = {}
