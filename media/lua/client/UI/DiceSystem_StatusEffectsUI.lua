@@ -77,17 +77,8 @@ function StatusEffectsUI:drawStatusEffect(pl, statusEffects)
     local plX = getX(pl)
     local plY = getY(pl)
     local plZ = getZ(pl)
-    local baseX = isoToScreenX(plNum, plX, plY, plZ) - 150
-    local baseY = isoToScreenY(plNum, plX, plY, plZ)
-    local log = "BaseY = " .. tostring(baseY)
-
-    local modifierY = (150 + StatusEffectsUI.GetUserOffset()/self.zoom) --((200 + StatusEffectsUI.GetUserOffset())/ self.zoom) -- - 100 
-    log = log .. " , ModifierY = " .. tostring(modifierY)
-
-    baseY = baseY - modifierY - 100     -- Additional 100
-    log = log .. " , finalBaseY = " .. tostring(baseY)
-
-    debugWriteLog(log)
+    local baseX = isoToScreenX(plNum, plX, plY, plZ) - 100
+    local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150/self.zoom) - 50 + StatusEffectsUI.GetUserOffset()
 
     local x = baseX
     local y = baseY
