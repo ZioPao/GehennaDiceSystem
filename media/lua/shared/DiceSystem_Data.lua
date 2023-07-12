@@ -85,3 +85,15 @@ function DiceSystem_Common.Roll(skill, points)
 
     return finalValue
 end
+if isDebugEnabled() then
+    ---Writes a log in the console ONLY if debug is enabled
+    ---@param text string   
+    function DiceSystem_Common.DebugWriteLog(text)
+        writeLog("DiceSystem", text)
+    end
+else
+    ---Placeholder, to prevent non essential calls
+    function DiceSystem_Common.DebugWriteLog()
+        return
+    end
+end

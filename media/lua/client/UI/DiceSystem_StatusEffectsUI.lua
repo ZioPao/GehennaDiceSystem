@@ -9,6 +9,7 @@ local getY = playerBase.getY
 local getZ = playerBase.getZ
 local isoToScreenX = isoToScreenX
 local isoToScreenY = isoToScreenY
+local debugWriteLog = DiceSystem_Common.DebugWriteLog
 
 -----------------
 
@@ -78,17 +79,16 @@ function StatusEffectsUI:drawStatusEffect(pl, statusEffects)
     local plZ = getZ(pl)
     local baseX = isoToScreenX(plNum, plX, plY, plZ) - 150
     local baseY = isoToScreenY(plNum, plX, plY, plZ)
+    local log = "BaseY = " .. tostring(baseY)
 
-    --print("BaseY = " .. tostring(baseY))
-    --print("Zoom = " .. tostring(self.zoom))
     local modifierY = (150 + StatusEffectsUI.GetUserOffset()/self.zoom) --((200 + StatusEffectsUI.GetUserOffset())/ self.zoom) -- - 100 
-    baseY = baseY - modifierY - 100     -- Additional 100
-    --print(modifierY)
+    log = log .. " , ModifierY = " .. tostring(modifierY)
 
-    --print("Final baseY = " .. baseY)
-    --print(self.zoom)
-    --print("___________________________")
-    
+    baseY = baseY - modifierY - 100     -- Additional 100
+    log = log .. " , finalBaseY = " .. tostring(baseY)
+
+    debugWriteLog(log)
+
     local x = baseX
     local y = baseY
 
