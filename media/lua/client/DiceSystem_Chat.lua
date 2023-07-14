@@ -61,12 +61,12 @@ function DiceSystem_ChatOverride.getTextWithPrefix(originalFunc)
 
 
         local plDescriptor = player:getDescriptor()
-        local forename = plDescriptor:getForename()
-        local surname = plDescriptor:getSurname()
+        local forename = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor)
+
         local statusEffectsString = GetStatusEffectsString(username)
         local _, endMatch = string.find(message, '(||DICE_SYSTEM_MESSAGE||)')
         local separatedMsg = string.sub(message, endMatch + 2, string.len(message))
-        local finalMsg = string.format("<RGB:1,1,1> %s %s %s <SPACE> %s %s", timestamp, forename, surname,
+        local finalMsg = string.format("<RGB:1,1,1> %s <SPACE> %s <SPACE> %s <SPACE> %s", timestamp, forename,
             statusEffectsString, separatedMsg)
         return finalMsg
     end

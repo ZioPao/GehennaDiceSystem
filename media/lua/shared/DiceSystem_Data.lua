@@ -97,6 +97,25 @@ function DiceSystem_Common.Roll(skill, points)
     return finalValue
 end
 
+---Get the forename without the tabulations added by Buffy's bios
+---@param plDescriptor SurvivorDesc
+function DiceSystem_Common.GetForenameWithoutTabs(plDescriptor)
+    local forenameWithTabs = plDescriptor:getForename()
+    local forename = string.gsub(forenameWithTabs, "^%s*(%a+)", "%1")
+    if forename == nil then forename = "" end
+    return forename
+end
+
+---Get the surname without the bio from Buffy's Bios
+---@param plDescriptor SurvivorDesc
+function DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
+
+    local surnameAndBio = plDescriptor:getSurname()
+    local surname = string.match(surnameAndBio, "(%w+)")
+    if surname == nil then surname = " " end        -- Added space, not sure if it'll help
+    return surname
+end
+
 if isDebugEnabled() then
     ---Writes a log in the console ONLY if debug is enabled
     ---@param text string

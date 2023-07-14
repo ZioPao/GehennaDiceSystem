@@ -260,7 +260,8 @@ function DiceMenu:createChildren()
     local yOffset = 40
     local pl
     if isClient() then pl = getPlayerFromUsername(PlayerHandler.username) else pl = getPlayer() end
-    local playerName = pl:getDescriptor():getForename() .. " " .. pl:getDescriptor():getSurname()
+    local plDescriptor = pl:getDescriptor()
+    local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
 
     local isAdmin = self:getIsAdminMode()
 
