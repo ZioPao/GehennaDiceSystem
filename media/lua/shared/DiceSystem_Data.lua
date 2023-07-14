@@ -106,16 +106,6 @@ function DiceSystem_Common.GetForenameWithoutTabs(plDescriptor)
     return forename
 end
 
----Get the surname without the bio from Buffy's Bios
----@param plDescriptor SurvivorDesc
-function DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
-
-    local surnameAndBio = plDescriptor:getSurname()
-    local surname = string.match(surnameAndBio, "(%w+)")
-    if surname == nil then surname = " " end        -- Added space, not sure if it'll help
-    return surname
-end
-
 if isDebugEnabled() then
     ---Writes a log in the console ONLY if debug is enabled
     ---@param text string

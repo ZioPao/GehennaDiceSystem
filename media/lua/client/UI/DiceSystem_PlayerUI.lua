@@ -23,7 +23,8 @@ Admin utilities
     An Item that users can use to reset their skills\occupations
     Menu with a list of players, where admins can open a specific player dice menu.
 ]]
-
+local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
+local FONT_SCALE = FONT_HGT_SMALL / 16
 
 --* Helper functions
 
@@ -196,7 +197,7 @@ function DiceMenu:update()
             local singleStatus = GetColoredStatusEffect(v)
 
             if statusEffectsText == "" then
-                statusEffectsText = singleStatus
+                statusEffectsText = " <CENTRE> " .. singleStatus
             else
                 statusEffectsText = statusEffectsText .. " <SPACE> - <SPACE> " .. singleStatus
             end
@@ -279,11 +280,16 @@ function DiceMenu:createChildren()
     local frameHeight = 40
     local yOffsetFrame = frameHeight / 4
 
-    self.labelStatusEffectsList = ISRichTextPanel:new(0, yOffset, self.width - 20, 25)
+    print(FONT_SCALE)
+    local labelStatusEffectsHeight = 25 * (FONT_SCALE + 0.5)
+
+    self.labelStatusEffectsList = ISRichTextPanel:new(0, yOffset, self.width - 20, labelStatusEffectsHeight)
     self.labelStatusEffectsList:initialise()
     self:addChild(self.labelStatusEffectsList)
 
-    self.labelStatusEffectsList.marginLeft = self.width / 4
+    self.labelStatusEffectsList.marginTop = 20
+    self.labelStatusEffectsList.marginLeft = self.width/6
+    self.labelStatusEffectsList.marginRight = self.width/6
     self.labelStatusEffectsList.autosetheight = false
     self.labelStatusEffectsList.background = false
     self.labelStatusEffectsList.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
@@ -291,7 +297,7 @@ function DiceMenu:createChildren()
     self.labelStatusEffectsList:paginate()
 
 
-    yOffset = yOffset + 45
+    yOffset = yOffset + labelStatusEffectsHeight + 25
 
 
     --* Occupation *--
@@ -535,8 +541,7 @@ function DiceMenu.OpenPanel(isAdminMode)
         isAdminMode = false
     end
 
-    local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
-    local FONT_SCALE = FONT_HGT_SMALL / 16
+
 
     local width = 400 * FONT_SCALE
     local height = 700
