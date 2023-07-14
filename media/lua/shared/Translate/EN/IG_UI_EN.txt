@@ -51,5 +51,5 @@ IG_UI_EN = {
     IGUI_Dice_RefreshPlayersListTooltip = "Refresh the list. Only players who have set up their dice data will be shown",
 
 
-    IGUI_DiceAdminMenu = "Dice System - Admin Panel",
+    IGUI_DiceAdminMenu = "Dice System - Admin",
 }

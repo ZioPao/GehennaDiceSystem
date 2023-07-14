@@ -212,17 +212,18 @@ function DiceMenu:update()
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local skillPoints = PlayerHandler.GetSkillPoints(skill)
         local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
-        local skillPointsString = string.format(" <RIGHT> %d <SPACE> ", skillPoints)
+        local skillPointsString = " <RIGHT> " .. string.format("%d", skillPoints)
 
         --local skillPointsString
         if bonusSkillPoints ~= 0 then
-            skillPointsString = string.format(skillPointsString .. " <SPACE> <RGB:0.94,0.82,0.09> + %d", bonusSkillPoints)
+            skillPointsString = skillPointsString .. string.format(" <RGB:0.94,0.82,0.09> <SPACE> + <SPACE> %d", bonusSkillPoints)
         end
         -- Specific case for Resolve, it should scale on armor bonus
         if skill == "Resolve" and armorBonusPoints ~= 0 then
-            skillPointsString = string.format(skillPointsString .. " <SPACE> <RGB:1,0,0> + %d", armorBonusPoints)
+            skillPointsString = skillPointsString .. string.format(" <RGB:1,0,0> <SPACE> + <SPACE> %d", armorBonusPoints)
         end
 
+        --print(skillPointsString)
 
         self["labelSkillPoints" .. skill]:setText(skillPointsString)
         self["labelSkillPoints" .. skill].textDirty = true
@@ -533,7 +534,12 @@ function DiceMenu.OpenPanel(isAdminMode)
         isAdminMode = false
     end
 
-    local pnl = DiceMenu:new(50, 200, 400, 700)
+    local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
+    local FONT_SCALE = FONT_HGT_SMALL / 16
+
+    local width = 400 * FONT_SCALE
+    local height = 700
+    local pnl = DiceMenu:new(100, 200, width, height)
     pnl:setAdminMode(isAdminMode)
     pnl:initialise()
     pnl:addToUIManager()
