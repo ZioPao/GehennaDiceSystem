@@ -26,6 +26,10 @@ Admin utilities
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local FONT_SCALE = FONT_HGT_SMALL / 16
 
+if FONT_SCALE < 1 then
+    FONT_SCALE = 1
+end
+
 --* Helper functions
 
 ---Get a string for ISRichTextPanel containing a colored status effect string
@@ -154,6 +158,8 @@ function DiceMenu:fillSkillPanel()
         skillPointsPanel:paginate()
         self["labelSkillPoints" .. skill] = skillPointsPanel
         yOffset = yOffset + frameHeight
+
+        self.panelSkills:setHeight(self.panelSkills:getHeight() + frameHeight)
     end
 end
 
@@ -257,6 +263,12 @@ function DiceMenu:update()
     self.btnMinusMovement:setEnable(currMovement > 0)
 end
 
+function DiceMenu:calculateHeight(y)
+    local fixedFrameHeight = 40
+    local finalheight = y + fixedFrameHeight*8 + 25
+    self:setHeight(finalheight)
+end
+
 function DiceMenu:createChildren()
     local yOffset = 40
     local pl
@@ -277,10 +289,8 @@ function DiceMenu:createChildren()
     self:addChild(self.labelPlayer)
     yOffset = yOffset + 10
 
-    local frameHeight = 40
-    local yOffsetFrame = frameHeight / 4
+    local frameHeight = 40 * FONT_SCALE
 
-    print(FONT_SCALE)
     local labelStatusEffectsHeight = 25 * (FONT_SCALE + 0.5)
 
     self.labelStatusEffectsList = ISRichTextPanel:new(0, yOffset, self.width - 20, labelStatusEffectsHeight)
@@ -299,17 +309,18 @@ function DiceMenu:createChildren()
 
     yOffset = yOffset + labelStatusEffectsHeight + 25
 
-    local xFrameMargin = 20
+    local xFrameMargin = 10 * FONT_SCALE
     local comboBoxHeight = 25       -- TODO This should scale?
+    local marginPanelTop = (frameHeight/4)
 
     --* Occupation *--
     local occupationString = getText("IGUI_Occupation") .. ": "
     self.panelOccupation = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
-    self.panelOccupation.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.panelOccupation.marginLeft = xFrameMargin
+    self.panelOccupation.marginTop = marginPanelTop
     self.panelOccupation.autosetheight = false
     self.panelOccupation.background = true
-    self.panelOccupation.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }       -- TODO Set to black
+    self.panelOccupation.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
     self.panelOccupation.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.panelOccupation:initialise()
     self.panelOccupation:instantiate()
@@ -338,6 +349,7 @@ function DiceMenu:createChildren()
     self.panelStatusEffects = ISRichTextPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
     self.panelStatusEffects.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.panelStatusEffects.marginLeft = xFrameMargin
+    self.panelStatusEffects.marginTop = marginPanelTop
     self.panelStatusEffects.autosetheight = false
     self.panelStatusEffects.background = true
     self.panelStatusEffects.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }       -- TODO Set to black
@@ -364,6 +376,7 @@ function DiceMenu:createChildren()
     self.panelArmorBonus:initialise()
     self:addChild(self.panelArmorBonus)
     self.panelArmorBonus.autosetheight = false
+    self.panelArmorBonus.marginTop = marginPanelTop
     self.panelArmorBonus.background = true
     self.panelArmorBonus.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
     self.panelArmorBonus.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
@@ -373,8 +386,8 @@ function DiceMenu:createChildren()
     self.panelMovementBonus = ISRichTextPanel:new(self.width / 2, yOffset, self.width / 2, frameHeight)
     self.panelMovementBonus:initialise()
     self:addChild(self.panelMovementBonus)
-
     self.panelMovementBonus.marginLeft = 20
+    self.panelMovementBonus.marginTop = marginPanelTop
     self.panelMovementBonus.autosetheight = false
     self.panelMovementBonus.background = true
     self.panelMovementBonus.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
@@ -394,7 +407,8 @@ function DiceMenu:createChildren()
 
 
     --LEFT MINUS BUTTON
-    self.btnMinusHealth = ISButton:new(2, 0, self.width / 4, frameHeight, "-", self, self.onOptionMouseDown)
+    self.btnMinusHealth = ISButton:new(0, 0, self.width / 4, frameHeight, "-", self, self.onOptionMouseDown)
+    self.btnMinusHealth.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.btnMinusHealth.internal = "MINUS_HEALTH"
     self.btnMinusHealth:initialise()
     self.btnMinusHealth:instantiate()
@@ -402,8 +416,9 @@ function DiceMenu:createChildren()
     self.panelHealth:addChild(self.btnMinusHealth)
 
     --RIGHT PLUS BUTTON
-    self.btnPlusHealth = ISButton:new(self.width / 1.333 - 2, 0, self.width / 4, frameHeight, "+", self,
+    self.btnPlusHealth = ISButton:new(self.width / 1.333, 0, self.width / 4, frameHeight, "+", self,
         self.onOptionMouseDown)
+    self.btnPlusHealth.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.btnPlusHealth.internal = "PLUS_HEALTH"
     self.btnPlusHealth:initialise()
     self.btnPlusHealth:instantiate()
@@ -423,16 +438,18 @@ function DiceMenu:createChildren()
     self.panelMovement:paginate()
 
     --LEFT MINUS BUTTON
-    self.btnMinusMovement = ISButton:new(2, 0, self.width / 4, frameHeight, "-", self, self.onOptionMouseDown)
+    self.btnMinusMovement = ISButton:new(0, 0, self.width / 4, frameHeight, "-", self, self.onOptionMouseDown)
     self.btnMinusMovement.internal = "MINUS_MOVEMENT"
+    self.btnMinusMovement.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.btnMinusMovement:initialise()
     self.btnMinusMovement:instantiate()
     self.btnMinusMovement:setEnable(true)
     self.panelMovement:addChild(self.btnMinusMovement)
 
     --RIGHT PLUS BUTTON
-    self.btnPlusMovement = ISButton:new(self.width / 1.333 - 2, 0, self.width / 4, frameHeight, "+", self,
+    self.btnPlusMovement = ISButton:new(self.width / 1.333 , 0, self.width / 4, frameHeight, "+", self,
         self.onOptionMouseDown)
+    self.btnPlusMovement.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.btnPlusMovement.internal = "PLUS_MOVEMENT"
     self.btnPlusMovement:initialise()
     self.btnPlusMovement:instantiate()
@@ -458,10 +475,12 @@ function DiceMenu:createChildren()
 
     yOffset = yOffset + frameHeight
 
-    local panelSkillsHeight = frameHeight * 7
-    self.panelSkills = ISPanel:new(0, yOffset, self.width, panelSkillsHeight)
+    self.panelSkills = ISPanel:new(0, yOffset, self.width, 0)       --Height doesn't really matter, but we will set in fillSkillPanel
     self:addChild(self.panelSkills)
     self:fillSkillPanel()
+
+    --* Set correct height for the panel AFTER we're done with everything else *--
+    self:calculateHeight(yOffset, frameHeight)
 
     if not PlayerHandler.IsPlayerInitialized() or isAdmin then
         self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Dice_Save"), self,
@@ -474,12 +493,13 @@ function DiceMenu:createChildren()
     end
 
     self.btnClose = ISButton:new(self.width - 100 - 10, self.height - 35, 100, 25, getText("IGUI_Dice_Close"), self,
-        self.onOptionMouseDown)
+    self.onOptionMouseDown)
     self.btnClose.internal = "CLOSE"
     self.btnClose:initialise()
     self.btnClose:instantiate()
     self.btnClose:setEnable(true)
     self:addChild(self.btnClose)
+
 end
 
 function DiceMenu:onChangeStatusEffect()
@@ -551,7 +571,7 @@ function DiceMenu.OpenPanel(isAdminMode)
 
     print(FONT_SCALE)
     local width = 460 * FONT_SCALE
-    local height = 700
+    local height = 700 * FONT_SCALE
     local pnl = DiceMenu:new(100, 200, width, height)
     pnl:setAdminMode(isAdminMode)
     pnl:initialise()

@@ -1,5 +1,6 @@
-local offsets = { "-200", "-150", "-100", "-50", "0", "50", "100", "150", "200" }
+require ("UI/DiceSystem_StatusEffectsUI")
 
+local offsets = { "-200", "-150", "-100", "-50", "0", "50", "100", "150", "200" }
 local OPTIONS = {
     enableColorBlind = false,
     offsetStatusEffects = 5, -- Should be equal to "0"
