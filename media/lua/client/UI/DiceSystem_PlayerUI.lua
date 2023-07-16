@@ -299,20 +299,25 @@ function DiceMenu:createChildren()
 
     yOffset = yOffset + labelStatusEffectsHeight + 25
 
+    local xFrameMargin = 20
+    local comboBoxHeight = 25       -- TODO This should scale?
 
     --* Occupation *--
-    self.panelOccupation = ISPanel:new(0, yOffset, self.width / 2, frameHeight)
+    local occupationString = getText("IGUI_Occupation") .. ": "
+    self.panelOccupation = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
     self.panelOccupation.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    self.panelOccupation.marginLeft = xFrameMargin
+    self.panelOccupation.autosetheight = false
+    self.panelOccupation.background = true
+    self.panelOccupation.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }       -- TODO Set to black
+    self.panelOccupation.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    self.panelOccupation:initialise()
+    self.panelOccupation:instantiate()
+    self.panelOccupation:setText(occupationString)
     self:addChild(self.panelOccupation)
+    self.panelOccupation:paginate()
 
-    local occupationString = getText("IGUI_Occupation")
-    self.labelOccupation = ISLabel:new(10, yOffsetFrame, 25, occupationString .. ": ", 1, 1, 1, 1, UIFont.Small, true)
-    self.labelOccupation:initialise()
-    self.labelOccupation:instantiate()
-    self.panelOccupation:addChild(self.labelOccupation)
-
-    self.comboOccupation = DiceSystem_ComboBox:new(self.labelOccupation:getRight() + 6, self.labelOccupation:getY(),
-        self.width / 4, 25, self, self.onChangeOccupation, "OCCUPATIONS")
+    self.comboOccupation = DiceSystem_ComboBox:new(self.panelOccupation:getWidth()/2 - xFrameMargin, self.panelOccupation:getHeight()/5, self.width / 4, comboBoxHeight, self, self.onChangeOccupation, "OCCUPATIONS")
     self.comboOccupation.noSelectionText = ""
     self.comboOccupation:setEditable(true)
 
@@ -329,19 +334,21 @@ function DiceMenu:createChildren()
     self.panelOccupation:addChild(self.comboOccupation)
 
     --* Status Effects *--
-    self.panelStatusEffects = ISPanel:new(self.width / 2, yOffset, self.width / 2, frameHeight)
+    local statusEffectString = getText("IGUI_StatusEffect") .. ": "
+    self.panelStatusEffects = ISRichTextPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
     self.panelStatusEffects.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    self.panelStatusEffects.marginLeft = xFrameMargin
+    self.panelStatusEffects.autosetheight = false
+    self.panelStatusEffects.background = true
+    self.panelStatusEffects.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }       -- TODO Set to black
+    self.panelStatusEffects.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    self.panelStatusEffects:initialise()
+    self.panelStatusEffects:instantiate()
+    self.panelStatusEffects:setText(statusEffectString)
     self:addChild(self.panelStatusEffects)
+    self.panelStatusEffects:paginate()
 
-    local statusEffectString = getText("IGUI_StatusEffect")
-    self.labelStatusEffects = ISLabel:new(10, yOffsetFrame, 25, statusEffectString .. ": ", 1, 1, 1, 1, UIFont.Small,
-        true)
-    self.labelStatusEffects:initialise()
-    self.labelStatusEffects:instantiate()
-    self.panelStatusEffects:addChild(self.labelStatusEffects)
-
-    self.comboStatusEffects = DiceSystem_ComboBox:new(self.labelStatusEffects:getRight() + 6,
-        self.labelStatusEffects:getY(), self.width / 4, 25, self, self.onChangeStatusEffect, "STATUS_EFFECTS")
+    self.comboStatusEffects = DiceSystem_ComboBox:new(self.panelStatusEffects:getWidth()/2 - xFrameMargin, self.panelStatusEffects:getHeight()/5, self.width / 4, comboBoxHeight, self, self.onChangeStatusEffect, "STATUS_EFFECTS")
     self.comboStatusEffects.noSelectionText = ""
     self.comboStatusEffects:setEditable(true)
     for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
@@ -542,8 +549,8 @@ function DiceMenu.OpenPanel(isAdminMode)
     end
 
 
-
-    local width = 400 * FONT_SCALE
+    print(FONT_SCALE)
+    local width = 460 * FONT_SCALE
     local height = 700
     local pnl = DiceMenu:new(100, 200, width, height)
     pnl:setAdminMode(isAdminMode)
