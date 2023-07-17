@@ -293,11 +293,11 @@ function DiceMenu:createChildren()
 
     local labelStatusEffectsHeight = 25 * (FONT_SCALE + 0.5)
 
-    self.labelStatusEffectsList = ISRichTextPanel:new(0, yOffset, self.width - 20, labelStatusEffectsHeight)
+    self.labelStatusEffectsList = ISRichTextPanel:new(20, yOffset, self.width - 20, labelStatusEffectsHeight)
     self.labelStatusEffectsList:initialise()
     self:addChild(self.labelStatusEffectsList)
 
-    self.labelStatusEffectsList.marginTop = 20
+    self.labelStatusEffectsList.marginTop = 0
     self.labelStatusEffectsList.marginLeft = self.width/6
     self.labelStatusEffectsList.marginRight = self.width/6
     self.labelStatusEffectsList.autosetheight = false
@@ -480,7 +480,7 @@ function DiceMenu:createChildren()
     self:fillSkillPanel()
 
     --* Set correct height for the panel AFTER we're done with everything else *--
-    self:calculateHeight(yOffset, frameHeight)
+    self:calculateHeight(yOffset)
 
     if not PlayerHandler.IsPlayerInitialized() or isAdmin then
         self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Dice_Save"), self,
