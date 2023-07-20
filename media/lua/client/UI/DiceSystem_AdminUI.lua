@@ -296,33 +296,11 @@ local _ISAdminPanelUICreate = ISAdminPanelUI.create
 function ISAdminPanelUI:create()
     _ISAdminPanelUICreate(self)
 
-
-    -- TODO Doesn't scale correctly with 2x
-    -- TODO They're using server points, we need to add this button after that
-
     local lastButton = self.children[self.IDMax-1].internal == "CANCEL" and self.children[self.IDMax-2] or self.children[self.IDMax-1]
     self.btnOpenAdminDiceMenu = ISButton:new(lastButton.x, lastButton.y + 5 + lastButton.height, self.sandboxOptionsBtn.width, self.sandboxOptionsBtn.height, getText("IGUI_DiceAdminMenu"), self, DiceMenuAdminViewer.OnOpenPanel)
-    self.btnOpenAdminDiceMenu.internal = "SERVERPOINTS"
     self.btnOpenAdminDiceMenu:initialise()
     self.btnOpenAdminDiceMenu:instantiate()
     self.btnOpenAdminDiceMenu.borderColor = self.buttonBorderColor
     self:addChild(self.btnOpenAdminDiceMenu)
 
-
-
-
-
-
-
-    -- local btnHgt = math.max(25, FONT_HGT_SMALL + 3 * 2)
-    -- local btnGapY = 5
-    -- local y = self.showStatisticsBtn.y + btnHgt + btnGapY
-    -- local btnWid = 150
-
-    -- self.btnOpenAdminDiceMenu = ISButton:new(10 + btnWid + 20, y, btnWid, btnHgt, getText("IGUI_DiceAdminMenu"), self,
-    --     )
-    -- self.btnOpenAdminDiceMenu:initialise()
-    -- self.btnOpenAdminDiceMenu:instantiate()
-    -- self.btnOpenAdminDiceMenu.borderColor = self.buttonBorderColor
-    -- self:addChild(self.btnOpenAdminDiceMenu)
 end
