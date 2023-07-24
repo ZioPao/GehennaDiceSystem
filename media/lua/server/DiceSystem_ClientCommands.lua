@@ -29,6 +29,8 @@ end
 function ModDataCommands.ResetServerDiceData(_, args)
 	local receivingPl = getPlayerByOnlineID(args.userID)
 
+	-- TODO This is not working correctly
+
 	PlayersDiceData[args.username] = {}
 	ModData.add(DICE_SYSTEM_MOD_STRING, PlayersDiceData) -- Force update just to be sure that it's synced
 	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", { forceSync = false})

@@ -8,12 +8,15 @@ local PlayerStatsHandler = {}
 --* Global mod data *--
 
 function OnConnected()
-    --print("Requested global mod data")
+    print("Requested global mod data")
     ModData.request(DICE_SYSTEM_MOD_STRING)
     DICE_CLIENT_MOD_DATA = ModData.get(DICE_SYSTEM_MOD_STRING)
 
     if DICE_CLIENT_MOD_DATA == nil then
         DICE_CLIENT_MOD_DATA = {}
+    else
+        print("Found DICE_SYSTEM global mod data, sent it to client")
+        print(DICE_CLIENT_MOD_DATA)
     end
 end
 
@@ -37,10 +40,9 @@ end
 
 
 
-
+---This is a fairly aggressive way to sync the moddata table. Use it sparingly
+---@param username any
 local function SyncPlayerTable(username)
-    -- TODO Too aggressive, will cause massive lag
-    --print("Syncing table for " .. username)
     sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "UpdatePlayerStats",
         { data = DICE_CLIENT_MOD_DATA[username], username = username })
 end
@@ -250,22 +252,22 @@ PlayerStatsHandler.GetStatusEffectValue = function(status)
     return val
 end
 
--- TODO This should be deleted and we should use GetActiveStatusEffectsByUsername
----Returns the currently active status effects 
----@return table
-PlayerStatsHandler.GetActiveStatusEffects = function()
-    local diceData = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username]
-    local statusEffects = diceData.statusEffects
-    local list = {}
-    for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
-        local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-        if statusEffects[x] ~= nil and statusEffects[x] == true then
-            table.insert(list, x)
-        end
-    end
+-- -- TODO This should be deleted and we should use GetActiveStatusEffectsByUsername
+-- ---Returns the currently active status effects 
+-- ---@return table
+-- PlayerStatsHandler.GetActiveStatusEffects = function()
+--     local diceData = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username]
+--     local statusEffects = diceData.statusEffects
+--     local list = {}
+--     for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+--         local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+--         if statusEffects[x] ~= nil and statusEffects[x] == true then
+--             table.insert(list, x)
+--         end
+--     end
 
-    return list
-end
+--     return list
+-- end
 
 ---Get a certain player active status effects from the cache
 ---@return table
@@ -279,21 +281,6 @@ PlayerStatsHandler.GetActiveStatusEffectsByUsername = function(username)
     end
 
     return {}
-    -- local diceData = DICE_CLIENT_MOD_DATA[username]
-
-    -- if diceData == nil then return {} end
-    -- --if diceData == nil then return {} end
-    -- local statusEffects = diceData.statusEffects
-    -- local list = {}
-
-    -- for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
-    --     local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-    --     if statusEffects[x] ~= nil and statusEffects[x] == true then
-    --         table.insert(list, x)
-    --     end
-    -- end
-
-    -- return list
 end
 
 
@@ -513,8 +500,6 @@ PlayerStatsHandler.InitModData = function(force)
     if PlayerStatsHandler.username == nil then
         PlayerStatsHandler.username = getPlayer():getUsername()
     end
-
-
     -- This should happen only from that specific player, not an admin
     if (DICE_CLIENT_MOD_DATA ~= nil and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] == nil) or force then
         --print("[DiceSystem] Initializing new player dice data")
@@ -558,30 +543,12 @@ PlayerStatsHandler.InitModData = function(force)
         DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] = {}
         copyTable(DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username], tempTable)
 
-        -- NO SYNC NOW!
-        -- sendClientCommand(getPlayer(), DICE_SYSTEM_MOD_STRING, "UpdatePlayerStats",
-        --     { data = statsTable[PlayerStatsHandler.username], username = PlayerStatsHandler.username })
-        --print("DiceSystem: initialized player")
+        -- Sync it now
+        SyncPlayerTable(PlayerStatsHandler.username)
+        print("DiceSystem: initialized player")
+    
     elseif DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] == nil then
         error("DiceSystem: Global mod data is broken")
-
-        -- Armor bonus will be recalculated when it's the actual player that's opening the panel, not an admin
-        --print("[DiceSystem] Found player in data. Loading it")
-
-        --!!! JUST FOR DEBUG PRINT STUFF FROM THE TABLE
-        --local tab = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username]
-        
-        -- print(tab.isInitialized)
-        -- print(tab.occupation)
-        -- print(tab.skills.Charm)
-        -- print(tab.skills.Brutal)
-        -- print(tab.currentHealth)
-
-        -- local localPlayer = getPlayer()
-        -- if localPlayer:getUsername() == PlayerStatsHandler.username then
-        --     PlayerStatsHandler.CalculateArmorBonus(localPlayer)
-        -- end
-    
     end
 end
 
@@ -619,6 +586,7 @@ end
 ---@param userID number
 PlayerStatsHandler.CleanModData = function(userID, username)
     sendClientCommand(DICE_SYSTEM_MOD_STRING, "ResetServerDiceData", { userID = userID, username = username })
+
     --statsTable[username] = nil
     --SyncTable(username)
 end

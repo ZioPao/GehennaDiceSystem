@@ -195,8 +195,8 @@ function DiceMenu:update()
         self.comboStatusEffects.disabled = (plUsername ~= PlayerHandler.username)
         local statusEffectsText = ""
 
-        -- TODO This is broken from the Admin Panel. You should force a sync
-        local activeStatusEffects = PlayerHandler.GetActiveStatusEffects()
+        -- TODO Test it
+        local activeStatusEffects = PlayerHandler.GetActiveStatusEffectsByUsername(PlayerHandler.username)
 
         for i = 1, #activeStatusEffects do
             local v = activeStatusEffects[i]
@@ -352,7 +352,7 @@ function DiceMenu:createChildren()
     self.panelStatusEffects.marginTop = marginPanelTop
     self.panelStatusEffects.autosetheight = false
     self.panelStatusEffects.background = true
-    self.panelStatusEffects.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }       -- TODO Set to black
+    self.panelStatusEffects.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
     self.panelStatusEffects.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.panelStatusEffects:initialise()
     self.panelStatusEffects:instantiate()

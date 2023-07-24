@@ -31,7 +31,7 @@ TestFramework.registerTestModule("UI Tests", "Do initialization", function()
     end
 
     function Tests.SetRandomProfession()
-        -- TODO This is not really how th UI would work, so it's not really a correct test, but it'll have to do
+        -- TODO This is not really how the UI would work, so it's not really a correct test, but it'll have to do
         local PlayerHandler = require("DiceSystem_PlayerHandling")
         local randOcc = PLAYER_DICE_VALUES.OCCUPATIONS[ZombRand(1, #PLAYER_DICE_VALUES.OCCUPATIONS)]
         PlayerHandler.SetOccupation(randOcc)

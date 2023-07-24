@@ -23,8 +23,7 @@ local REQUEST_LIMIT = 10
 ---@param onlinePlayer IsoPlayer
 ---@return number
 local function TryDistTo(localPlayer, onlinePlayer)
-
-    local dist = 10000000000     -- Fake number, just to prevent problems later.
+    local dist = 10000000000 -- Fake number, just to prevent problems later.
     if localPlayer and onlinePlayer then
         if onlinePlayer:getCurrentSquare() ~= nil then
             dist = localPlayer:DistTo(onlinePlayer)
@@ -58,8 +57,7 @@ function StatusEffectsUI:new()
 
     -- Init a table where we're gonna cache the status effects from nearby players
     StatusEffectsUI.nearPlayersStatusEffects = {}
-    o.requestsCounter = {}         -- TODO This is to prevent a spam of syncs from users who did not initialize the mod.
-    --StatusEffectsUI.instance = o
+    o.requestsCounter = {} -- This is to prevent a spam of syncs from users who did not initialize the mod.
     return o
 end
 
@@ -73,17 +71,16 @@ function StatusEffectsUI:initialise()
     self.currPlayerUsername = self.player:getUsername()
 end
 
+---Handled it with a timer. After a certain amount let's delete this user from the blacklist
+---@param username string
+---@return boolean
 function StatusEffectsUI:checkPlayerForRequest(username)
-
-    -- TODO Add a timer, after a certain amount let's delete this user from the blacklist
     if self.requestsCounter[username] and self.requestsCounter[username] > REQUEST_LIMIT then
         return false
     end
 
     return true
-
 end
-
 
 function StatusEffectsUI:addRequestToCounter(username)
     if self.requestsCounter[username] then
@@ -91,18 +88,14 @@ function StatusEffectsUI:addRequestToCounter(username)
     else
         self.requestsCounter[username] = 1
     end
-
 end
-
 
 ---Render loop
 function StatusEffectsUI:render()
-    -- TODO TEST THIS CHECK WITH A FRESH START!!!
-
     if DICE_CLIENT_MOD_DATA and DICE_CLIENT_MOD_DATA[self.currPlayerUsername] and DICE_CLIENT_MOD_DATA[self.currPlayerUsername].isInitialized then
         self.zoom = getCore():getZoom(self.player:getPlayerNum())
         local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
-        local onlinePlayers = getOnlinePlayers() -- TODO How heavy is it?
+        local onlinePlayers = getOnlinePlayers()
 
         for i = 0, onlinePlayers:size() - 1 do
             local pl = onlinePlayers:get(i)
@@ -112,15 +105,14 @@ function StatusEffectsUI:render()
                 local userID = getOnlineID(pl)
                 if statusEffectsTable[userID] == nil then
                     -- Table needs an update
-                    -- TODO Delete this before releasing it
                     local username = getUsername(pl)
 
                     if self:checkPlayerForRequest(username) then
                         --print("Requesting update for " .. pl:getUsername())
                         sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
-                        { username = username, userID = userID })
+                            { username = username, userID = userID })
                         self:addRequestToCounter(username)
-                    --else
+                        --else
                         --print("Limit exceeded for " .. pl:getUsername())
                     end
                 else
@@ -130,7 +122,7 @@ function StatusEffectsUI:render()
                 end
             end
         end
-    --else
+        --else
         --print("Waiting for init")
     end
 end
@@ -153,7 +145,7 @@ function StatusEffectsUI:drawStatusEffect(pl, statusEffects)
     for k = 1, #statusEffects do
         local v = statusEffects[k]
 
-        -- TODO This part could be cached if we wanted.
+        -- OPTIMIZE This part could be cached if we wanted.
         local stringToPrint = string.format("[%s]", v)
         --print(stringToPrint)
         if k > 3 and isSecondLine == false then
@@ -195,7 +187,7 @@ function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffects)
         if table.concat(newStatusEffectsTable) ~= table.concat(StatusEffectsUI.nearPlayersStatusEffects[userID]) then
             --print("Changing table! Some stuff is different")
             StatusEffectsUI.nearPlayersStatusEffects[userID] = newStatusEffectsTable
-        --else
+            --else
             --print("Same effects! No change needed")
         end
     else
