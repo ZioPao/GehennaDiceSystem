@@ -95,7 +95,7 @@ function StatusEffectsUI:render()
     if DICE_CLIENT_MOD_DATA and DICE_CLIENT_MOD_DATA[self.currPlayerUsername] and DICE_CLIENT_MOD_DATA[self.currPlayerUsername].isInitialized then
         self.zoom = getCore():getZoom(self.player:getPlayerNum())
         local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
-        local onlinePlayers = getOnlinePlayers()
+        local onlinePlayers = getOnlinePlayers()        -- TODO Could this cause those issues?
 
         for i = 0, onlinePlayers:size() - 1 do
             local pl = onlinePlayers:get(i)
@@ -220,5 +220,5 @@ if isClient() then
         StatusEffectsUI.renderDistance = SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
         StatusEffectsUI:new()
     end
-    Events.OnGameStart.Add(InitStatusEffectsUI)
+    --Events.OnGameStart.Add(InitStatusEffectsUI)
 end
