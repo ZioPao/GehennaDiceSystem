@@ -287,7 +287,7 @@ function DiceMenu:createChildren()
     self.labelPlayer:initialise()
     self.labelPlayer:instantiate()
     self:addChild(self.labelPlayer)
-    yOffset = yOffset + 10
+    yOffset = yOffset + 25 + 10
 
     local frameHeight = 40 * FONT_SCALE
 
