@@ -10,9 +10,13 @@ local getZ = playerBase.getZ
 local isoToScreenX = isoToScreenX
 local isoToScreenY = isoToScreenY
 local debugWriteLog = DiceSystem_Common.DebugWriteLog
+local os_time = os.time
 
+
+-- TODO Update timer, each 5-10 seconds or so.
 
 local REQUEST_LIMIT = 10
+local UPDATE_TIMER = 10 -- 10 seconds or so?
 
 -----------------
 
@@ -58,6 +62,12 @@ function StatusEffectsUI:new()
     -- Init a table where we're gonna cache the status effects from nearby players
     StatusEffectsUI.nearPlayersStatusEffects = {}
     o.requestsCounter = {} -- This is to prevent a spam of syncs from users who did not initialize the mod.
+    o.onlinePlayers = getOnlinePlayers() -- Should be updated every once in a while, not in a render.
+
+    o.sTime = os_time()
+
+
+
     return o
 end
 
@@ -92,40 +102,57 @@ end
 
 ---Render loop
 function StatusEffectsUI:render()
-    if DICE_CLIENT_MOD_DATA and DICE_CLIENT_MOD_DATA[self.currPlayerUsername] and DICE_CLIENT_MOD_DATA[self.currPlayerUsername].isInitialized then
-        self.zoom = getCore():getZoom(self.player:getPlayerNum())
-        local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
-        local onlinePlayers = getOnlinePlayers()        -- TODO Could this cause those issues?
 
-        for i = 0, onlinePlayers:size() - 1 do
-            local pl = onlinePlayers:get(i)
-            -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
-            -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
-            if pl and TryDistTo(self.player, pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
-                local userID = getOnlineID(pl)
-                if statusEffectsTable[userID] == nil then
-                    -- Table needs an update
-                    local username = getUsername(pl)
+    if DICE_CLIENT_MOD_DATA == nil or DICE_CLIENT_MOD_DATA[self.currPlayerUsername] or DICE_CLIENT_MOD_DATA[self.currPlayerUsername].isInitialized == false then return end
+    self.zoom = getCore():getZoom(self.player:getPlayerNum())
+    local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
 
-                    if self:checkPlayerForRequest(username) then
-                        --print("Requesting update for " .. pl:getUsername())
-                        sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
-                            { username = username, userID = userID })
-                        self:addRequestToCounter(username)
-                        --else
-                        --print("Limit exceeded for " .. pl:getUsername())
-                    end
-                else
-                    --print("Table already present. Could be uncomplete")
-                    -- Table already present (maybe not complete)
-                    self:drawStatusEffect(pl, statusEffectsTable[userID])
+    -- Check timer
+    local cTime = os_time()
+    local shouldUpdate = false
+
+    if cTime > self.sTime + UPDATE_TIMER then
+
+        -- REQUEST UPDATE!
+        self.sTime = os_time()
+        shouldUpdate = true
+    end
+
+
+    for i = 0, self.onlinePlayers:size() - 1 do
+        local pl = self.onlinePlayers:get(i)
+        -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
+        -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
+
+
+        if pl and TryDistTo(self.player, pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
+            local userID = getOnlineID(pl)
+            if statusEffectsTable[userID] == nil then
+                -- Table needs an update
+                local username = getUsername(pl)
+
+                if self:checkPlayerForRequest(username) and shouldUpdate then
+                    --print("Requesting update for " .. pl:getUsername())
+                    sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
+                        { username = username, userID = userID })
+                    self:addRequestToCounter(username)
+                    --else
+                    --print("Limit exceeded for " .. pl:getUsername())
                 end
+            else
+                --print("Table already present. Could be uncomplete")
+                -- Table already present (maybe not complete)
+                self:drawStatusEffect(pl, statusEffectsTable[userID])
             end
         end
-        --else
-        --print("Waiting for init")
     end
+    --else
+    --print("Waiting for init")
 end
+
+
+
+
 
 ---Main function ran during the render loop
 ---@param pl IsoPlayer
@@ -220,5 +247,5 @@ if isClient() then
         StatusEffectsUI.renderDistance = SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
         StatusEffectsUI:new()
     end
-    --Events.OnGameStart.Add(InitStatusEffectsUI)
+    Events.OnGameStart.Add(InitStatusEffectsUI)
 end
