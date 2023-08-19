@@ -12,7 +12,7 @@ local isoToScreenY = isoToScreenY
 local debugWriteLog = DiceSystem_Common.DebugWriteLog
 local os_time = os.time
 
-local UPDATE_DELAY = 10
+local UPDATE_DELAY = SandboxVars.PandemoniumDiceSystem.DelayUpdateStatusEffects
 
 -----------------
 
@@ -79,18 +79,20 @@ function StatusEffectsUI:render()
     self.zoom = getCore():getZoom(self.player:getPlayerNum())
     local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
 
-    -- TEMP
+    -- Check timer and update if it's over
     local cTime = os_time()
-    local shouldUpdate = true
+    local shouldUpdate = false
     if cTime > self.sTime + UPDATE_DELAY then
+        shouldUpdate = true
         self.onlinePlayers = getOnlinePlayers()
         self.sTime = os_time()
     end
+
     for i = 0, self.onlinePlayers:size() - 1 do
         local pl = self.onlinePlayers:get(i)
         -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
         -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
-        if pl and TryDistTo(self.player, pl) < StatusEffectsUI.renderDistance and self.player:checkCanSeeClient(pl) then
+        if pl and TryDistTo(self.player, pl) < StatusEffectsUI.renderDistance then
             local userID = getOnlineID(pl)
             if shouldUpdate then
                 local username = getUsername(pl)
@@ -98,12 +100,13 @@ function StatusEffectsUI:render()
                 sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
                     { username = username, userID = userID })
             end
-            if statusEffectsTable[userID] then
+
+            -- Player is visible and their data is present locally
+            if self.player:checkCanSeeClient(pl) and statusEffectsTable[userID] then
                 self:drawStatusEffect(pl, statusEffectsTable[userID])
             end
         end
     end
-
 end
 
 ---Main function ran during the render loop
