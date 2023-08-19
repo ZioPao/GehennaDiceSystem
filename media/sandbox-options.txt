@@ -1,5 +1,14 @@
 VERSION = 1,
 
+
+option PandemoniumDiceSystem.ShowStatusEffects
+{
+    type = boolean,
+    default = true,
+
+    page = PandemoniumDiceSystem,
+    translation = PandemoniumDiceSystem_ShowStatusEffects,
+},
 option PandemoniumDiceSystem.RenderDistanceStatusEffects
 {
     type = integer,

@@ -12,13 +12,9 @@ local isoToScreenY = isoToScreenY
 local debugWriteLog = DiceSystem_Common.DebugWriteLog
 local os_time = os.time
 
-
-local REQUEST_LIMIT = 10
 local UPDATE_DELAY = 10
 
 -----------------
-
--- TODO Use a override instead of this
 
 ---Zomboid doesn't really DistTo. So let's have a wrapper to prevent errors
 ---@param localPlayer IsoPlayer
@@ -34,8 +30,6 @@ local function TryDistTo(localPlayer, onlinePlayer)
 
     return dist
 end
-
-
 
 
 
@@ -75,25 +69,6 @@ function StatusEffectsUI:initialise()
     self.onlinePlayers = getOnlinePlayers()
     self.requestsCounter = {} -- This is to prevent a spam of syncs from users who did not initialize the mod.
 
-end
-
----Handled it with a timer. After a certain amount let's delete this user from the blacklist
----@param username string
----@return boolean
-function StatusEffectsUI:checkPlayerForRequest(username)
-    if self.requestsCounter[username] and self.requestsCounter[username] > REQUEST_LIMIT then
-        return false
-    end
-
-    return true
-end
-
-function StatusEffectsUI:addRequestToCounter(username)
-    if self.requestsCounter[username] then
-        self.requestsCounter[username] = self.requestsCounter[username] + 1
-    else
-        self.requestsCounter[username] = 1
-    end
 end
 
 ---Render loop
@@ -224,5 +199,8 @@ if isClient() then
         StatusEffectsUI.renderDistance = SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
         StatusEffectsUI:new()
     end
-    Events.OnGameStart.Add(InitStatusEffectsUI)
+
+    if SandboxVars.PandemoniumDiceSystem.ShowStatusEffects then
+        Events.OnGameStart.Add(InitStatusEffectsUI)
+    end
 end
