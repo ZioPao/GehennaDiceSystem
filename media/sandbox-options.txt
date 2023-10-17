@@ -1,31 +1,31 @@
 VERSION = 1,
 
 
-option PandemoniumDiceSystem.ShowStatusEffects
+option GehennaDiceSystem.ShowStatusEffects
 {
     type = boolean,
     default = true,
 
-    page = PandemoniumDiceSystem,
-    translation = PandemoniumDiceSystem_ShowStatusEffects,
+    page = GehennaDiceSystem,
+    translation = GehennaDiceSystem_ShowStatusEffects,
 }
-option PandemoniumDiceSystem.DelayUpdateStatusEffects
+option GehennaDiceSystem.DelayUpdateStatusEffects
 {
     type = integer,
     min = 1,
     max = 100,
     default = 10,
 
-    page = PandemoniumDiceSystem,
-    translation = PandemoniumDiceSystem_DelayUpdateStatusEffects,
+    page = GehennaDiceSystem,
+    translation = GehennaDiceSystem_DelayUpdateStatusEffects,
 }
-option PandemoniumDiceSystem.RenderDistanceStatusEffects
+option GehennaDiceSystem.RenderDistanceStatusEffects
 {
     type = integer,
     min = 10,
     max = 100,
     default = 20,
 
-    page = PandemoniumDiceSystem,
-    translation = PandemoniumDiceSystem_RenderDistanceStatusEffects,
+    page = GehennaDiceSystem,
+    translation = GehennaDiceSystem_RenderDistanceStatusEffects,
 }

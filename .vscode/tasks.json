@@ -44,9 +44,9 @@
         },
         {
             "label": "Run Zomboid Test Server",
-            "options": {"statusbar": {"label": "$(run) Zomboid Server (Pandemonium)"}},
+            "options": {"statusbar": {"label": "$(run) Zomboid Server (Gehenna)"}},
             "type": "shell",
-            "command":"\"${config:zomboid_server_folder}\\StartServer64_nosteam_custom.bat\" pandemonium",
+            "command":"\"${config:zomboid_server_folder}\\StartServer64_nosteam_custom.bat\" Gehenna",
             "problemMatcher": [
                 "$eslint-stylish"
             ]

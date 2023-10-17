@@ -1,4 +1,4 @@
-DICE_SYSTEM_MOD_STRING = "PandemoniumDiceSystem"
+DICE_SYSTEM_MOD_STRING = "GehennaDiceSystem"
 PLAYER_DICE_VALUES = {
     STATUS_EFFECTS = { "Stable", "Wounded", "Bleeding", "Moderate", "Severe", "Prone", "Unconscious" },
     OCCUPATIONS = { "Unemployed", "Artist", "WageSlave", "Soldier", "Frontiersmen", "LawEnforcement", "FirstResponders",

@@ -12,7 +12,7 @@ local isoToScreenY = isoToScreenY
 local debugWriteLog = DiceSystem_Common.DebugWriteLog
 local os_time = os.time
 
-local UPDATE_DELAY = SandboxVars.PandemoniumDiceSystem.DelayUpdateStatusEffects
+local UPDATE_DELAY = SandboxVars.GehennaDiceSystem.DelayUpdateStatusEffects
 
 -----------------
 
@@ -200,11 +200,11 @@ end
 -- Setup Status Effects UI
 if isClient() then
     local function InitStatusEffectsUI()
-        StatusEffectsUI.renderDistance = SandboxVars.PandemoniumDiceSystem.RenderDistanceStatusEffects
+        StatusEffectsUI.renderDistance = SandboxVars.GehennaDiceSystem.RenderDistanceStatusEffects
         StatusEffectsUI:new()
     end
 
-    if SandboxVars.PandemoniumDiceSystem.ShowStatusEffects then
+    if SandboxVars.GehennaDiceSystem.ShowStatusEffects then
         Events.OnGameStart.Add(InitStatusEffectsUI)
     end
 end
