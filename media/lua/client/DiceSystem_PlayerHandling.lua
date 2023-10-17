@@ -488,7 +488,7 @@ end
 
 --- Returns the current value of armor bonus
 ---@return number
-PlayerStatsHandler.GetArmorBonus = function()
+PlayerStatsHandler.GetArmorClass = function()
     if DICE_CLIENT_MOD_DATA and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] then
         return DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].armorClass
     end

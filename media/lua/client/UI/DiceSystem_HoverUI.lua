@@ -25,17 +25,14 @@ HoverUI.nearPlayersStatusEffects = {}
 
 
 function HoverUI.Open(x,y)
-    local width = 400 * CommonUI.FONT_SCALE
-    local height = 400 * CommonUI.FONT_SCALE
-
+    local width = 300 * CommonUI.FONT_SCALE
+    local height = 300 * CommonUI.FONT_SCALE
 
     if HoverUI.instance == nil then
         local pnl = HoverUI:new(x, y, width, height)
         pnl:initialise()
         pnl:bringToTop()
     end
-
-
 end
 
 
@@ -90,7 +87,7 @@ function HoverUI:createChildren()
     self:addChild(self.panelTop)
 
     --* Name Label *--
-    CommonUI.AddNameLabel(self.panelTop, playerName, yOffset)
+    CommonUI.AddCenteredTextLabel(self.panelTop, "nameLabel", playerName, yOffset)
     yOffset = yOffset + 25 + 10     -- TODO Janky
 
     --* Status Effects Panel *--
@@ -101,15 +98,23 @@ function HoverUI:createChildren()
 
     -----------------
 
-    local xOffset = 20
-    local frameHeight = self.width / 3
+    local xOffset = 40
+    local frameHeight = self.width / 3  - xOffset
     local frameWidth = self.width / 3 - xOffset
 
+    self.labelHealth = ISLabel:new(xOffset, yOffset, 25, "Health", 1, 1, 1, 1, UIFont.Large, true)
+    self.labelHealth:initialise()
+    self.labelHealth:instantiate()
+    self:addChild(self.labelHealth)
 
-    --* Health *--
+    self.labelArmorClass = ISLabel:new(self.width - frameWidth - xOffset, yOffset, 25, "Armor Class", 1, 1, 1, 1, UIFont.Large, true)
+    self.labelArmorClass:initialise()
+    self.labelArmorClass:instantiate()
+    self:addChild(self.labelArmorClass)
+
+    yOffset = yOffset + 25
+
     CommonUI.AddPanel(self, "panelHealth", frameWidth, frameHeight, xOffset, yOffset)
-
-    --* Armor Class *--
     CommonUI.AddPanel(self, "panelArmorClass", frameWidth, frameHeight, self.width - frameWidth - xOffset, yOffset)
 
 
@@ -134,13 +139,11 @@ function HoverUI:render()
     ISCollapsableWindow.render(self)
 
     --* Health *--
-    self.panelHealth:setText("<CENTRE> <SIZE:large>" .. getText("IGUI_Health", PlayerHandler.GetCurrentHealth(),
-        PlayerHandler.GetMaxHealth()))
+    self.panelHealth:setText("<SIZE:large> " .. PlayerHandler.GetCurrentHealth() .. "/" .. PlayerHandler.GetMaxHealth())
     self.panelHealth.textDirty = true
 
-
-
-    self.panelArmorClass:setText("Test Armor Class")
+    --* Armor Class *--
+    self.panelArmorClass:setText("<SIZE:large> " .. PlayerHandler.GetArmorClass())
     self.panelArmorClass.textDirty = true
 end
 
@@ -154,6 +157,9 @@ end
 
 -- Should run in a loop, check if mouse is over a player with stats
 local function CheckMouseOverPlayer()
+
+    -- TODO ACtive this from right click and enable hover thing
+    -- TODO Active ONLY if you keep the mouse on the player for about 1-2 seconds
 
     -- todo add range +1 to account for more squares
     local plZ = getPlayer():getZ()

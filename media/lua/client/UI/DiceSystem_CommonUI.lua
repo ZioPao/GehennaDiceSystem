@@ -31,15 +31,15 @@ end
 
 
 
----Create a name panel and returns the correct offset
+---Create a text panel
 ---@param parent ISPanel
----@param playerName String
+---@param text String
 ---@param currentOffset number
-function DiceSystem_CommonUI.AddNameLabel(parent, playerName, currentOffset)
-    parent.nameLabel = ISLabel:new((parent.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, currentOffset, 25, playerName, 1, 1, 1, 1, UIFont.Large, true)
-    parent.nameLabel:initialise()
-    parent.nameLabel:instantiate()
-    parent:addChild(parent.nameLabel)
+function DiceSystem_CommonUI.AddCenteredTextLabel(parent, name, text, currentOffset)
+    parent[name] = ISLabel:new((parent.width - getTextManager():MeasureStringX(UIFont.Large, text)) / 2, currentOffset, 25, text, 1, 1, 1, 1, UIFont.Large, true)
+    parent[name]:initialise()
+    parent[name]:instantiate()
+    parent:addChild(parent[name])
 end
 
 -- Status Effects Panel

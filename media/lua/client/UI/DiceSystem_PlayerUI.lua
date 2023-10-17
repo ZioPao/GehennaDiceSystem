@@ -183,28 +183,12 @@ function DiceMenu:update()
         self.labelSkillPointsAllocated:setName("")
 
         self.comboStatusEffects.disabled = (plUsername ~= PlayerHandler.username)
-        
         CommonUI.UpdateStatusEffectsText(self, PlayerHandler)
-        -- local statusEffectsText = ""
 
-        -- local activeStatusEffects = PlayerHandler.GetActiveStatusEffectsByUsername(PlayerHandler.username)
-
-        -- for i = 1, #activeStatusEffects do
-        --     local v = activeStatusEffects[i]
-        --     local singleStatus = GetColoredStatusEffect(v)
-
-        --     if statusEffectsText == "" then
-        --         statusEffectsText = " <CENTRE> " .. singleStatus
-        --     else
-        --         statusEffectsText = statusEffectsText .. " <SPACE> - <SPACE> " .. singleStatus
-        --     end
-        -- end
-        -- self.labelStatusEffectsList:setText(statusEffectsText)
-        -- self.labelStatusEffectsList.textDirty = true
     end
 
-    local armorBonusPoints = PlayerHandler.GetArmorBonus()
-    --print(armorBonusPoints)
+    local armorClassPoints = PlayerHandler.GetArmorClass()
+    --print(armorClassPoints)
     -- Show skill points
     for i = 1, #PLAYER_DICE_VALUES.SKILLS do
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
@@ -217,8 +201,8 @@ function DiceMenu:update()
             skillPointsString = skillPointsString .. string.format(" <RGB:0.94,0.82,0.09> <SPACE> + <SPACE> %d", bonusSkillPoints)
         end
         -- Specific case for Resolve, it should scale on armor bonus
-        if skill == "Resolve" and armorBonusPoints ~= 0 then
-            skillPointsString = skillPointsString .. string.format(" <RGB:1,0,0> <SPACE> + <SPACE> %d", armorBonusPoints)
+        if skill == "Resolve" and armorClassPoints ~= 0 then
+            skillPointsString = skillPointsString .. string.format(" <RGB:1,0,0> <SPACE> + <SPACE> %d", armorClassPoints)
         end
 
         --print(skillPointsString)
@@ -236,7 +220,7 @@ function DiceMenu:update()
 
     -- TODO Swap armor bonus for AC
 
-    self.panelArmorClass:setText(getText("IGUI_ArmorClass", armorBonusPoints))
+    self.panelArmorClass:setText(getText("IGUI_ArmorClass", armorClassPoints))
     self.panelArmorClass.textDirty = true
     self.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler.GetMovementBonus()))
     self.panelMovementBonus.textDirty = true
@@ -280,7 +264,7 @@ function DiceMenu:createChildren()
 
 
     --* Name Label *--
-    CommonUI.AddNameLabel(self, playerName, yOffset)
+    CommonUI.AddCenteredTextLabel(self, "nameLabel", playerName, yOffset)
     yOffset = yOffset + 25 + 10     -- TODO Janky
 
     --* Status Effects Panel *--
