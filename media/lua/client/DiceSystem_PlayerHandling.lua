@@ -73,7 +73,7 @@ PlayerStatsHandler.GetFullSkillPoints = function(skill)
 
     -- TODO We must account better for this kind of stuff
     if skill == "Resolve" then
-        bonusPoints = bonusPoints + diceData.armorBonus
+        bonusPoints = bonusPoints + diceData.armorClass
     end
 
     return points + bonusPoints
@@ -113,8 +113,8 @@ PlayerStatsHandler.HandleSkillPoint = function(skill, operation)
 
     --* Special cases
 
-    -- Movement Bonus scales in Deft
-    if skill == 'Deft' then
+    -- Movement Bonus scales in Endurance
+    if skill == 'Endurance' then
         local actualPoints = PlayerStatsHandler.GetSkillPoints(skill)
         local bonusPoints = PlayerStatsHandler.GetBonusSkillPoints(skill)
         PlayerStatsHandler.ApplyMovementBonus(actualPoints, bonusPoints)
@@ -394,13 +394,13 @@ PlayerStatsHandler.GetMaxMovement = function()
     return -1
 end
 
-PlayerStatsHandler.ApplyMovementBonus = function(deftPoints, deftBonusPoints)
-    local movBonus = math.floor((deftPoints + deftBonusPoints) / 2)
+PlayerStatsHandler.ApplyMovementBonus = function(endurancePoints, enduranceBonusPoints)
+    local movBonus = math.floor((endurancePoints + enduranceBonusPoints) / 2)
     DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].movementBonus = movBonus
 end
 
-PlayerStatsHandler.SetMovementBonus = function(deftPoints)
-    local addedBonus = math.floor(deftPoints / 2)
+PlayerStatsHandler.SetMovementBonus = function(endurancePoints)
+    local addedBonus = math.floor(endurancePoints / 2)
     DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].movementBonus = addedBonus
 end
 
@@ -431,56 +431,66 @@ end
 ---Check the armor bonus for a certain player
 ---@param pl IsoPlayer
 ---@return boolean
-PlayerStatsHandler.CalculateArmorBonus = function(pl)
+PlayerStatsHandler.CalcualteArmorClass = function(pl)
     -- !!! This could be run on any client.
     if pl == nil then return false end
     if pl ~= getPlayer() then return false end
 
-
     if DICE_CLIENT_MOD_DATA == nil or DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] == nil then return false end
 
-    --getBulletDefense()
-    local wornItems = pl:getWornItems()
-    local tempProtection = 0
-    for i = 1, wornItems:size() do
-        local item = wornItems:get(i - 1):getItem()
-        if instanceof(item, "Clothing") then
-            tempProtection = tempProtection + item:getBulletDefense()
-        end
-    end
+    local resolvePoints = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].skills["Resolve"]
+    local resolveBonusPoints = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].skillsBonus["Resolve"]
 
-    ---------------------------
-    --print(tempProtection)
-    --------------------------
+    local armorClass = 8 + resolvePoints + resolveBonusPoints
 
-
-    local scaledProtection = math.floor(tempProtection / 100)
-    --print(scaledProtection)
-    if scaledProtection < 0 then scaledProtection = 0 end
-
-    -- TODO Cache old armor bonus before updating it
-
-    -- Set the correct amount of armor bonus
-    DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].armorBonus = scaledProtection
-
-    -- We need to scale the movement accordingly
-    local maxMov = PLAYER_DICE_VALUES.DEFAULT_MOVEMENT - scaledProtection
-    PlayerStatsHandler.SetMaxMovement(maxMov)
-
-    -- TODO Cache old max movement before updating it
+    DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].armorClass = armorClass
     if PlayerStatsHandler.IsPlayerInitialized() then
-        sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateArmorBonus', {armorBonus = scaledProtection, username = PlayerStatsHandler.username})
-        sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateMaxMovement', {maxMovement = maxMov, username = PlayerStatsHandler.username})    
+         sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateArmorClass', {armorClass = armorClass, username = PlayerStatsHandler.username})
     end
-
     return true
+    
+    -- --getBulletDefense()
+    -- local wornItems = pl:getWornItems()
+    -- local tempProtection = 0
+    -- for i = 1, wornItems:size() do
+    --     local item = wornItems:get(i - 1):getItem()
+    --     if instanceof(item, "Clothing") then
+    --         tempProtection = tempProtection + item:getBulletDefense()
+    --     end
+    -- end
+
+    -- ---------------------------
+    -- --print(tempProtection)
+    -- --------------------------
+
+
+    -- local scaledProtection = math.floor(tempProtection / 100)
+    -- --print(scaledProtection)
+    -- if scaledProtection < 0 then scaledProtection = 0 end
+
+    -- -- TODO Cache old armor bonus before updating it
+
+    -- -- Set the correct amount of armor bonus
+    -- DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].armorClass = scaledProtection
+
+    -- -- We need to scale the movement accordingly
+    -- local maxMov = PLAYER_DICE_VALUES.DEFAULT_MOVEMENT - scaledProtection
+    -- PlayerStatsHandler.SetMaxMovement(maxMov)
+
+    -- -- TODO Cache old max movement before updating it
+    -- if PlayerStatsHandler.IsPlayerInitialized() then
+    --     sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateArmorClass', {armorClass = scaledProtection, username = PlayerStatsHandler.username})
+    --     sendClientCommand(DICE_SYSTEM_MOD_STRING, 'UpdateMaxMovement', {maxMovement = maxMov, username = PlayerStatsHandler.username})    
+    -- end
+
+    -- return true
 end
 
 --- Returns the current value of armor bonus
 ---@return number
 PlayerStatsHandler.GetArmorBonus = function()
     if DICE_CLIENT_MOD_DATA and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] then
-        return DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].armorBonus
+        return DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].armorClass
     end
 
     return -1
@@ -512,7 +522,7 @@ PlayerStatsHandler.InitModData = function(force)
             currentHealth = PLAYER_DICE_VALUES.DEFAULT_HEALTH,
             maxHealth = PLAYER_DICE_VALUES.DEFAULT_HEALTH,
 
-            armorBonus = 0,
+            armorClass = 0,     -- TODO Remove this
 
             currentMovement = PLAYER_DICE_VALUES.DEFAULT_MOVEMENT,
             maxMovement = PLAYER_DICE_VALUES.DEFAULT_MOVEMENT,
@@ -538,7 +548,7 @@ PlayerStatsHandler.InitModData = function(force)
         end
 
 
-        --PlayerStatsHandler.CalculateArmorBonus(getPlayer())
+        --PlayerStatsHandler.CalcualteArmorClass(getPlayer())
 
         DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] = {}
         copyTable(DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username], tempTable)
@@ -609,6 +619,6 @@ end
 
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
-Events.OnClothingUpdated.Add(PlayerStatsHandler.CalculateArmorBonus)
+Events.OnClothingUpdated.Add(PlayerStatsHandler.CalcualteArmorClass)
 
 return PlayerStatsHandler

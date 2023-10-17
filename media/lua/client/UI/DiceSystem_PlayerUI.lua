@@ -8,7 +8,7 @@ Main interface
     Status effects should be shown near a player's name, on top of their head.
         Multiple status effects can be selected; in that case, in the select you will read "X status effects selected" instead.
     Armor Bonus (Only visual, dependent on equipped clothing)
-    Movement Bonus (Only visual, dependent on Deft skill and armor bonus)
+    Movement Bonus (Only visual, dependent on Endurance skill and armor bonus)
     Health handling bar
         Players should be able to change the current amount of health
     Movement handling bar
@@ -242,8 +242,11 @@ function DiceMenu:update()
         end
     end
 
-    self.panelArmorBonus:setText(getText("IGUI_ArmorBonus", armorBonusPoints))
-    self.panelArmorBonus.textDirty = true
+
+    -- TODO Swap armor bonus for AC
+
+    self.panelArmorClass:setText(getText("IGUI_ArmorClass", armorBonusPoints))
+    self.panelArmorClass.textDirty = true
     self.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler.GetMovementBonus()))
     self.panelMovementBonus.textDirty = true
 
@@ -372,15 +375,15 @@ function DiceMenu:createChildren()
     yOffset = yOffset + frameHeight
 
     --* Armor Bonus *--
-    self.panelArmorBonus = ISRichTextPanel:new(0, yOffset, self.width / 2, frameHeight)
-    self.panelArmorBonus:initialise()
-    self:addChild(self.panelArmorBonus)
-    self.panelArmorBonus.autosetheight = false
-    self.panelArmorBonus.marginTop = marginPanelTop
-    self.panelArmorBonus.background = true
-    self.panelArmorBonus.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
-    self.panelArmorBonus.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
-    self.panelArmorBonus:paginate()
+    self.panelArmorClass = ISRichTextPanel:new(0, yOffset, self.width / 2, frameHeight)
+    self.panelArmorClass:initialise()
+    self:addChild(self.panelArmorClass)
+    self.panelArmorClass.autosetheight = false
+    self.panelArmorClass.marginTop = marginPanelTop
+    self.panelArmorClass.background = true
+    self.panelArmorClass.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
+    self.panelArmorClass.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    self.panelArmorClass:paginate()
 
     --* Movement Bonus *--
     self.panelMovementBonus = ISRichTextPanel:new(self.width / 2, yOffset, self.width / 2, frameHeight)

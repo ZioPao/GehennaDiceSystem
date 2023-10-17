@@ -48,13 +48,13 @@ TestFramework.registerTestModule("UI Tests", "Do initialization", function()
             end
 
             loops = ZombRand(5)
-            fakeBtn.skill = 'Brutal'
+            fakeBtn.skill = 'Brutality'
             for i = 0, loops do
                 Tests.pnl:onOptionMouseDown(fakeBtn)
             end
 
             loops = ZombRand(5)
-            fakeBtn.skill = 'Deft'
+            fakeBtn.skill = 'Endurance'
             for i = 0, loops do
                 Tests.pnl:onOptionMouseDown(fakeBtn)
             end

@@ -2,27 +2,31 @@ DICE_SYSTEM_MOD_STRING = "GehennaDiceSystem"
 PLAYER_DICE_VALUES = {
     STATUS_EFFECTS = { "Stable", "Wounded", "Bleeding", "Moderate", "Severe", "Prone", "Unconscious" },
     OCCUPATIONS = { "Unemployed", "Artist", "WageSlave", "Soldier", "Frontiersmen", "LawEnforcement", "FirstResponders",
-        "Criminal", "BlueCollar", "Engineer", "WhiteCollar", "Clinician", "Academic" },
-    SKILLS = { "Charm", "Brutal", "Resolve", "Sharp", "Deft", "Wit", "Luck" },
+        "Criminal", "BlueCollar", "Engineer", "WhiteCollar", "Clinician", "Academic", "Follower" },
+
+
+    SKILLS = {"Brutality", "Resolve", "Awareness", "Chance", "Endurance"},      -- Max 15 points
 
     DEFAULT_HEALTH = 5,
     DEFAULT_MOVEMENT = 5,
 
 
     OCCUPATIONS_BONUS = {
-        Unemployed      = { Brutal = 1, Luck = 1, Wit = 1 },
-        Artist          = { Charm = 2, Sharp = 1 },
-        WageSlave       = { Charm = 2, Resolve = 1 },
-        Soldier         = { Brutal = 2, Resolve = 1 },
-        Frontiersmen    = { Brutal = 2, Deft = 1 },
-        LawEnforcement  = { Sharp = 2, Wit = 1 },
-        FirstResponders = { Sharp = 2, Resolve = 1 },
-        Criminal        = { Sharp = 2, Luck = 1 },
-        BlueCollar      = { Deft = 2, Sharp = 1 },
-        Engineer        = { Deft = 2, Wit = 1 },
-        WhiteCollar     = { Wit = 2, Resolve = 1 },
-        Clinician       = { Wit = 2, Sharp = 1 },
-        Academic        = { Wit = 2, Charm = 1 }
+        Unemployed      = { Brutality = 1, Chance = 1, Awareness = 1 },
+        Artist          = { Chance = 2, Awareness = 1 },
+        WageSlave       = { Chance = 2, Resolve = 1 },
+        Soldier         = { Brutality = 2, Resolve = 1 },
+        Frontiersmen    = { Brutality = 2, Endurance = 1 },
+        LawEnforcement  = { Awareness = 2, Resolve = 1 },
+        FirstResponders = { Awareness = 2, Endurance = 1 },
+        Criminal        = { Chance = 2, Brutality = 1 },
+        BlueCollar      = { Endurance = 2, Brutality = 1 },
+        Engineer        = { Endurance = 2, Resolve = 1 },
+        WhiteCollar     = { Endurance = 2, Chance = 1 },
+        Clinician       = { Endurance = 2, Awareness = 1 },
+        Academic        = { Awareness = 2, Chance = 1 },
+        Follower        = { Chance = 2, Endurance = 1},
+        --Dryad           = { Resolve = 2, Endurance = 2}
     }
 }
 COLORS_DICE_TABLES = {

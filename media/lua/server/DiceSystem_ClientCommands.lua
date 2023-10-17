@@ -108,9 +108,9 @@ function ModDataCommands.UpdateMovementBonus(_, args)
 	PlayersDiceData[args.username].movementBonus = movementBonus
 end
 
-function ModDataCommands.UpdateArmorBonus(_, args)
-	local armorBonus = args.armorBonus
-	PlayersDiceData[args.username].armorBonus = armorBonus
+function ModDataCommands.UpdateArmorClass(_, args)
+	local armorClass = args.armorClass
+	PlayersDiceData[args.username].armorClass = armorClass
 end
 
 function ModDataCommands.UpdateStatusEffect(_, args)

@@ -1,5 +1,5 @@
-local inputString1 = "<RGB:1.0,1.0,1.0> <SIZE:medium> [23:00][Local][test2]: (||DICE_SYSTEM_MESSAGE||) rolled Brutal &lt;SPACE&gt; &lt;RGB:0,1,0&gt; CRITICAL SUCCESS! 20+5=25"
-local inputString2 = "<RGB:1.0,1.0,1.0> <SIZE:medium> [test2]: (||DICE_SYSTEM_MESSAGE||) rolled Brutal 17+5=22"
+local inputString1 = "<RGB:1.0,1.0,1.0> <SIZE:medium> [23:00][Local][test2]: (||DICE_SYSTEM_MESSAGE||) rolled Brutality &lt;SPACE&gt; &lt;RGB:0,1,0&gt; CRITICAL SUCCESS! 20+5=25"
+local inputString2 = "<RGB:1.0,1.0,1.0> <SIZE:medium> [test2]: (||DICE_SYSTEM_MESSAGE||) rolled Brutality 17+5=22"
 
 local pattern = "%[([^%]]+)%]:"
 
