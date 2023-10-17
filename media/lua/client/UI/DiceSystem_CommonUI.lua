@@ -1,5 +1,22 @@
 -- TODO Some stuff is shared between PlayerUI and HoverUI.
 
+
+--* Helper functions
+
+---Get a string for ISRichTextPanel containing a colored status effect string
+---@param status string
+---@return string
+local function GetColoredStatusEffect(status)
+    -- Pick from table colors
+    local statusColors = DiceSystem_Common.statusEffectsColors[status]
+    local colorString = string.format(" <RGB:%s,%s,%s> ", statusColors.r, statusColors.g, statusColors.b)
+    return colorString .. status
+end
+
+
+
+
+
 local DiceSystem_CommonUI = {}
 
 
@@ -41,6 +58,30 @@ function DiceSystem_CommonUI.AddStatusEffectsPanel(parent, height, currentOffset
     parent.labelStatusEffectsList:paginate()
 end
 
+
+
+
+---Handles status effects in update
+---@param parent any
+---@param playerHandler any
+function DiceSystem_CommonUI.UpdateStatusEffectsText(parent, playerHandler)
+    local statusEffectsText = ""
+    local activeStatusEffects = playerHandler.GetActiveStatusEffectsByUsername(playerHandler.username)
+
+    for i = 1, #activeStatusEffects do
+        local v = activeStatusEffects[i]
+        local singleStatus = GetColoredStatusEffect(v)
+
+        if statusEffectsText == "" then
+            statusEffectsText = " <CENTRE> " .. singleStatus
+        else
+            statusEffectsText = statusEffectsText .. " <SPACE> - <SPACE> " .. singleStatus
+        end
+    end
+    parent.labelStatusEffectsList:setText(statusEffectsText)
+    parent.labelStatusEffectsList.textDirty = true
+
+end
 
 
 -- Show Armor Class

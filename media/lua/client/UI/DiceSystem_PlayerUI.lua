@@ -30,17 +30,6 @@ if FONT_SCALE < 1 then
     FONT_SCALE = 1
 end
 
---* Helper functions
-
----Get a string for ISRichTextPanel containing a colored status effect string
----@param status string
----@return string
-local function GetColoredStatusEffect(status)
-    -- Pick from table colors
-    local statusColors = DiceSystem_Common.statusEffectsColors[status]
-    local colorString = string.format(" <RGB:%s,%s,%s> ", statusColors.r, statusColors.g, statusColors.b)
-    return colorString .. status
-end
 
 
 ----------------------------------
@@ -194,23 +183,24 @@ function DiceMenu:update()
         self.labelSkillPointsAllocated:setName("")
 
         self.comboStatusEffects.disabled = (plUsername ~= PlayerHandler.username)
-        local statusEffectsText = ""
+        
+        CommonUI.UpdateStatusEffectsText(self, PlayerHandler)
+        -- local statusEffectsText = ""
 
-        -- TODO Test it
-        local activeStatusEffects = PlayerHandler.GetActiveStatusEffectsByUsername(PlayerHandler.username)
+        -- local activeStatusEffects = PlayerHandler.GetActiveStatusEffectsByUsername(PlayerHandler.username)
 
-        for i = 1, #activeStatusEffects do
-            local v = activeStatusEffects[i]
-            local singleStatus = GetColoredStatusEffect(v)
+        -- for i = 1, #activeStatusEffects do
+        --     local v = activeStatusEffects[i]
+        --     local singleStatus = GetColoredStatusEffect(v)
 
-            if statusEffectsText == "" then
-                statusEffectsText = " <CENTRE> " .. singleStatus
-            else
-                statusEffectsText = statusEffectsText .. " <SPACE> - <SPACE> " .. singleStatus
-            end
-        end
-        self.labelStatusEffectsList:setText(statusEffectsText)
-        self.labelStatusEffectsList.textDirty = true
+        --     if statusEffectsText == "" then
+        --         statusEffectsText = " <CENTRE> " .. singleStatus
+        --     else
+        --         statusEffectsText = statusEffectsText .. " <SPACE> - <SPACE> " .. singleStatus
+        --     end
+        -- end
+        -- self.labelStatusEffectsList:setText(statusEffectsText)
+        -- self.labelStatusEffectsList.textDirty = true
     end
 
     local armorBonusPoints = PlayerHandler.GetArmorBonus()
