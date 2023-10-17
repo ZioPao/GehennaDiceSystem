@@ -1,3 +1,6 @@
+-- TODO Should appear when you toggle it on via a keybind or something when hovering over a player with the mouse
+
+
 -- Caching stuff
 local getOnlinePlayers = getOnlinePlayers
 local playerBase = __classmetatables[IsoPlayer.class].__index
@@ -13,6 +16,7 @@ local debugWriteLog = DiceSystem_Common.DebugWriteLog
 local os_time = os.time
 
 local UPDATE_DELAY = SandboxVars.GehennaDiceSystem.DelayUpdateStatusEffects
+local PlayerHandler = require("DiceSystem_PlayerHandling")
 
 -----------------
 
@@ -35,12 +39,12 @@ end
 
 ------------------
 
-StatusEffectsUI = ISPanel:derive("StatusEffectsUI")
-StatusEffectsUI.nearPlayersStatusEffects = {}
+HoverUI = ISPanel:derive("HoverUI")
+HoverUI.nearPlayersStatusEffects = {}
 
 --************************************--
 
-function StatusEffectsUI:new()
+function HoverUI:new()
     local o = ISPanel:new(0, 0, 0, 0)
     setmetatable(o, self)
     self.__index    = self
@@ -52,7 +56,7 @@ function StatusEffectsUI:new()
     o:initialise()
 
     -- Init a table where we're gonna cache the status effects from nearby players
-    StatusEffectsUI.nearPlayersStatusEffects = {}
+    HoverUI.nearPlayersStatusEffects = {}
 
     return o
 end
@@ -60,7 +64,7 @@ end
 --************************************--
 
 ---Initialization
-function StatusEffectsUI:initialise()
+function HoverUI:initialise()
     ISPanel.initialise(self)
     self:addToUIManager()
 
@@ -71,8 +75,59 @@ function StatusEffectsUI:initialise()
 
 end
 
+function HoverUI:createChildren()
+    local yOffset = 40
+    local pl
+    if isClient() then pl = getPlayerFromUsername(PlayerHandler.username) else pl = getPlayer() end
+    local plDescriptor = pl:getDescriptor()
+    local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
+
+
+    self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset,
+        25, playerName, 1, 1, 1, 1, UIFont.Large, true)
+    self.labelPlayer:initialise()
+    self.labelPlayer:instantiate()
+    self:addChild(self.labelPlayer)
+
+
+    --* Health *--
+    local occupationString = getText("IGUI_Occupation") .. ": "
+    self.panelHealth = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
+    self.panelHealth.marginLeft = xFrameMargin
+    self.panelHealth.marginTop = marginPanelTop
+    self.panelHealth.autosetheight = false
+    self.panelHealth.background = true
+    self.panelHealth.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
+    self.panelHealth.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    self.panelHealth:initialise()
+    self.panelHealth:instantiate()
+    self.panelHealth:setText(occupationString)
+    self:addChild(self.panelHealth)
+    self.panelHealth:paginate()
+
+    --* Armor Class *--
+    local armorClassString = getText("IGUI_Occupation") .. ": "
+    self.panelArmorClass = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
+    self.panelArmorClass.marginLeft = xFrameMargin
+    self.panelArmorClass.marginTop = marginPanelTop
+    self.panelArmorClass.autosetheight = false
+    self.panelArmorClass.background = true
+    self.panelArmorClass.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
+    self.panelArmorClass.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    self.panelArmorClass:initialise()
+    self.panelArmorClass:instantiate()
+    self.panelArmorClass:setText(armorClassString)
+    self:addChild(self.panelArmorClass)
+    self.panelArmorClass:paginate()
+
+
+
+end
+
+
+
 ---Render loop
-function StatusEffectsUI:render()
+function HoverUI:render()
     if DICE_CLIENT_MOD_DATA == nil or DICE_CLIENT_MOD_DATA[self.currPlayerUsername] == nil then return end
     if DICE_CLIENT_MOD_DATA[self.currPlayerUsername].isInitialized == false then return end
 

@@ -46,6 +46,7 @@ end
 ----------------------------------
 
 local PlayerHandler = require("DiceSystem_PlayerHandling")
+local CommonUI = require("UI/DiceSystem_CommonUI")
 
 local DiceMenu = ISCollapsableWindow:derive("DiceMenu")
 DiceMenu.instance = nil
@@ -285,12 +286,14 @@ function DiceMenu:createChildren()
         playerName = "ADMIN MODE - " .. playerName
     end
 
-    self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset,
-        25, playerName, 1, 1, 1, 1, UIFont.Large, true)
-    self.labelPlayer:initialise()
-    self.labelPlayer:instantiate()
-    self:addChild(self.labelPlayer)
-    yOffset = yOffset + 25 + 10
+    yOffset = CommonUI.AddNameLabel(self, playerName, yOffset)
+
+    -- self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset,
+    --     25, playerName, 1, 1, 1, 1, UIFont.Large, true)
+    -- self.labelPlayer:initialise()
+    -- self.labelPlayer:instantiate()
+    -- self:addChild(self.labelPlayer)
+    -- yOffset = yOffset + 25 + 10
 
     local frameHeight = 40 * FONT_SCALE
 
