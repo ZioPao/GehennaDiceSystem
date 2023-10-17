@@ -175,7 +175,7 @@ function DiceMenu:update()
     -- Show allocated points during init
     if not isInit or isAdmin then
         -- Points allocated label
-        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
+        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/15", allocatedPoints)
         self.labelSkillPointsAllocated:setName(pointsAllocatedString)
 
         -- Occupations
@@ -187,7 +187,7 @@ function DiceMenu:update()
         self.comboStatusEffects.disabled = not isAdmin
 
         -- Save button
-        self.btnConfirm:setEnable(allocatedPoints == 20)
+        self.btnConfirm:setEnable(allocatedPoints == 15)
     else
         -- disable occupation choice and allocated skill points label if it's already initialized
         self.comboOccupation.disabled = true

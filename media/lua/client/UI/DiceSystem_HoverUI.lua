@@ -40,25 +40,39 @@ end
 
 ------------------
 
-HoverUI = ISPanel:derive("HoverUI")
+HoverUI = ISCollapsableWindow:derive("HoverUI")
 HoverUI.nearPlayersStatusEffects = {}
+
+
+function HoverUI.Open()
+    local width = 400 * CommonUI.FONT_SCALE
+    local height = 400 * CommonUI.FONT_SCALE
+    local pnl = HoverUI:new(100, 200, width, height)
+    pnl:initialise()
+    pnl:bringToTop()
+end
+
 
 --************************************--
 
-function HoverUI:new()
-    local o = ISPanel:new(0, 0, 0, 0)
+function HoverUI:new(x, y, width, height)
+    local o = {}
+    o = ISCollapsableWindow:new(x, y, width, height)
     setmetatable(o, self)
-    self.__index    = self
+    self.__index = self
 
-    o.player        = getPlayer()
-    o.zoom          = 1
-    o.visibleTarget = o
-    o:setAlwaysOnTop(false)
-    o:initialise()
+    o.width = width
+    o.height = height
 
-    -- Init a table where we're gonna cache the status effects from nearby players
-    HoverUI.nearPlayersStatusEffects = {}
+    o.resizable = false
 
+    o.variableColor = { r = 0.9, g = 0.55, b = 0.1, a = 1 }
+    o.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    o.backgroundColor = { r = 0, g = 0, b = 0, a = 1.0 }
+    o.buttonBorderColor = { r = 0.7, g = 0.7, b = 0.7, a = 0.5 }
+    o.moveWithMouse = true
+
+    HoverUI.instance = o        -- TODO Can be multiple?
     return o
 end
 
@@ -66,17 +80,18 @@ end
 
 ---Initialization
 function HoverUI:initialise()
-    ISPanel.initialise(self)
+    ISCollapsableWindow.initialise(self)
     self:addToUIManager()
 
-    self.currPlayerUsername = self.player:getUsername()
+    --self.currPlayerUsername = self.player:getUsername()
     self.sTime = os_time()
-    self.onlinePlayers = getOnlinePlayers()
+    --self.onlinePlayers = getOnlinePlayers()
     self.requestsCounter = {} -- This is to prevent a spam of syncs from users who did not initialize the mod.
 
 end
 
 function HoverUI:createChildren()
+    print("Running create children")
     local yOffset = 40
     local pl
     if isClient() then pl = getPlayerFromUsername(PlayerHandler.username) else pl = getPlayer() end
@@ -107,46 +122,54 @@ function HoverUI:createChildren()
 
 end
 
+function HoverUI:render()
+    ISCollapsableWindow.render(self)
 
+    self.panelHealth:setText("Test Health")
+    self.panelHealth.textDirty = true
+
+    self.panelArmorClass:setText("Test Armor Class")
+    self.panelArmorClass.textDirty = true
+end
 
 ---Render loop
-function HoverUI:render()
-    if DICE_CLIENT_MOD_DATA == nil or DICE_CLIENT_MOD_DATA[self.currPlayerUsername] == nil then return end
-    if DICE_CLIENT_MOD_DATA[self.currPlayerUsername].isInitialized == false then return end
+--function HoverUI:render()
+    -- if DICE_CLIENT_MOD_DATA == nil or DICE_CLIENT_MOD_DATA[self.currPlayerUsername] == nil then return end
+    -- if DICE_CLIENT_MOD_DATA[self.currPlayerUsername].isInitialized == false then return end
 
-    self.zoom = getCore():getZoom(self.player:getPlayerNum())
-    local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
+    -- self.zoom = getCore():getZoom(self.player:getPlayerNum())
+    -- local statusEffectsTable = StatusEffectsUI.nearPlayersStatusEffects
 
-    -- Check timer and update if it's over
-    local cTime = os_time()
-    local shouldUpdate = false
-    if cTime > self.sTime + UPDATE_DELAY then
-        shouldUpdate = true
-        self.onlinePlayers = getOnlinePlayers()
-        self.sTime = os_time()
-    end
+    -- -- Check timer and update if it's over
+    -- local cTime = os_time()
+    -- local shouldUpdate = false
+    -- if cTime > self.sTime + UPDATE_DELAY then
+    --     shouldUpdate = true
+    --     self.onlinePlayers = getOnlinePlayers()
+    --     self.sTime = os_time()
+    -- end
 
-    for i = 0, self.onlinePlayers:size() - 1 do
-        local pl = self.onlinePlayers:get(i)
-        -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
-        -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
-        if pl and TryDistTo(self.player, pl) < StatusEffectsUI.renderDistance then
-            local userID = getOnlineID(pl)
-            if shouldUpdate then
-                local username = getUsername(pl)
-                print("Updating for " ..username)
-                --print("Requesting update for " .. pl:getUsername())
-                sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
-                    { username = username, userID = userID })
-            end
+    -- for i = 0, self.onlinePlayers:size() - 1 do
+    --     local pl = self.onlinePlayers:get(i)
+    --     -- When servers are overloaded, it seems like they like to make players "disappear". That means they exists, but they're not
+    --     -- in any square. This causes a bunch of issues here, since it needs to access getCurrentSquare in checkCanSeeClient
+    --     if pl and TryDistTo(self.player, pl) < StatusEffectsUI.renderDistance then
+    --         local userID = getOnlineID(pl)
+    --         if shouldUpdate then
+    --             local username = getUsername(pl)
+    --             print("Updating for " ..username)
+    --             --print("Requesting update for " .. pl:getUsername())
+    --             sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
+    --                 { username = username, userID = userID })
+    --         end
 
-            -- Player is visible and their data is present locally
-            if self.player:checkCanSeeClient(pl) and statusEffectsTable[userID] then
-                self:drawStatusEffect(pl, statusEffectsTable[userID])
-            end
-        end
-    end
-end
+    --         -- Player is visible and their data is present locally
+    --         if self.player:checkCanSeeClient(pl) and statusEffectsTable[userID] then
+    --             self:drawStatusEffect(pl, statusEffectsTable[userID])
+    --         end
+    --     end
+    -- end
+--end
 
 -- ---Main function ran during the render loop
 -- ---@param pl IsoPlayer
