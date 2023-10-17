@@ -286,33 +286,16 @@ function DiceMenu:createChildren()
         playerName = "ADMIN MODE - " .. playerName
     end
 
-    yOffset = CommonUI.AddNameLabel(self, playerName, yOffset)
-
-    -- self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset,
-    --     25, playerName, 1, 1, 1, 1, UIFont.Large, true)
-    -- self.labelPlayer:initialise()
-    -- self.labelPlayer:instantiate()
-    -- self:addChild(self.labelPlayer)
-    -- yOffset = yOffset + 25 + 10
-
     local frameHeight = 40 * FONT_SCALE
 
+
+    --* Name Label *--
+    CommonUI.AddNameLabel(self, playerName, yOffset)
+    yOffset = yOffset + 25 + 10     -- TODO Janky
+
+    --* Status Effects Panel *--
     local labelStatusEffectsHeight = 25 * (FONT_SCALE + 0.5)
-
-    self.labelStatusEffectsList = ISRichTextPanel:new(20, yOffset, self.width - 20, labelStatusEffectsHeight)
-    self.labelStatusEffectsList:initialise()
-    self:addChild(self.labelStatusEffectsList)
-
-    self.labelStatusEffectsList.marginTop = 0
-    self.labelStatusEffectsList.marginLeft = self.width/6
-    self.labelStatusEffectsList.marginRight = self.width/6
-    self.labelStatusEffectsList.autosetheight = false
-    self.labelStatusEffectsList.background = false
-    self.labelStatusEffectsList.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
-    self.labelStatusEffectsList.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
-    self.labelStatusEffectsList:paginate()
-
-
+    CommonUI.AddStatusEffectsPanel(self, labelStatusEffectsHeight, yOffset)
     yOffset = yOffset + labelStatusEffectsHeight + 25
 
     local xFrameMargin = 10 * FONT_SCALE
@@ -350,7 +333,7 @@ function DiceMenu:createChildren()
 
     self.panelOccupation:addChild(self.comboOccupation)
 
-    --* Status Effects *--
+    --* Status Effects Selector *--
     local statusEffectString = getText("IGUI_StatusEffect") .. ": "
     self.panelStatusEffects = ISRichTextPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
     self.panelStatusEffects.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
@@ -377,7 +360,8 @@ function DiceMenu:createChildren()
 
     yOffset = yOffset + frameHeight
 
-    --* Armor Bonus *--
+    --* Armor Class *--
+    -- TODO Replace with AddPanel
     self.panelArmorClass = ISRichTextPanel:new(0, yOffset, self.width / 2, frameHeight)
     self.panelArmorClass:initialise()
     self:addChild(self.panelArmorClass)
@@ -404,13 +388,8 @@ function DiceMenu:createChildren()
     yOffset = yOffset + frameHeight
 
     --* Health Line *--
-    self.panelHealth = ISRichTextPanel:new(0, yOffset, self.width, frameHeight)
-    self.panelHealth:initialise()
-    self:addChild(self.panelHealth)
-    self.panelHealth.autosetheight = false
-    self.panelHealth.background = false
-    self.panelHealth:paginate()
-
+    CommonUI.AddPanel(self, "panelHealth", self.width, frameHeight, 0, yOffset)
+    --CommonUI.AddHealthPanel(self, yOffset, self.width, frameHeight)
 
     --LEFT MINUS BUTTON
     self.btnMinusHealth = ISButton:new(0, 0, self.width / 4, frameHeight, "-", self, self.onOptionMouseDown)

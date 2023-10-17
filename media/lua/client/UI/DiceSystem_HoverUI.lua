@@ -17,6 +17,7 @@ local os_time = os.time
 
 local UPDATE_DELAY = SandboxVars.GehennaDiceSystem.DelayUpdateStatusEffects
 local PlayerHandler = require("DiceSystem_PlayerHandling")
+local CommonUI = require("UI/DiceSystem_CommonUI")
 
 -----------------
 
@@ -82,44 +83,26 @@ function HoverUI:createChildren()
     local plDescriptor = pl:getDescriptor()
     local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
 
+    --* Name Label *--
+    CommonUI.AddNameLabel(self, playerName, yOffset)
+    yOffset = yOffset + 25 + 10     -- TODO Janky
 
-    self.labelPlayer = ISLabel:new((self.width - getTextManager():MeasureStringX(UIFont.Large, playerName)) / 2, yOffset,
-        25, playerName, 1, 1, 1, 1, UIFont.Large, true)
-    self.labelPlayer:initialise()
-    self.labelPlayer:instantiate()
-    self:addChild(self.labelPlayer)
+    --* Status Effects Panel *--
+    local labelStatusEffectsHeight = 25 * (CommonUI.FONT_SCALE + 0.5)
+    CommonUI.AddStatusEffectsPanel(self, labelStatusEffectsHeight, yOffset)
+    yOffset = yOffset + labelStatusEffectsHeight + 25
 
+    --local xFrameMargin = 10 * CommonUI.FONT_SCALE
+    --local comboBoxHeight = 25       -- TODO This should scale?
+    --local marginPanelTop = (frameHeight/4)
+
+    local frameHeight = 50
 
     --* Health *--
-    local occupationString = getText("IGUI_Occupation") .. ": "
-    self.panelHealth = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
-    self.panelHealth.marginLeft = xFrameMargin
-    self.panelHealth.marginTop = marginPanelTop
-    self.panelHealth.autosetheight = false
-    self.panelHealth.background = true
-    self.panelHealth.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
-    self.panelHealth.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
-    self.panelHealth:initialise()
-    self.panelHealth:instantiate()
-    self.panelHealth:setText(occupationString)
-    self:addChild(self.panelHealth)
-    self.panelHealth:paginate()
+    CommonUI.AddPanel(self, "panelHealth", self.width / 2, frameHeight, 0, yOffset)
 
     --* Armor Class *--
-    local armorClassString = getText("IGUI_Occupation") .. ": "
-    self.panelArmorClass = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
-    self.panelArmorClass.marginLeft = xFrameMargin
-    self.panelArmorClass.marginTop = marginPanelTop
-    self.panelArmorClass.autosetheight = false
-    self.panelArmorClass.background = true
-    self.panelArmorClass.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
-    self.panelArmorClass.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
-    self.panelArmorClass:initialise()
-    self.panelArmorClass:instantiate()
-    self.panelArmorClass:setText(armorClassString)
-    self:addChild(self.panelArmorClass)
-    self.panelArmorClass:paginate()
-
+    CommonUI.AddPanel(self, "panelArmorClass", self.width / 2, frameHeight, self.width / 2, yOffset)
 
 
 end
@@ -165,91 +148,91 @@ function HoverUI:render()
     end
 end
 
----Main function ran during the render loop
----@param pl IsoPlayer
----@param statusEffects table
-function StatusEffectsUI:drawStatusEffect(pl, statusEffects)
-    local plNum = getNum(pl)
-    local plX = getX(pl)
-    local plY = getY(pl)
-    local plZ = getZ(pl)
-    local baseX = isoToScreenX(plNum, plX, plY, plZ) - 100
-    local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 / self.zoom) - 50 + StatusEffectsUI.GetUserOffset()
+-- ---Main function ran during the render loop
+-- ---@param pl IsoPlayer
+-- ---@param statusEffects table
+-- function StatusEffectsUI:drawStatusEffect(pl, statusEffects)
+--     local plNum = getNum(pl)
+--     local plX = getX(pl)
+--     local plY = getY(pl)
+--     local plZ = getZ(pl)
+--     local baseX = isoToScreenX(plNum, plX, plY, plZ) - 100
+--     local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 / self.zoom) - 50 + StatusEffectsUI.GetUserOffset()
 
-    local x = baseX
-    local y = baseY
+--     local x = baseX
+--     local y = baseY
 
-    local isSecondLine = false
-    for k = 1, #statusEffects do
-        local v = statusEffects[k]
+--     local isSecondLine = false
+--     for k = 1, #statusEffects do
+--         local v = statusEffects[k]
 
-        -- OPTIMIZE This part could be cached if we wanted.
-        local stringToPrint = string.format("[%s]", v)
-        --print(stringToPrint)
-        if k > 3 and isSecondLine == false then
-            y = y + getTextManager():MeasureStringY(UIFont.NewMedium, stringToPrint)
-            x = baseX
-            isSecondLine = true
-        end
+--         -- OPTIMIZE This part could be cached if we wanted.
+--         local stringToPrint = string.format("[%s]", v)
+--         --print(stringToPrint)
+--         if k > 3 and isSecondLine == false then
+--             y = y + getTextManager():MeasureStringY(UIFont.NewMedium, stringToPrint)
+--             x = baseX
+--             isSecondLine = true
+--         end
 
-        local color = DiceSystem_Common.statusEffectsColors[v]
+--         local color = DiceSystem_Common.statusEffectsColors[v]
 
-        -- The first DrawText is to simulate a drop shadow to help readability
-        self:drawText(stringToPrint, x - 2, y - 2, 0, 0, 0, 0.5, UIFont.NewMedium)
-        self:drawText(stringToPrint, x, y, color.r, color.g, color.b, 1, UIFont.NewMedium)
-        x = x + getTextManager():MeasureStringX(UIFont.NewMedium, stringToPrint) + 10
-    end
-end
+--         -- The first DrawText is to simulate a drop shadow to help readability
+--         self:drawText(stringToPrint, x - 2, y - 2, 0, 0, 0, 0.5, UIFont.NewMedium)
+--         self:drawText(stringToPrint, x, y, color.r, color.g, color.b, 1, UIFont.NewMedium)
+--         x = x + getTextManager():MeasureStringX(UIFont.NewMedium, stringToPrint) + 10
+--     end
+-- end
 
 ----------------------
 -- Static functions, to be used to set stuff from external sources
 
 ---Used to update the local status effects table
----@param userID number
----@param statusEffects table
-function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffects)
-    StatusEffectsUI.mainPlayer = getPlayer()
-    local receivedPlayer = getPlayerByOnlineID(userID)
-    local dist = TryDistTo(StatusEffectsUI.mainPlayer, receivedPlayer)
-    if dist < StatusEffectsUI.renderDistance then
-        StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
-        local newStatusEffectsTable = {}
-        for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
-            local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
-            if statusEffects[x] ~= nil and statusEffects[x] == true then
-                --print(x)
-                table.insert(newStatusEffectsTable, x)
-            end
-        end
+-- ---@param userID number
+-- ---@param statusEffects table
+-- function StatusEffectsUI.UpdateLocalStatusEffectsTable(userID, statusEffects)
+--     StatusEffectsUI.mainPlayer = getPlayer()
+--     local receivedPlayer = getPlayerByOnlineID(userID)
+--     local dist = TryDistTo(StatusEffectsUI.mainPlayer, receivedPlayer)
+--     if dist < StatusEffectsUI.renderDistance then
+--         StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
+--         local newStatusEffectsTable = {}
+--         for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
+--             local x = PLAYER_DICE_VALUES.STATUS_EFFECTS[i]
+--             if statusEffects[x] ~= nil and statusEffects[x] == true then
+--                 --print(x)
+--                 table.insert(newStatusEffectsTable, x)
+--             end
+--         end
 
-        if table.concat(newStatusEffectsTable) ~= table.concat(StatusEffectsUI.nearPlayersStatusEffects[userID]) then
-            --print("Changing table! Some stuff is different")
-            StatusEffectsUI.nearPlayersStatusEffects[userID] = newStatusEffectsTable
-            --else
-            --print("Same effects! No change needed")
-        end
-    else
-        StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
-    end
-end
+--         if table.concat(newStatusEffectsTable) ~= table.concat(StatusEffectsUI.nearPlayersStatusEffects[userID]) then
+--             --print("Changing table! Some stuff is different")
+--             StatusEffectsUI.nearPlayersStatusEffects[userID] = newStatusEffectsTable
+--             --else
+--             --print("Same effects! No change needed")
+--         end
+--     else
+--         StatusEffectsUI.nearPlayersStatusEffects[userID] = {}
+--     end
+-- end
 
----Set the colors table. Used to handle colorblind option
----@param colors table r,g,b
-function StatusEffectsUI.SetColorsTable(colors)
-    StatusEffectsUI.colorsTable = colors
-end
+-- ---Set the colors table. Used to handle colorblind option
+-- ---@param colors table r,g,b
+-- function StatusEffectsUI.SetColorsTable(colors)
+--     StatusEffectsUI.colorsTable = colors
+-- end
 
----Set the Y offset for the status effects on top of the players heads
----@param offset number
-function StatusEffectsUI.SetUserOffset(offset)
-    StatusEffectsUI.userOffset = offset
-end
+-- ---Set the Y offset for the status effects on top of the players heads
+-- ---@param offset number
+-- function StatusEffectsUI.SetUserOffset(offset)
+--     StatusEffectsUI.userOffset = offset
+-- end
 
----Returns the y offset for status effects
----@return number
-function StatusEffectsUI.GetUserOffset()
-    return StatusEffectsUI.userOffset
-end
+-- ---Returns the y offset for status effects
+-- ---@return number
+-- function StatusEffectsUI.GetUserOffset()
+--     return StatusEffectsUI.userOffset
+-- end
 
 --************************************--
 
