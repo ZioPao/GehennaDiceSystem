@@ -18,7 +18,12 @@ local PlayerHandler = require("DiceSystem_PlayerHandling")
 local CommonUI = require("UI/DiceSystem_CommonUI")
 
 -----------------
+local heartIco = getTexture("media/ui/dnd_heart.png")        -- Document icons created by Freepik - Flaticon - Document
+local armorIco = getTexture("media/ui/dnd_armor.png")
 
+
+
+------------------
 
 HoverUI = ISCollapsableWindow:derive("HoverUI")
 HoverUI.nearPlayersStatusEffects = {}
@@ -26,7 +31,7 @@ HoverUI.nearPlayersStatusEffects = {}
 
 function HoverUI.Open(x,y)
     local width = 300 * CommonUI.FONT_SCALE
-    local height = 300 * CommonUI.FONT_SCALE
+    local height = 250 * CommonUI.FONT_SCALE
 
     if HoverUI.instance == nil then
         local pnl = HoverUI:new(x, y, width, height)
@@ -102,29 +107,35 @@ function HoverUI:createChildren()
     local frameHeight = self.width / 3  - xOffset
     local frameWidth = self.width / 3 - xOffset
 
-    self.labelHealth = ISLabel:new(xOffset, yOffset, 25, "Health", 1, 1, 1, 1, UIFont.Large, true)
-    self.labelHealth:initialise()
-    self.labelHealth:instantiate()
-    self:addChild(self.labelHealth)
+    -- self.labelHealth = ISLabel:new(xOffset, yOffset, 25, "Health", 1, 1, 1, 1, UIFont.Large, true)
+    -- self.labelHealth:initialise()
+    -- self.labelHealth:instantiate()
+    -- self:addChild(self.labelHealth)
 
-    self.labelArmorClass = ISLabel:new(self.width - frameWidth - xOffset, yOffset, 25, "Armor Class", 1, 1, 1, 1, UIFont.Large, true)
-    self.labelArmorClass:initialise()
-    self.labelArmorClass:instantiate()
-    self:addChild(self.labelArmorClass)
+    -- self.labelArmorClass = ISLabel:new(self.width - xOffset, yOffset, 25, "Armor Class", 1, 1, 1, 1, UIFont.Large, false)
+    -- self.labelArmorClass:initialise()
+    -- self.labelArmorClass:instantiate()
+    -- self:addChild(self.labelArmorClass)
 
     yOffset = yOffset + 25
 
-    CommonUI.AddPanel(self, "panelHealth", frameWidth, frameHeight, xOffset, yOffset)
-    CommonUI.AddPanel(self, "panelArmorClass", frameWidth, frameHeight, self.width - frameWidth - xOffset, yOffset)
+    self.panelBottom = ISPanel:new(0, self.panelTop:getBottom(), self.width, self.height - self.panelTop:getHeight())
+    self.panelBottom:setAlwaysOnTop(false)
+    self.panelBottom:initialise()
+    self:addChild(self.panelBottom)
 
+    CommonUI.AddPanel(self.panelBottom, "panelHealth", frameWidth, frameHeight, xOffset, self.panelBottom:getHeight() / 3)
+    CommonUI.AddPanel(self.panelBottom, "panelArmorClass", frameWidth, frameHeight, self.width - frameWidth - xOffset, self.panelBottom:getHeight() / 3)
 
-    self.panelHealth.background = true
-    self.panelHealth.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
-    self.panelHealth.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    --self.panelBottom.panelHealth:drawText("Health", 0, 20, 1, 1, 1, 1, UIFont.Large)
+    self.panelBottom.panelHealth.background = true
+    self.panelBottom.panelHealth.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
+    self.panelBottom.panelHealth.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
 
-    self.panelArmorClass.background = true
-    self.panelArmorClass.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
-    self.panelArmorClass.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    --self.panelBottom.panelArmorClass:drawText("Armor Class", 0, 20, 1, 1, 1, 1, UIFont.Large)
+    self.panelBottom.panelArmorClass.background = true
+    self.panelBottom.panelArmorClass.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
+    self.panelBottom.panelArmorClass.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
 
 end
 
@@ -135,16 +146,39 @@ function HoverUI:update()
 
 end
 
+
+local bStrHealth = "<CENTRE> <SIZE:large> <RGB:0,1,0> %d/%d"
+local bStrArmorClass = "<CENTRE> <SIZE:large> <RGB:1,0,0> %d"
+
+function HoverUI:prerender()
+    ISCollapsableWindow.prerender(self)
+
+    local yLabel = self.panelBottom.panelHealth:getY() - 25
+
+
+    local xHealth = (self.width/2 - getTextManager():MeasureStringX(UIFont.Large, "Health")) / 2.1
+	self.panelBottom:drawText("Health" , xHealth, yLabel, 1, 1, 1, 1, UIFont.Large)
+
+    local xArmorClass = (self.width - getTextManager():MeasureStringX(UIFont.Large, "Armor Class")) * 0.9
+	self.panelBottom:drawText("Armor Class" , xArmorClass, yLabel, 1, 1, 1, 1, UIFont.Large)
+
+
+    self.panelBottom.panelHealth:drawTextureScaled(heartIco, 5, 5, 48, 48, 0.2, 1, 1, 1)
+    self.panelBottom.panelArmorClass:drawTextureScaled(armorIco, 5, 5, 48, 48, 0.2, 1, 1, 1)
+
+end
+
 function HoverUI:render()
     ISCollapsableWindow.render(self)
 
+
     --* Health *--
-    self.panelHealth:setText("<SIZE:large> " .. PlayerHandler.GetCurrentHealth() .. "/" .. PlayerHandler.GetMaxHealth())
-    self.panelHealth.textDirty = true
+    self.panelBottom.panelHealth:setText(string.format(bStrHealth, PlayerHandler.GetCurrentHealth(), PlayerHandler.GetMaxHealth()))
+    self.panelBottom.panelHealth.textDirty = true
 
     --* Armor Class *--
-    self.panelArmorClass:setText("<SIZE:large> " .. PlayerHandler.GetArmorClass())
-    self.panelArmorClass.textDirty = true
+    self.panelBottom.panelArmorClass:setText(string.format(bStrArmorClass, PlayerHandler.GetArmorClass()))
+    self.panelBottom.panelArmorClass.textDirty = true
 end
 
 function HoverUI:close()
@@ -164,37 +198,19 @@ local function CheckMouseOverPlayer()
     -- todo add range +1 to account for more squares
     local plZ = getPlayer():getZ()
     local xx, yy = ISCoordConversion.ToWorld(getMouseXScaled(), getMouseYScaled(), plZ)
-
     local x = math.floor(xx)
     local y = math.floor(yy)
-
     local sq = getCell():getGridSquare(x, y, plZ)
-    --if sq and sq:getFloor() then sq:getFloor():setHighlighted(true) end
-
     local pl = sq:getPlayer()
 
-    print(pl)
+    if pl == nil then return end
 
-    if pl ~= nil then
-        local plNum = getNum(pl)
+    local plNum = getNum(pl)
 
-        local panelX = isoToScreenX(plNum, x, y, plZ)
-        local panelY = isoToScreenY(plNum, x, y, plZ)
+    local panelX = isoToScreenX(plNum, x, y, plZ)
+    local panelY = isoToScreenY(plNum, x, y, plZ)
 
-        HoverUI.Open(panelX, panelY)
-    end
-
-    -- local objects = sq:getObjects()
-    -- for i=0, objects:size() - 1 do
-    --     local obj = objects:get(i)
-    --     print(obj:getType())
-
-    --     -- if instanceof(obj, "IsoPlayer") then
-    --     --     print("It's a player!")
-    --     --     print(obj:getUsername())
-    --     -- end
-    -- end
-
+    HoverUI.Open(panelX, panelY)
 
 end
 
@@ -202,35 +218,35 @@ Events.OnTick.Add(CheckMouseOverPlayer)
 
 
 
-function HoverUI.CheckPlayerStats()
-    local plNum = getNum(pl)
-    local plX = getX(pl)
-    local plY = getY(pl)
-    local plZ = getZ(pl)
-    local baseX = isoToScreenX(plNum, plX, plY, plZ) - 100
-    local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 / self.zoom) - 50 + StatusEffectsUI.GetUserOffset()
+-- function HoverUI.CheckPlayerStats()
+--     local plNum = getNum(pl)
+--     local plX = getX(pl)
+--     local plY = getY(pl)
+--     local plZ = getZ(pl)
+--     local baseX = isoToScreenX(plNum, plX, plY, plZ) - 100
+--     local baseY = isoToScreenY(plNum, plX, plY, plZ) - (150 / self.zoom) - 50 + StatusEffectsUI.GetUserOffset()
 
-    local x = baseX
-    local y = baseY
+--     local x = baseX
+--     local y = baseY
 
-    local isSecondLine = false
-    for k = 1, #statusEffects do
-        local v = statusEffects[k]
+--     local isSecondLine = false
+--     for k = 1, #statusEffects do
+--         local v = statusEffects[k]
 
-        -- OPTIMIZE This part could be cached if we wanted.
-        local stringToPrint = string.format("[%s]", v)
-        --print(stringToPrint)
-        if k > 3 and isSecondLine == false then
-            y = y + getTextManager():MeasureStringY(UIFont.NewMedium, stringToPrint)
-            x = baseX
-            isSecondLine = true
-        end
+--         -- OPTIMIZE This part could be cached if we wanted.
+--         local stringToPrint = string.format("[%s]", v)
+--         --print(stringToPrint)
+--         if k > 3 and isSecondLine == false then
+--             y = y + getTextManager():MeasureStringY(UIFont.NewMedium, stringToPrint)
+--             x = baseX
+--             isSecondLine = true
+--         end
 
-        local color = DiceSystem_Common.statusEffectsColors[v]
+--         local color = DiceSystem_Common.statusEffectsColors[v]
 
-        -- The first DrawText is to simulate a drop shadow to help readability
-        self:drawText(stringToPrint, x - 2, y - 2, 0, 0, 0, 0.5, UIFont.NewMedium)
-        self:drawText(stringToPrint, x, y, color.r, color.g, color.b, 1, UIFont.NewMedium)
-        x = x + getTextManager():MeasureStringX(UIFont.NewMedium, stringToPrint) + 10
-    end
-end
+--         -- The first DrawText is to simulate a drop shadow to help readability
+--         self:drawText(stringToPrint, x - 2, y - 2, 0, 0, 0, 0.5, UIFont.NewMedium)
+--         self:drawText(stringToPrint, x, y, color.r, color.g, color.b, 1, UIFont.NewMedium)
+--         x = x + getTextManager():MeasureStringX(UIFont.NewMedium, stringToPrint) + 10
+--     end
+-- end
