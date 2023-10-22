@@ -10,6 +10,9 @@ PLAYER_DICE_VALUES = {
     DEFAULT_HEALTH = 5,
     DEFAULT_MOVEMENT = 5,
 
+    MAX_ALLOCATED_POINTS = 15,
+    MAX_PER_SKILL_ALLOCATED_POINTS = 5,
+
 
     OCCUPATIONS_BONUS = {
         Unemployed      = { Brutality = 1, Chance = 1, Awareness = 1 },

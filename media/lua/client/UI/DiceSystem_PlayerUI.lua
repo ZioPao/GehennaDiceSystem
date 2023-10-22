@@ -14,7 +14,7 @@ Main interface
     Movement handling bar
         Players should be able to change the current movement value
     Skill points section
-        Maximum of 20 assignable points
+        Maximum of 15 assignable points
         When setting this up, the player can assign points to each skill
         When a player has already setup their skills, they will be able to press "Roll" for each skill.
         When a player press on "Roll", results must be shown in the chat
@@ -213,7 +213,7 @@ function DiceMenu:update()
         -- Handles buttons to assign skill points
         if not isInit or isAdmin then
             self["btnMinus" .. skill]:setEnable(skillPoints ~= 0)
-            self["btnPlus" .. skill]:setEnable(skillPoints ~= 5 and allocatedPoints ~= 20)
+            self["btnPlus" .. skill]:setEnable(skillPoints ~= PLAYER_DICE_VALUES.MAX_PER_SKILL_ALLOCATED_POINTS and allocatedPoints ~= PLAYER_DICE_VALUES.MAX_ALLOCATED_POINTS)
         end
     end
 
@@ -421,7 +421,7 @@ function DiceMenu:createChildren()
     local arePointsAllocated = false
     if not arePointsAllocated then
         local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
-        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/20", allocatedPoints)
+        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/%d", allocatedPoints, PLAYER_DICE_VALUES.MAX_ALLOCATED_POINTS)
 
         self.labelSkillPointsAllocated = ISLabel:new(
             (self.width - getTextManager():MeasureStringX(UIFont.Small, pointsAllocatedString)) / 2,
