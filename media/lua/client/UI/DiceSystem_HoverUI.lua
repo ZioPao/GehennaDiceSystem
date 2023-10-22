@@ -73,7 +73,7 @@ function HoverUI:createChildren()
     ISCollapsableWindow.createChildren(self)
 
     print("Running create children")
-    local yOffset = 25
+    local yOffset = 10
     local pl
     if isClient() then pl = getPlayerFromUsername(PlayerHandler.username) else pl = getPlayer() end
     local plDescriptor = pl:getDescriptor()
@@ -87,7 +87,7 @@ function HoverUI:createChildren()
 
     --* Name Label *--
     CommonUI.AddCenteredTextLabel(self.panelTop, "nameLabel", playerName, yOffset)
-    yOffset = yOffset + 25 + 10     -- TODO Janky
+    yOffset = yOffset + 25
 
     --* Status Effects Panel *--
     local labelStatusEffectsHeight = 25 * (CommonUI.FONT_SCALE + 0.5)

@@ -37,7 +37,7 @@ end
 
 StatusEffectsUI = ISPanel:derive("StatusEffectsUI")
 StatusEffectsUI.nearPlayersStatusEffects = {}
-
+StatusEffectsUI.renderDistance = 100        -- TODO Delete me
 --************************************--
 
 function StatusEffectsUI:new()
