@@ -20,6 +20,7 @@ local armorIco = getTexture("media/ui/dnd_armor.png")
 
 HoverUI = ISCollapsableWindow:derive("HoverUI")
 HoverUI.nearPlayersStatusEffects = {}
+HoverUI.isActive = false
 
 -- TODO Status effects are overriden to the other people
 
@@ -211,8 +212,8 @@ local function CheckMouseOverPlayer()
     -- Double check
     local checkedPlayer
 
-    for i=0, 1 do
-        for j=0, 1 do
+    for i=-1, 1 do
+        for j=-1, 1 do
             local sq = getCell():getGridSquare(x+i, y+i+j, plZ)
             if checkedPlayer == nil then
                 checkedPlayer = sq:getPlayer()
@@ -270,4 +271,16 @@ local function CheckMouseOverPlayer()
     end
 end
 
-Events.OnTick.Add(CheckMouseOverPlayer)
+local function ManageHoverUIActivation(player,context,worldobjects,test)
+    if HoverUI.isActive then
+        context:addOption("Disable Hover Menu", worldobjects, function()
+            HoverUI.isActive = false
+            Events.OnTick.Remove(CheckMouseOverPlayer) end)
+    else
+        context:addOption("Enable Hover Menu", worldobjects, function()
+            HoverUI.isActive = true
+            Events.OnTick.Add(CheckMouseOverPlayer) end)
+    end
+end
+
+Events.OnFillWorldObjectContextMenu.Add(ManageHoverUIActivation)
