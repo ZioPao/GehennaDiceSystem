@@ -21,8 +21,9 @@ local armorIco = getTexture("media/ui/dnd_armor.png")
 HoverUI = ISCollapsableWindow:derive("HoverUI")
 HoverUI.nearPlayersStatusEffects = {}
 
+-- TODO Status effects are overriden to the other people
 
-function HoverUI.Open(x,y)
+function HoverUI.Open(pl, x,y)
 
     -- TODO Fade in effect
 
@@ -31,7 +32,7 @@ function HoverUI.Open(x,y)
     local height = 250 * CommonUI.FONT_SCALE
 
     if HoverUI.instance == nil then
-        local pnl = HoverUI:new(x, y, width, height)
+        local pnl = HoverUI:new(x, y, width, height, pl)
         pnl:initialise()
         pnl:bringToTop()
     end
@@ -40,7 +41,7 @@ end
 
 --************************************--
 
-function HoverUI:new(x, y, width, height)
+function HoverUI:new(x, y, width, height, pl)
     local o = {}
     o = ISCollapsableWindow:new(x, y, width, height)
     setmetatable(o, self)
@@ -54,6 +55,8 @@ function HoverUI:new(x, y, width, height)
     o.buttonBorderColor = { r = 0.7, g = 0.7, b = 0.7, a = 0.5 }
     o.moveWithMouse = true
     o.isOpening = true
+
+    o.pl = pl
 
     HoverUI.instance = o        -- TODO Can be multiple?
     return o
@@ -75,8 +78,8 @@ function HoverUI:createChildren()
     print("Running create children")
     local yOffset = 10
     local pl
-    if isClient() then pl = getPlayerFromUsername(PlayerHandler.username) else pl = getPlayer() end
-    local plDescriptor = pl:getDescriptor()
+    --if isClient() then pl = getPlayerFromUsername(PlayerHandler.username) else pl = getPlayer() end
+    local plDescriptor = self.pl:getDescriptor()
     local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
 
     -- TOP PANEL
@@ -124,7 +127,7 @@ end
 
 function HoverUI:update()
     ISCollapsableWindow.update(self)
-    CommonUI.UpdateStatusEffectsText(self.panelTop, PlayerHandler)
+    CommonUI.UpdateStatusEffectsText(self.panelTop, PlayerHandler, self.pl:getUsername())
 end
 
 
@@ -150,7 +153,7 @@ function HoverUI:prerender()
     end
 
     local iconSize = 48 * fontScale
-    print(fontScale)
+    --print(fontScale)
 
     self.panelBottom.panelHealth:drawTextureScaled(heartIco, 7, 5, iconSize, iconSize, 0.2, 1, 1, 1)
     self.panelBottom.panelArmorClass:drawTextureScaled(armorIco, 7, 5, iconSize, iconSize, 0.2, 1, 1, 1)
@@ -196,14 +199,15 @@ local hoverData = {
 local function CheckMouseOverPlayer()
 
     -- TODO ACtive this from right click and enable hover thing
-    -- TODO Active ONLY if you keep the mouse on the player for about 1-2 seconds
 
-    -- todo add range +1 to account for more squares
+
     local plZ = getPlayer():getZ()
     local xx, yy = ISCoordConversion.ToWorld(getMouseXScaled(), getMouseYScaled(), plZ)
     local x = math.floor(xx)
     local y = math.floor(yy)
 
+
+    -- TODO x offset max 1, y offset max 2
     -- Double check
     local checkedPlayer
     for i=0, 1 do
@@ -212,6 +216,8 @@ local function CheckMouseOverPlayer()
             checkedPlayer = sq:getPlayer()
         end
     end
+
+
 
 
     -- No player during iteration, start countdown to close the hover ui
@@ -231,6 +237,10 @@ local function CheckMouseOverPlayer()
     -- Same player as before, we can manage the timer
     elseif hoverData.pl == checkedPlayer then
 
+        local plUsername = checkedPlayer:getUsername()
+        if DICE_CLIENT_MOD_DATA == nil or DICE_CLIENT_MOD_DATA[plUsername] == nil then return end
+        if DICE_CLIENT_MOD_DATA[plUsername].isInitialized == false then return end
+
         -- Timer wasn't started before
         if hoverData.startTime == nil then
             hoverData.startTime = os_time()
@@ -243,10 +253,13 @@ local function CheckMouseOverPlayer()
             if HoverUI.instance then HoverUI.instance:close() end
             return
         else
+
+            ModData.request(DICE_SYSTEM_MOD_STRING)
+            PlayerHandler.SetUser(plUsername)       -- TODO Not sure if this is gonna work
             local plNum = getNum(hoverData.pl)
             local panelX = isoToScreenX(plNum, x+1, y, plZ)     -- TODO Check if we're at the limit of the screen
             local panelY = isoToScreenY(plNum, x, y+1, plZ)
-            HoverUI.Open(panelX, panelY)
+            HoverUI.Open(checkedPlayer, panelX, panelY)
         end
 
     end

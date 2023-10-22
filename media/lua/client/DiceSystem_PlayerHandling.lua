@@ -431,7 +431,7 @@ end
 ---Check the armor bonus for a certain player
 ---@param pl IsoPlayer
 ---@return boolean
-PlayerStatsHandler.CalcualteArmorClass = function(pl)
+PlayerStatsHandler.CalculateArmorClass = function(pl)
     -- !!! This could be run on any client.
     if pl == nil then return false end
     if pl ~= getPlayer() then return false end
@@ -490,7 +490,12 @@ end
 ---@return number
 PlayerStatsHandler.GetArmorClass = function()
     if DICE_CLIENT_MOD_DATA and DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username] then
-        return DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].armorClass
+
+        local resolvePoints = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].skills["Resolve"]
+        local resolveBonusPoints = DICE_CLIENT_MOD_DATA[PlayerStatsHandler.username].skillsBonus["Resolve"]
+
+        local armorClass = 8 + resolvePoints + resolveBonusPoints
+        return armorClass
     end
 
     return -1
@@ -619,6 +624,6 @@ end
 
 -- Various events handling
 Events.OnGameStart.Add(PlayerStatsHandler.InitModData)
-Events.OnClothingUpdated.Add(PlayerStatsHandler.CalcualteArmorClass)
+--Events.OnClothingUpdated.Add(PlayerStatsHandler.CalculateArmorClass)
 
 return PlayerStatsHandler

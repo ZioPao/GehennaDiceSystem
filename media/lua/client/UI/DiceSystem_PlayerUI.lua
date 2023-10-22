@@ -165,7 +165,7 @@ function DiceMenu:update()
     if not isInit or isAdmin then
         -- Points allocated label
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/15", allocatedPoints)
-        self.labelSkillPointsAllocated:setName(pointsAllocatedString)
+        self.labelSkillPointsAllocated:setName(pointsAllocatedString)        
 
         -- Occupations
         local comboOcc = self.comboOccupation
@@ -183,7 +183,7 @@ function DiceMenu:update()
         self.labelSkillPointsAllocated:setName("")
 
         self.comboStatusEffects.disabled = (plUsername ~= PlayerHandler.username)
-        CommonUI.UpdateStatusEffectsText(self, PlayerHandler)
+        CommonUI.UpdateStatusEffectsText(self, PlayerHandler, plUsername)
 
     end
 
@@ -200,10 +200,10 @@ function DiceMenu:update()
         if bonusSkillPoints ~= 0 then
             skillPointsString = skillPointsString .. string.format(" <RGB:0.94,0.82,0.09> <SPACE> + <SPACE> %d", bonusSkillPoints)
         end
-        -- Specific case for Resolve, it should scale on armor bonus
-        if skill == "Resolve" and armorClassPoints ~= 0 then
-            skillPointsString = skillPointsString .. string.format(" <RGB:1,0,0> <SPACE> + <SPACE> %d", armorClassPoints)
-        end
+
+        -- if skill == "Resolve" and armorClassPoints ~= 0 then
+        --     skillPointsString = skillPointsString .. string.format(" <RGB:1,0,0> <SPACE> + <SPACE> %d", armorClassPoints)
+        -- end
 
         --print(skillPointsString)
 
@@ -222,6 +222,8 @@ function DiceMenu:update()
 
     self.panelArmorClass:setText(getText("IGUI_ArmorClass", armorClassPoints))
     self.panelArmorClass.textDirty = true
+
+
     self.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler.GetMovementBonus()))
     self.panelMovementBonus.textDirty = true
 
