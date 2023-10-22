@@ -207,17 +207,19 @@ local function CheckMouseOverPlayer()
     local y = math.floor(yy)
 
 
-    -- TODO x offset max 1, y offset max 2
+    -- x offset max 1, y offset max 2
     -- Double check
     local checkedPlayer
+
     for i=0, 1 do
-        local sq = getCell():getGridSquare(x + i, y + i, plZ)
-        if checkedPlayer == nil then
-            checkedPlayer = sq:getPlayer()
+        for j=0, 1 do
+            local sq = getCell():getGridSquare(x+i, y+i+j, plZ)
+            if checkedPlayer == nil then
+                checkedPlayer = sq:getPlayer()
+            end
         end
+
     end
-
-
 
 
     -- No player during iteration, start countdown to close the hover ui
@@ -236,8 +238,8 @@ local function CheckMouseOverPlayer()
         return
     -- Same player as before, we can manage the timer
     elseif hoverData.pl == checkedPlayer then
-
         local plUsername = checkedPlayer:getUsername()
+
         if DICE_CLIENT_MOD_DATA == nil or DICE_CLIENT_MOD_DATA[plUsername] == nil then return end
         if DICE_CLIENT_MOD_DATA[plUsername].isInitialized == false then return end
 
@@ -251,6 +253,9 @@ local function CheckMouseOverPlayer()
 
         if hoverData.currentTime - hoverData.startTime < 1 then
             if HoverUI.instance then HoverUI.instance:close() end
+
+            -- Set back the og user just to be sure that stuff doesn't break
+            PlayerHandler.SetUser(plUsername)
             return
         else
 
