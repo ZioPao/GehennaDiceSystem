@@ -122,7 +122,7 @@ end
 
 function HoverUI:update()
     ISCollapsableWindow.update(self)
-    CommonUI.UpdateStatusEffectsText(self.panelTop, self.playerHandler, self.pl:getUsername())
+    CommonUI.UpdateStatusEffectsText(self.panelTop, self.pl:getUsername())
 end
 
 local bStrHealth = "<CENTRE> <SIZE:large> <RGB:0,1,0> %d/%d"
