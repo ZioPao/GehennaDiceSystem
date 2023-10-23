@@ -1,6 +1,9 @@
 require "ISUI/ISPanel"
 require "ISUI/ISScrollingListBox"
 
+
+local PlayerHandler = require("DiceSystem_PlayerHandling")
+
 --**************--
 -- Various utilities
 local function FetchPlayers()
@@ -172,7 +175,7 @@ function DiceMenuAdminViewer:onClick(button)
     if button.internal == "OPEN" then
         ModData.request(DICE_SYSTEM_MOD_STRING)
         local player = self.mainCategory.datas.items[self.mainCategory.datas.selected].item
-        NewPlayerHandler:instantiate(player:getUsername())
+        PlayerHandler:instantiate(player:getUsername())
         DiceMenu.OpenPanel(true)
     elseif button.internal == 'REFRESH' then
         local players = FetchPlayers()
@@ -183,7 +186,7 @@ function DiceMenuAdminViewer:onClick(button)
         local player = self.mainCategory.datas.items[self.mainCategory.datas.selected].item
 
         local playerID = player:getOnlineID()
-        NewPlayerHandler.CleanModData(playerID)
+        PlayerHandler.CleanModData(playerID)
         processAdminChatMessage("Reset " .. player:getUsername() .. " data")
 
 
@@ -255,7 +258,7 @@ function DiceMenuAdminScrollingTable:initList(module)
         local pl = module:get(i)
         local username = pl:getUsername()
         --check if there are dice data for that specific player
-        if NewPlayerHandler.CheckInitializedStatus(username) then
+        if PlayerHandler.CheckInitializedStatus(username) then
             self.datas:addItem(username, pl)
         end
     end

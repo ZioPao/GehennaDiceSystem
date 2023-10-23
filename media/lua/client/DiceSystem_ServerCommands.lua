@@ -1,4 +1,4 @@
---local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandling")
 local DiceMenu = require("UI/DiceSystem_PlayerUI")
 
 local ModDataServerCommands = {}
@@ -16,7 +16,7 @@ function ModDataServerCommands.ResetClientDiceData(args)
     end
 
     local username = getPlayer():getUsername()
-    local playerHandler = NewPlayerHandler:instantiate(username)
+    local playerHandler = PlayerHandler:instantiate(username)
 
     -- TODO Pretty sure this was wrong, it should be diceData, not data. Test it
     playerHandler.diceData = ModData.get(DICE_SYSTEM_MOD_STRING)

@@ -11,7 +11,7 @@
 -- Caching stuff
 local os_time = os.time
 
---local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandling")
 local CommonUI = require("UI/DiceSystem_CommonUI")
 
 -----------------
@@ -27,7 +27,7 @@ HoverUI.isActive = true     -- Active by default
 
 ---comment
 ---@param pl IsoPlayer
----@param playerHandler NewPlayerHandler
+---@param playerHandler PlayerHandler
 ---@param x number
 ---@param y number
 function HoverUI.Open(pl, playerHandler, x, y)
@@ -256,7 +256,7 @@ local function CheckMouseOverPlayer()
         else
             ModData.request(DICE_SYSTEM_MOD_STRING)
             --PlayerHandler.SetUser(plUsername)               -- TODO Not sure if this is gonna work
-            local handler = NewPlayerHandler:instantiate(plUsername)
+            local handler = PlayerHandler:instantiate(plUsername)
             HoverUI.Open(checkedPlayer, handler, getMouseX(), getMouseY())
         end
     end

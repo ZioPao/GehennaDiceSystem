@@ -1,10 +1,12 @@
+local PlayerHandler = require("DiceSystem_PlayerHandling")
+
 ---Reset a player mod data and sync it with the server
 ---@param playerIndex number
 local function HandleResetTool(playerIndex)
     --local PlayerHandler = require("DiceSystem_PlayerHandling")
     local pl = getPlayer()
     local username = pl:getUsername()
-    NewPlayerHandler.CleanModData(playerIndex, username)
+    PlayerHandler.CleanModData(playerIndex, username)
 
     pl:Say("Cleaning data")
 

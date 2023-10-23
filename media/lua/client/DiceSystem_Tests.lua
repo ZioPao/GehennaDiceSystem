@@ -1,11 +1,14 @@
 --!!! DEBUG ONLY
+
+local PlayerHandler = require("DiceSystem_PlayerHandling")
+
 if not getActivatedMods():contains("TEST_FRAMEWORK") or not isDebugEnabled() then return end
 local TestFramework = require("TestFramework/TestFramework")
 local TestUtils = require("TestFramework/TestUtils")
 
 function DeleteGlobalModData()
     --local PlayerHandler = require("DiceSystem_PlayerHandling")
-    PlayerHandler.data = {}
+    PlayerHandler.diceData = {}
     ModData.add(DICE_SYSTEM_MOD_STRING, {})
 end
 

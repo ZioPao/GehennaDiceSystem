@@ -1,4 +1,4 @@
---local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandling")
 
 DiceSystem_ChatOverride = {}
 DiceSystem_ChatOverride.currentMsg = ""
@@ -7,7 +7,7 @@ DiceSystem_ChatOverride.currentMsg = ""
 ---@param username string
 ---@return string
 local function GetStatusEffectsString(username)
-    local effectsTable = NewPlayerHandler.GetActiveStatusEffectsByUsername(username)
+    local effectsTable = PlayerHandler.GetActiveStatusEffectsByUsername(username)
     local formattedString = ""
     for i = 1, #effectsTable do
         local effect = effectsTable[i]

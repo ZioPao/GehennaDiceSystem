@@ -101,7 +101,7 @@ end
 ---@param y any
 ---@param width any
 ---@param height any
----@param playerHandler NewPlayerHandler
+---@param playerHandler PlayerHandler
 ---@return ISComboBoxPopup
 function DiceSystem_ComboBoxStatusPopup:new(x, y, width, height, playerHandler)
     local o = ISComboBoxPopup:new(x, y, width, height)
@@ -234,7 +234,7 @@ end
 ---@param target any
 ---@param onChange any
 ---@param contents any
----@param playerHandler NewPlayerHandler
+---@param playerHandler PlayerHandler
 ---@return ISComboBox
 function DiceSystem_ComboBox:new(x, y, width, height, target, onChange, contents, playerHandler)
     local o = ISComboBox:new(x, y, width, height, target, onChange, nil, nil)

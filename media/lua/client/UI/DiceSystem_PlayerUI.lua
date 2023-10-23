@@ -34,7 +34,7 @@ end
 
 ----------------------------------
 
---local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandling")
 local CommonUI = require("UI/DiceSystem_CommonUI")
 
 local DiceMenu = ISCollapsableWindow:derive("DiceMenu")
@@ -45,7 +45,7 @@ DiceMenu.instance = nil
 ---@param y number
 ---@param width number
 ---@param height number
----@param playerHandler NewPlayerHandler
+---@param playerHandler PlayerHandler
 ---@return ISCollapsableWindow
 function DiceMenu:new(x, y, width, height, playerHandler)
     local o = {}
@@ -525,7 +525,7 @@ end
 ---@return ISCollapsableWindow
 function DiceMenu.OpenPanel(isAdminMode, username)
     --local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
-    local playerHandler = NewPlayerHandler:instantiate(username)
+    local playerHandler = PlayerHandler:instantiate(username)
     playerHandler:initModData(false)
 
     if DiceMenu.instance then
