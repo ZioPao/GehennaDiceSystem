@@ -19,7 +19,7 @@ function ModDataServerCommands.ResetClientDiceData(args)
     PlayerHandler.data[PlayerHandler.username] = nil
 
     -- Reset status effects local table
-    StatusEffectsUI.UpdateLocalStatusEffectsTable(getPlayer():getOnlineID(), {})
+    StatusEffectsHandler.UpdateLocalStatusEffectsTable(getPlayer():getOnlineID(), {})
     PlayerHandler.InitModData(true)
 end
 
@@ -27,7 +27,7 @@ end
 ---@param args table statusEffectsTable=table, userID=number
 function ModDataServerCommands.ReceiveUpdatedStatusEffects(args)
     local statusEffectsTable = args.statusEffectsTable
-    StatusEffectsUI.UpdateLocalStatusEffectsTable(args.userID, statusEffectsTable)
+    StatusEffectsHandler.UpdateLocalStatusEffectsTable(args.userID, statusEffectsTable)
 end
 
 --****************************************************-

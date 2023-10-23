@@ -276,7 +276,7 @@ PlayerStatsHandler.GetActiveStatusEffectsByUsername = function(username)
 
     if pl then
         local plID = pl:getOnlineID()
-        local effectsTable = StatusEffectsUI.nearPlayersStatusEffects[plID]
+        local effectsTable = StatusEffectsHandler.nearPlayersStatusEffects[plID]
         if effectsTable == nil then return {} else return effectsTable end
     end
 

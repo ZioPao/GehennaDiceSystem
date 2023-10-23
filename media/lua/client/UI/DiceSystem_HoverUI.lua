@@ -1,10 +1,6 @@
 -- TODO Should appear when you toggle it on via a keybind or something when hovering over a player with the mouse
 
 -- Caching stuff
-local playerBase = __classmetatables[IsoPlayer.class].__index
-local getNum = playerBase.getPlayerNum
-local isoToScreenX = isoToScreenX
-local isoToScreenY = isoToScreenY
 local os_time = os.time
 
 local PlayerHandler = require("DiceSystem_PlayerHandling")
@@ -181,34 +177,26 @@ end
 
 --------------------------------------
 
-
+-- Contains all the data we need to handle the HoverUI
 local hoverData = {
     pl = nil,
-
     startTime = nil,
     currentTime = nil,
 }
 
-
 -- Should run in a loop, check if mouse is over a player with stats
 local function CheckMouseOverPlayer()
-    -- TODO ACtive this from right click and enable hover thing
-
     local mousePosX = getMouseXScaled()
     local mousePosY = getMouseYScaled()
-
-    
 
     local plZ = getPlayer():getZ()
     local xx, yy = ISCoordConversion.ToWorld(mousePosX, mousePosY, plZ)
     local x = math.floor(xx)
     local y = math.floor(yy)
 
-
     -- x offset max 1, y offset max 2
     -- Double check
     local checkedPlayer
-
     for i = -1, 1 do
         for j = -1, 1 do
             local sq = getCell():getGridSquare(x + i, y + i + j, plZ)
@@ -217,7 +205,6 @@ local function CheckMouseOverPlayer()
             end
         end
     end
-
 
     -- No player during iteration, start countdown to close the hover ui
     if checkedPlayer == nil then
@@ -257,9 +244,6 @@ local function CheckMouseOverPlayer()
         else
             ModData.request(DICE_SYSTEM_MOD_STRING)
             PlayerHandler.SetUser(plUsername)               -- TODO Not sure if this is gonna work
-            local plNum = getNum(hoverData.pl)
-            --local panelX = isoToScreenX(plNum, x, y, plZ)
-            --local panelY = isoToScreenY(plNum, x, y, plZ)
             HoverUI.Open(checkedPlayer, getMouseX(), getMouseY())
         end
     end
@@ -282,7 +266,6 @@ end
 -- Start it up
 if HoverUI.isActive then
     Events.OnTick.Add(CheckMouseOverPlayer)
- 
 end
 
 
