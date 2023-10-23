@@ -1,4 +1,12 @@
--- TODO Should appear when you toggle it on via a keybind or something when hovering over a player with the mouse
+
+-- TODO Instead of checking if a player has the mouse over them, just right click. It's easier and less expensive.
+
+-- TODO Admins shouldn't be hoverable
+-- TODO Make them pinnable 
+-- TODO add command /showstats "playername"
+
+-- TODO Make it more condensed
+-- TODO If you are setting your stats and hover somebody that has already set their stats, your stats are gonna die :( 
 
 -- Caching stuff
 local os_time = os.time
