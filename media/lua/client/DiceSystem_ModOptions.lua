@@ -16,8 +16,8 @@ local function CheckOptions()
         DiceSystem_Common.SetStatusEffectsColorsTable(COLORS_DICE_TABLES.STATUS_EFFECTS)
     end
 
-    local amount = offsets[OPTIONS.offsetStatusEffects]
-    StatusEffectsHandler.SetUserOffset(tonumber(amount))
+    --local amount = offsets[OPTIONS.offsetStatusEffects]
+    --StatusEffectsHandler.SetUserOffset(tonumber(amount))
 end
 
 -----------------------------
@@ -44,16 +44,16 @@ if ModOptions and ModOptions.getInstance then
     end
 
 
-    offsetStatusEffects.name = "Status Effects offset"
-    offsetStatusEffects.tooltip = "Set the offset for the status effects on top of the players heads"
-    function offsetStatusEffects:OnApplyInGame(val)
-        local amount = offsets[val]
-        StatusEffectsHandler.SetUserOffset(tonumber(amount))
-    end
+    -- offsetStatusEffects.name = "Status Effects offset"
+    -- offsetStatusEffects.tooltip = "Set the offset for the status effects on top of the players heads"
+    -- function offsetStatusEffects:OnApplyInGame(val)
+    --     local amount = offsets[val]
+    --     StatusEffectsHandler.SetUserOffset(tonumber(amount))
+    -- end
 
     Events.OnGameStart.Add(CheckOptions)
 else
     --print("Setting normal colors")
     DiceSystem_Common.SetStatusEffectsColorsTable(COLORS_DICE_TABLES.STATUS_EFFECTS)
-    StatusEffectsHandler.SetUserOffset(0)
+    --StatusEffectsHandler.SetUserOffset(0)
 end

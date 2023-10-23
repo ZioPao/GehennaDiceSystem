@@ -1,7 +1,7 @@
 DiceSystem_ComboBox = ISComboBox:derive("DiceSystem_ComboBox")
 DiceSystem_ComboBoxOccupationPopup = ISComboBoxPopup:derive("DiceSystem_ComboBoxOccupationPopup")
 DiceSystem_ComboBoxStatusPopup = ISComboBoxPopup:derive("DiceSystem_ComboBoxStatusPopup")
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+--local PlayerHandler = require("DiceSystem_PlayerHandling")
 
 
 
@@ -83,7 +83,7 @@ function DiceSystem_ComboBoxStatusPopup:doDrawItem(y, item, alt)
     local itemPadY = self.itemPadY or (item.height - self.fontHgt) / 2
     local color = { r = 1, b = 1, g = 1, a = 1 }
     --print(item.text)
-    if PlayerHandler.GetStatusEffectValue(item.text) then
+    if self.playerHandler:getStatusEffectValue(item.text) then
         --print("Active!")
         color.r = 0
         color.g = 1
@@ -96,9 +96,19 @@ function DiceSystem_ComboBoxStatusPopup:doDrawItem(y, item, alt)
     return y
 end
 
-function DiceSystem_ComboBoxStatusPopup:new(x, y, width, height)
+---Creates the combo box for the occupations
+---@param x any
+---@param y any
+---@param width any
+---@param height any
+---@param playerHandler NewPlayerHandler
+---@return ISComboBoxPopup
+function DiceSystem_ComboBoxStatusPopup:new(x, y, width, height, playerHandler)
     local o = ISComboBoxPopup:new(x, y, width, height)
     setmetatable(o, self)
+
+    o.playerHandler = playerHandler
+
     return o
 end
 
@@ -108,7 +118,7 @@ function DiceSystem_ComboBox:createChildren()
     if self.contents == "OCCUPATIONS" then
         self.popup = DiceSystem_ComboBoxOccupationPopup:new(0, 0, 100, 50)
     else
-        self.popup = DiceSystem_ComboBoxStatusPopup:new(0, 0, 100, 50)
+        self.popup = DiceSystem_ComboBoxStatusPopup:new(0, 0, 100, 50, self.playerHandler)
     end
 
     self.popup:initialise()
@@ -168,7 +178,7 @@ function DiceSystem_ComboBox:prerender()
     local boxLabelString
     local boxLabelColor = { r = 1, b = 1, g = 1 }
     if self.contents == "OCCUPATIONS" then
-        boxLabelString = getText("IGUI_Ocptn_" .. PlayerHandler.GetOccupation())
+        boxLabelString = getText("IGUI_Ocptn_" .. self.playerHandler:getOccupation())
         boxLabelColor.r = 1
         boxLabelColor.g = 0.871
         boxLabelColor.b = 0.086
@@ -216,11 +226,22 @@ function DiceSystem_ComboBox:prerender()
     end
 end
 
-function DiceSystem_ComboBox:new(x, y, width, height, target, onChange, contents)
+---comment
+---@param x any
+---@param y any
+---@param width any
+---@param height any
+---@param target any
+---@param onChange any
+---@param contents any
+---@param playerHandler NewPlayerHandler
+---@return ISComboBox
+function DiceSystem_ComboBox:new(x, y, width, height, target, onChange, contents, playerHandler)
     local o = ISComboBox:new(x, y, width, height, target, onChange, nil, nil)
     setmetatable(o, self)
     self.__index = self
 
     o.contents = contents
+    o.playerHandler = playerHandler
     return o
 end

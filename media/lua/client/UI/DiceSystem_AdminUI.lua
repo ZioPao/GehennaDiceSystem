@@ -47,7 +47,7 @@ local FONT_HGT_LARGE = getTextManager():getFontHeight(UIFont.Large)
 local HEADER_HGT = FONT_HGT_MEDIUM + 2 * 2
 local ENTRY_HGT = FONT_HGT_MEDIUM + 2 * 2
 
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+--local PlayerHandler = require("DiceSystem_PlayerHandling")
 local DiceMenu = require("UI/DiceSystem_PlayerUI")
 
 DiceMenuAdminViewer = ISCollapsableWindow:derive("DiceMenuAdminViewer")
@@ -172,7 +172,7 @@ function DiceMenuAdminViewer:onClick(button)
     if button.internal == "OPEN" then
         ModData.request(DICE_SYSTEM_MOD_STRING)
         local player = self.mainCategory.datas.items[self.mainCategory.datas.selected].item
-        PlayerHandler.SetUser(player:getUsername())
+        NewPlayerHandler:instantiate(player:getUsername())
         DiceMenu.OpenPanel(true)
     elseif button.internal == 'REFRESH' then
         local players = FetchPlayers()
@@ -183,7 +183,7 @@ function DiceMenuAdminViewer:onClick(button)
         local player = self.mainCategory.datas.items[self.mainCategory.datas.selected].item
 
         local playerID = player:getOnlineID()
-        PlayerHandler.CleanModData(playerID)
+        NewPlayerHandler.CleanModData(playerID)
         processAdminChatMessage("Reset " .. player:getUsername() .. " data")
 
 
@@ -255,7 +255,7 @@ function DiceMenuAdminScrollingTable:initList(module)
         local pl = module:get(i)
         local username = pl:getUsername()
         --check if there are dice data for that specific player
-        if PlayerHandler.CheckInitializedStatus(username) then
+        if NewPlayerHandler.CheckInitializedStatus(username) then
             self.datas:addItem(username, pl)
         end
     end
@@ -293,6 +293,7 @@ require "ISUI/ISAdminPanelUI"
 require "ServerPointsAdminPanel"
 local _ISAdminPanelUICreate = ISAdminPanelUI.create
 
+---@diagnostic disable-next-line: duplicate-set-field
 function ISAdminPanelUI:create()
     _ISAdminPanelUICreate(self)
 

@@ -63,11 +63,10 @@ end
 
 ---Handles status effects in update
 ---@param parent any
----@param playerHandler any
 ---@param username string
-function DiceSystem_CommonUI.UpdateStatusEffectsText(parent, playerHandler, username)
+function DiceSystem_CommonUI.UpdateStatusEffectsText(parent, username)
     local statusEffectsText = ""
-    local activeStatusEffects = playerHandler.GetActiveStatusEffectsByUsername(username)
+    local activeStatusEffects = NewPlayerHandler.GetActiveStatusEffectsByUsername(username)
 
     for i = 1, #activeStatusEffects do
         local v = activeStatusEffects[i]

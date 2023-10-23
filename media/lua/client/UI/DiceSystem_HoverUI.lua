@@ -3,7 +3,7 @@
 -- Caching stuff
 local os_time = os.time
 
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+--local PlayerHandler = require("DiceSystem_PlayerHandling")
 local CommonUI = require("UI/DiceSystem_CommonUI")
 
 -----------------
@@ -17,21 +17,24 @@ HoverUI = ISCollapsableWindow:derive("HoverUI")
 HoverUI.nearPlayersStatusEffects = {}
 HoverUI.isActive = true     -- Active by default
 
--- TODO Status effects are overriden to the other people
-
-function HoverUI.Open(pl, x, y)
+---comment
+---@param pl IsoPlayer
+---@param playerHandler NewPlayerHandler
+---@param x number
+---@param y number
+function HoverUI.Open(pl, playerHandler, x, y)
     local width = 300 * CommonUI.FONT_SCALE
     local height = 250 * CommonUI.FONT_SCALE
 
     if HoverUI.instance == nil then
-        local pnl = HoverUI:new(x, y, width, height, pl)
+        local pnl = HoverUI:new(x, y, width, height, pl, playerHandler)
         pnl:initialise()
         pnl:bringToTop()
     end
 end
 --************************************--
 
-function HoverUI:new(x, y, width, height, pl)
+function HoverUI:new(x, y, width, height, pl, playerHandler)
     local o = {}
     o = ISCollapsableWindow:new(x, y, width, height)
     setmetatable(o, self)
@@ -47,6 +50,7 @@ function HoverUI:new(x, y, width, height, pl)
     o.isOpening = true
 
     o.pl = pl
+    o.playerHandler = playerHandler
 
     HoverUI.instance = o -- TODO Can be multiple?
     return o
@@ -118,7 +122,7 @@ end
 
 function HoverUI:update()
     ISCollapsableWindow.update(self)
-    CommonUI.UpdateStatusEffectsText(self.panelTop, PlayerHandler, self.pl:getUsername())
+    CommonUI.UpdateStatusEffectsText(self.panelTop, self.playerHandler, self.pl:getUsername())
 end
 
 local bStrHealth = "<CENTRE> <SIZE:large> <RGB:0,1,0> %d/%d"
@@ -161,12 +165,12 @@ function HoverUI:render()
     end
 
     --* Health *--
-    self.panelBottom.panelHealth:setText(string.format(bStrHealth, PlayerHandler.GetCurrentHealth(),
-        PlayerHandler.GetMaxHealth()))
+    self.panelBottom.panelHealth:setText(string.format(bStrHealth, self.playerHandler:getCurrentHealth(),
+        self.playerHandler:getMaxHealth()))
     self.panelBottom.panelHealth.textDirty = true
 
     --* Armor Class *--
-    self.panelBottom.panelArmorClass:setText(string.format(bStrArmorClass, PlayerHandler.GetArmorClass()))
+    self.panelBottom.panelArmorClass:setText(string.format(bStrArmorClass, self.playerHandler:getArmorClass()))
     self.panelBottom.panelArmorClass.textDirty = true
 end
 
@@ -239,12 +243,13 @@ local function CheckMouseOverPlayer()
             if HoverUI.instance then HoverUI.instance:close() end
 
             -- Set back the og user just to be sure that stuff doesn't break
-            PlayerHandler.SetUser(plUsername)
+            --PlayerHandler.SetUser(plUsername)
             return
         else
             ModData.request(DICE_SYSTEM_MOD_STRING)
-            PlayerHandler.SetUser(plUsername)               -- TODO Not sure if this is gonna work
-            HoverUI.Open(checkedPlayer, getMouseX(), getMouseY())
+            --PlayerHandler.SetUser(plUsername)               -- TODO Not sure if this is gonna work
+            local handler = NewPlayerHandler:instantiate(plUsername)
+            HoverUI.Open(checkedPlayer, handler, getMouseX(), getMouseY())
         end
     end
 end

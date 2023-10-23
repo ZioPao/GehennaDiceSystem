@@ -1,4 +1,4 @@
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+--local PlayerHandler = require("DiceSystem_PlayerHandling")
 local DiceMenu = require("UI/DiceSystem_PlayerUI")
 
 local ModDataServerCommands = {}
@@ -15,12 +15,16 @@ function ModDataServerCommands.ResetClientDiceData(args)
         ModData.request(DICE_SYSTEM_MOD_STRING)
     end
 
-    PlayerHandler.data = ModData.get(DICE_SYSTEM_MOD_STRING)
-    PlayerHandler.data[PlayerHandler.username] = nil
+    local username = getPlayer():getUsername()
+    local playerHandler = NewPlayerHandler:instantiate(username)
+
+    -- TODO Pretty sure this was wrong, it should be diceData, not data. Test it
+    playerHandler.diceData = ModData.get(DICE_SYSTEM_MOD_STRING)
+    playerHandler.diceData[username] = nil
 
     -- Reset status effects local table
     StatusEffectsHandler.UpdateLocalStatusEffectsTable(getPlayer():getOnlineID(), {})
-    PlayerHandler.InitModData(true)
+    playerHandler:initModData(true)
 end
 
 ---Sync status effects for a certain player in a table inside StatusEffectsUI

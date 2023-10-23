@@ -34,13 +34,20 @@ end
 
 ----------------------------------
 
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+--local PlayerHandler = require("DiceSystem_PlayerHandling")
 local CommonUI = require("UI/DiceSystem_CommonUI")
 
 local DiceMenu = ISCollapsableWindow:derive("DiceMenu")
 DiceMenu.instance = nil
 
-function DiceMenu:new(x, y, width, height)
+--- Init a new Dice Menu panel
+---@param x number
+---@param y number
+---@param width number
+---@param height number
+---@param playerHandler NewPlayerHandler
+---@return ISCollapsableWindow
+function DiceMenu:new(x, y, width, height, playerHandler)
     local o = {}
     o = ISCollapsableWindow:new(x, y, width, height)
     setmetatable(o, self)
@@ -48,14 +55,14 @@ function DiceMenu:new(x, y, width, height)
 
     o.width = width
     o.height = height
-
     o.resizable = false
-
     o.variableColor = { r = 0.9, g = 0.55, b = 0.1, a = 1 }
     o.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     o.backgroundColor = { r = 0, g = 0, b = 0, a = 1.0 }
     o.buttonBorderColor = { r = 0.7, g = 0.7, b = 0.7, a = 0.5 }
     o.moveWithMouse = true
+
+    o.playerHandler = playerHandler
 
     DiceMenu.instance = o
     return o
@@ -77,7 +84,7 @@ end
 function DiceMenu:fillSkillPanel()
     local yOffset = 0
     local frameHeight = 40
-    local isInitialized = PlayerHandler.IsPlayerInitialized()
+    local isInitialized = self.playerHandler:isPlayerInitialized()
     local plUsername = getPlayer():getUsername()
 
     for i = 1, #PLAYER_DICE_VALUES.SKILLS do
@@ -133,7 +140,7 @@ function DiceMenu:fillSkillPanel()
             btnRoll:initialise()
             btnRoll:instantiate()
             btnRoll.skill = PLAYER_DICE_VALUES.SKILLS[i]
-            btnRoll:setEnable(plUsername == PlayerHandler.username)
+            btnRoll:setEnable(plUsername == self.playerHandler.username)
             panel:addChild(btnRoll)
         end
 
@@ -156,8 +163,8 @@ end
 function DiceMenu:update()
     ISCollapsableWindow.update(self)
 
-    local isInit = PlayerHandler.IsPlayerInitialized()
-    local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
+    local isInit = self.playerHandler:isPlayerInitialized()
+    local allocatedPoints = self.playerHandler:getAllocatedSkillPoints()
     local plUsername = getPlayer():getUsername() -- TODO optimize this
     local isAdmin = self:getIsAdminMode()
 
@@ -165,12 +172,12 @@ function DiceMenu:update()
     if not isInit or isAdmin then
         -- Points allocated label
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/15", allocatedPoints)
-        self.labelSkillPointsAllocated:setName(pointsAllocatedString)        
+        self.labelSkillPointsAllocated:setName(pointsAllocatedString)
 
         -- Occupations
         local comboOcc = self.comboOccupation
         local selectedOccupation = comboOcc:getOptionData(comboOcc.selected)
-        PlayerHandler.SetOccupation(selectedOccupation)
+        self.playerHandler:setOccupation(selectedOccupation)
 
         -- Status effects
         self.comboStatusEffects.disabled = not isAdmin
@@ -182,18 +189,18 @@ function DiceMenu:update()
         self.comboOccupation.disabled = true
         self.labelSkillPointsAllocated:setName("")
 
-        self.comboStatusEffects.disabled = (plUsername ~= PlayerHandler.username)
-        CommonUI.UpdateStatusEffectsText(self, PlayerHandler, plUsername)
+        self.comboStatusEffects.disabled = (plUsername ~= self.playerHandler.username)
+        CommonUI.UpdateStatusEffectsText(self, plUsername)
 
     end
 
-    local armorClassPoints = PlayerHandler.GetArmorClass()
+    local armorClassPoints = self.playerHandler:getArmorClass()
     --print(armorClassPoints)
     -- Show skill points
     for i = 1, #PLAYER_DICE_VALUES.SKILLS do
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
-        local skillPoints = PlayerHandler.GetSkillPoints(skill)
-        local bonusSkillPoints = PlayerHandler.GetBonusSkillPoints(skill)
+        local skillPoints = self.playerHandler:getSkillPoints(skill)
+        local bonusSkillPoints = self.playerHandler:getBonusSkillPoints(skill)
         local skillPointsString = " <RIGHT> " .. string.format("%d", skillPoints)
 
         --local skillPointsString
@@ -224,19 +231,18 @@ function DiceMenu:update()
     self.panelArmorClass.textDirty = true
 
 
-    self.panelMovementBonus:setText(getText("IGUI_MovementBonus", PlayerHandler.GetMovementBonus()))
+    self.panelMovementBonus:setText(getText("IGUI_MovementBonus", self.playerHandler:getMovementBonus()))
     self.panelMovementBonus.textDirty = true
 
-    local currentHealth = PlayerHandler.GetCurrentHealth()
-    local maxHealth = PlayerHandler.GetMaxHealth()
-    self.panelHealth:setText(getText("IGUI_Health", PlayerHandler.GetCurrentHealth(),
-        PlayerHandler.GetMaxHealth()))
+    local currentHealth = self.playerHandler:getCurrentHealth()
+    local maxHealth = self.playerHandler:getMaxHealth()
+    self.panelHealth:setText(getText("IGUI_Health", self.playerHandler:getCurrentHealth(), self.playerHandler:getMaxHealth()))
     self.panelHealth.textDirty = true
     self.btnPlusHealth:setEnable(currentHealth < maxHealth)
     self.btnMinusHealth:setEnable(currentHealth > 0)
 
-    local totMovement = PlayerHandler.GetMaxMovement() + PlayerHandler.GetMovementBonus()
-    local currMovement = PlayerHandler.GetCurrentMovement()
+    local totMovement = self.playerHandler:getMaxMovement() + self.playerHandler:getMovementBonus()
+    local currMovement = self.playerHandler:getCurrentMovement()
     self.panelMovement:setText(getText("IGUI_Movement", currMovement, totMovement))
     self.panelMovement.textDirty = true
     self.btnPlusMovement:setEnable(currMovement < totMovement)
@@ -252,7 +258,7 @@ end
 function DiceMenu:createChildren()
     local yOffset = 40
     local pl
-    if isClient() then pl = getPlayerFromUsername(PlayerHandler.username) else pl = getPlayer() end
+    if isClient() then pl = getPlayerFromUsername(self.playerHandler.username) else pl = getPlayer() end
     local plDescriptor = pl:getDescriptor()
     local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
 
@@ -293,7 +299,7 @@ function DiceMenu:createChildren()
     self:addChild(self.panelOccupation)
     self.panelOccupation:paginate()
 
-    self.comboOccupation = DiceSystem_ComboBox:new(self.panelOccupation:getWidth()/2 - xFrameMargin, self.panelOccupation:getHeight()/5, self.width / 4, comboBoxHeight, self, self.onChangeOccupation, "OCCUPATIONS")
+    self.comboOccupation = DiceSystem_ComboBox:new(self.panelOccupation:getWidth()/2 - xFrameMargin, self.panelOccupation:getHeight()/5, self.width / 4, comboBoxHeight, self, self.onChangeOccupation, "OCCUPATIONS", self.playerHandler)
     self.comboOccupation.noSelectionText = ""
     self.comboOccupation:setEditable(true)
 
@@ -301,7 +307,7 @@ function DiceMenu:createChildren()
         local occ = PLAYER_DICE_VALUES.OCCUPATIONS[i]
         self.comboOccupation:addOptionWithData(getText("IGUI_Ocptn_" .. occ), occ)
     end
-    local occupation = PlayerHandler.GetOccupation()
+    local occupation = self.playerHandler:getOccupation()
     if occupation ~= "" then
         --print(occupation)
         self.comboOccupation:select(occupation)
@@ -325,7 +331,7 @@ function DiceMenu:createChildren()
     self:addChild(self.panelStatusEffects)
     self.panelStatusEffects:paginate()
 
-    self.comboStatusEffects = DiceSystem_ComboBox:new(self.panelStatusEffects:getWidth()/2 - xFrameMargin, self.panelStatusEffects:getHeight()/5, self.width / 4, comboBoxHeight, self, self.onChangeStatusEffect, "STATUS_EFFECTS")
+    self.comboStatusEffects = DiceSystem_ComboBox:new(self.panelStatusEffects:getWidth()/2 - xFrameMargin, self.panelStatusEffects:getHeight()/5, self.width / 4, comboBoxHeight, self, self.onChangeStatusEffect, "STATUS_EFFECTS", self.playerHandler)
     self.comboStatusEffects.noSelectionText = ""
     self.comboStatusEffects:setEditable(true)
     for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
@@ -422,7 +428,7 @@ function DiceMenu:createChildren()
     --* Skill points *--
     local arePointsAllocated = false
     if not arePointsAllocated then
-        local allocatedPoints = PlayerHandler.GetAllocatedSkillPoints()
+        local allocatedPoints = self.playerHandler:getAllocatedSkillPoints()
         local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/%d", allocatedPoints, PLAYER_DICE_VALUES.MAX_ALLOCATED_POINTS)
 
         self.labelSkillPointsAllocated = ISLabel:new(
@@ -443,7 +449,7 @@ function DiceMenu:createChildren()
     --* Set correct height for the panel AFTER we're done with everything else *--
     self:calculateHeight(yOffset)
 
-    if not PlayerHandler.IsPlayerInitialized() or isAdmin then
+    if not self.playerHandler:isPlayerInitialized() or isAdmin then
         self.btnConfirm = ISButton:new(10, self.height - 35, 100, 25, getText("IGUI_Dice_Save"), self,
             self.onOptionMouseDown)
         self.btnConfirm.internal = "SAVE"
@@ -465,33 +471,33 @@ end
 
 function DiceMenu:onChangeStatusEffect()
     local statusEffect = self.comboStatusEffects:getSelectedText()
-    PlayerHandler.ToggleStatusEffectValue(statusEffect)
+    self.playerHandler:toggleStatusEffectValue(statusEffect)
 end
 
 function DiceMenu:onOptionMouseDown(btn)
     if btn.internal == 'PLUS_HEALTH' then
-        PlayerHandler.HandleCurrentHealth("+")
+        self.playerHandler:handleCurrentHealth("+")
     elseif btn.internal == 'MINUS_HEALTH' then
-        PlayerHandler.HandleCurrentHealth("-")
+        self.playerHandler:handleCurrentHealth("-")
     elseif btn.internal == 'PLUS_MOVEMENT' then
-        PlayerHandler.HandleCurrentMovement("+")
+        self.playerHandler:handleCurrentMovement("+")
     elseif btn.internal == 'MINUS_MOVEMENT' then
-        PlayerHandler.HandleCurrentMovement("-")
+        self.playerHandler:handleCurrentMovement("-")
     elseif btn.internal == 'PLUS_SKILL' then
-        PlayerHandler.HandleSkillPoint(btn.skill, "+")
+        self.playerHandler:handleSkillPoint(btn.skill, "+")
     elseif btn.internal == 'MINUS_SKILL' then
-        PlayerHandler.HandleSkillPoint(btn.skill, "-")
+        self.playerHandler:handleSkillPoint(btn.skill, "-")
     elseif btn.internal == 'SKILL_ROLL' then
-        local points = PlayerHandler.GetFullSkillPoints(btn.skill)
+        local points = self.playerHandler:getFullSkillPoints(btn.skill)
         DiceSystem_Common.Roll(btn.skill, points)
     elseif btn.internal == 'SAVE' then
-        PlayerHandler.SetIsInitialized(true)
+        self.playerHandler:setIsInitialized(true)
         DiceMenu.instance.btnConfirm:setEnable(false)
 
         -- If we're editing stuff from the admin, we want to be able to notify the other client to update their stats from the server
         if self:getIsAdminMode() then
             print("ADMIN MODE! Sending notification to other client")
-            local receivingPl = getPlayerFromUsername(PlayerHandler.username)
+            local receivingPl = getPlayerFromUsername(self.playerHandler.username)
             sendClientCommand(DICE_SYSTEM_MOD_STRING, 'NotifyAdminChangedClientData',
                 { userID = receivingPl:getOnlineID() })
         end
@@ -517,9 +523,10 @@ end
 ---Open the Dice Menu panel
 ---@param isAdminMode boolean set admin mode, admins will be able to edit a specific user stats
 ---@return ISCollapsableWindow
-function DiceMenu.OpenPanel(isAdminMode)
+function DiceMenu.OpenPanel(isAdminMode, username)
     --local UI_SCALE = getTextManager():getFontHeight(UIFont.Small) / 14
-    PlayerHandler.InitModData(false)
+    local playerHandler = NewPlayerHandler:instantiate(username)
+    playerHandler:initModData(false)
 
     if DiceMenu.instance then
         DiceMenu.instance:close()
@@ -533,7 +540,7 @@ function DiceMenu.OpenPanel(isAdminMode)
     print(FONT_SCALE)
     local width = 460 * FONT_SCALE
     local height = 700 * FONT_SCALE
-    local pnl = DiceMenu:new(100, 200, width, height)
+    local pnl = DiceMenu:new(100, 200, width, height, playerHandler)
     pnl:setAdminMode(isAdminMode)
     pnl:initialise()
     pnl:addToUIManager()

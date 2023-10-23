@@ -21,8 +21,8 @@ function ISCharacterScreen:update()
 end
 
 function ISCharacterScreen.onOpenDiceMenu()
-    local PlayerHandler = require("DiceSystem_PlayerHandling")
-    PlayerHandler.SetUser(getPlayer():getUsername())
+    --local PlayerHandler = require("DiceSystem_PlayerHandling")
+    NewPlayerHandler:instantiate(getPlayer():getUsername())
 
     local DiceMenu = require("UI/DiceSystem_PlayerUI")
     DiceMenu.OpenPanel(false)
