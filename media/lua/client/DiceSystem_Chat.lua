@@ -1,4 +1,4 @@
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandler")
 
 DiceSystem_ChatOverride = {}
 DiceSystem_ChatOverride.currentMsg = ""

@@ -1,8 +1,7 @@
 require "ISUI/ISPanel"
 require "ISUI/ISScrollingListBox"
 
-
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandler")
 
 --**************--
 -- Various utilities
@@ -50,7 +49,7 @@ local FONT_HGT_LARGE = getTextManager():getFontHeight(UIFont.Large)
 local HEADER_HGT = FONT_HGT_MEDIUM + 2 * 2
 local ENTRY_HGT = FONT_HGT_MEDIUM + 2 * 2
 
---local PlayerHandler = require("DiceSystem_PlayerHandling")
+--local PlayerHandler = require("DiceSystem_PlayerHandler")
 local DiceMenu = require("UI/DiceSystem_PlayerUI")
 
 DiceMenuAdminViewer = ISCollapsableWindow:derive("DiceMenuAdminViewer")

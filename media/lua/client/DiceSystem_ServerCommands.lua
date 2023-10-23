@@ -1,4 +1,4 @@
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandler")
 local DiceMenu = require("UI/DiceSystem_PlayerUI")
 
 local ModDataServerCommands = {}

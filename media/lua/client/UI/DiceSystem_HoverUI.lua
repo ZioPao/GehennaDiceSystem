@@ -2,44 +2,56 @@
 -- TODO Instead of checking if a player has the mouse over them, just right click. It's easier and less expensive.
 
 -- TODO Admins shouldn't be hoverable
--- TODO Make them pinnable 
 -- TODO add command /showstats "playername"
 
 -- TODO Make it more condensed
 -- TODO If you are setting your stats and hover somebody that has already set their stats, your stats are gonna die :( 
 
 -- Caching stuff
-local os_time = os.time
+local playerBase = __classmetatables[IsoPlayer.class].__index
+local getNum = playerBase.getPlayerNum
+local heartIco = getTexture("media/ui/dnd_heart.png") -- Document icons created by Freepik - Flaticon - Document
+local armorIco = getTexture("media/ui/dnd_armor.png")
 
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandler")
 local CommonUI = require("UI/DiceSystem_CommonUI")
 
 -----------------
 
-local heartIco = getTexture("media/ui/dnd_heart.png") -- Document icons created by Freepik - Flaticon - Document
-local armorIco = getTexture("media/ui/dnd_armor.png")
 
 ------------------
 
 HoverUI = ISCollapsableWindow:derive("HoverUI")
-HoverUI.nearPlayersStatusEffects = {}
-HoverUI.isActive = true     -- Active by default
+HoverUI.openMenus = {}
 
 ---comment
 ---@param pl IsoPlayer
----@param playerHandler PlayerHandler
----@param x number
----@param y number
-function HoverUI.Open(pl, playerHandler, x, y)
+---@param username string Just the username of the player, since we've already referenced it before
+function HoverUI.Open(pl, username)
     local width = 300 * CommonUI.FONT_SCALE
     local height = 250 * CommonUI.FONT_SCALE
 
-    if HoverUI.instance == nil then
-        local pnl = HoverUI:new(x, y, width, height, pl, playerHandler)
-        pnl:initialise()
-        pnl:bringToTop()
-    end
+    local plNum = getNum(pl)
+    local plX = pl:getX()
+    local plY = pl:getY()
+    local plZ = pl:getZ()
+
+    --TODO check if there's space, if not, switch to the left or bottom or up or whatever
+    local x = isoToScreenX(plNum, plX, plY, plZ) * 1.1
+    local y = isoToScreenY(plNum, plX, plY, plZ) * 0.7
+
+    ModData.request(DICE_SYSTEM_MOD_STRING)
+    local handler = PlayerHandler:instantiate(username)
+    HoverUI.openMenus[username] = HoverUI:new(x, y, width, height, pl, handler)
+    HoverUI.openMenus[username]:initialise()
+    HoverUI.openMenus[username]:bringToTop()
 end
+
+
+function HoverUI.Close(username)
+    HoverUI.openMenus[username]:close()
+end
+
 --************************************--
 
 function HoverUI:new(x, y, width, height, pl, playerHandler)
@@ -60,7 +72,6 @@ function HoverUI:new(x, y, width, height, pl, playerHandler)
     o.pl = pl
     o.playerHandler = playerHandler
 
-    HoverUI.instance = o -- TODO Can be multiple?
     return o
 end
 
@@ -69,9 +80,6 @@ end
 function HoverUI:initialise()
     ISCollapsableWindow.initialise(self)
     self:addToUIManager()
-
-    --self.sTime = os_time()
-    --self.requestsCounter = {} -- This is to prevent a spam of syncs from users who did not initialize the mod.
 end
 
 function HoverUI:createChildren()
@@ -183,103 +191,47 @@ function HoverUI:render()
 end
 
 function HoverUI:close()
-    HoverUI.instance = nil
+    HoverUI.openMenus[self.pl:getUsername()] = nil
     ISCollapsableWindow.close(self)
 end
 
 --------------------------------------
 
--- Contains all the data we need to handle the HoverUI
-local hoverData = {
-    pl = nil,
-    startTime = nil,
-    currentTime = nil,
-}
+local function FillHoverMenuOptions(player, context, worldobjects, test)
+    local addedSubMenu = false
+    local subMenu
+    print("Running fillhovermenu")
 
--- Should run in a loop, check if mouse is over a player with stats
-local function CheckMouseOverPlayer()
-    local mousePosX = getMouseXScaled()
-    local mousePosY = getMouseYScaled()
-
-    local plZ = getPlayer():getZ()
-    local xx, yy = ISCoordConversion.ToWorld(mousePosX, mousePosY, plZ)
-    local x = math.floor(xx)
-    local y = math.floor(yy)
-
-    -- x offset max 1, y offset max 2
-    -- Double check
-    local checkedPlayer
-    for i = -1, 1 do
-        for j = -1, 1 do
-            local sq = getCell():getGridSquare(x + i, y + i + j, plZ)
-            if checkedPlayer == nil then
-                checkedPlayer = sq:getPlayer()
+    -- Got it directly from the base game, man this sucks ass
+    for i,v in ipairs(worldobjects) do
+        if v:getSquare() then
+            -- help detecting a player by checking nearby squares
+            for x=v:getSquare():getX()-1,v:getSquare():getX()+1 do
+                for y=v:getSquare():getY()-1,v:getSquare():getY()+1 do
+                    local sq = getCell():getGridSquare(x,y,v:getSquare():getZ())
+                    if sq then
+                        for i=0,sq:getMovingObjects():size()-1 do
+                            local o = sq:getMovingObjects():get(i)
+                            if instanceof(o, "IsoPlayer") and not o:isInvisible() then
+                                local username = o:getUsername()
+                                if addedSubMenu == false then
+                                    local optionHoverMenu = context:addOption("Dice Mini Menu", worldobjects, nil)
+                                    subMenu = ISContextMenu:getNew(context)
+                                    context:addSubMenu(optionHoverMenu, subMenu)
+                                end
+                                if HoverUI.openMenus[username] == nil then
+                                    subMenu:addOption("Open Menu for " .. username, o, HoverUI.Open, username)
+                                else
+                                    subMenu:addOption("Close Menu for " .. username, username, HoverUI.Close)
+                                end
+                                return
+                            end
+                        end
+                    end
+                end
             end
         end
     end
-
-    -- No player during iteration, start countdown to close the hover ui
-    if checkedPlayer == nil then
-        hoverData.pl = nil
-        hoverData.startTime = nil
-        hoverData.currentTime = nil
-        if HoverUI.instance then HoverUI.instance:close() end
-        return
-
-        -- Player wasn't found in a previous iteration, but now it is
-    elseif hoverData.pl == nil then
-        hoverData.pl = checkedPlayer
-        hoverData.startTime = nil
-        hoverData.currentTime = nil
-        return
-        -- Same player as before, we can manage the timer
-    elseif hoverData.pl == checkedPlayer then
-        local plUsername = checkedPlayer:getUsername()
-
-        if DICE_CLIENT_MOD_DATA == nil or DICE_CLIENT_MOD_DATA[plUsername] == nil then return end
-        if DICE_CLIENT_MOD_DATA[plUsername].isInitialized == false then return end
-
-        -- Timer wasn't started before
-        if hoverData.startTime == nil then
-            hoverData.startTime = os_time()
-            hoverData.currentTime = hoverData.startTime
-        else
-            hoverData.currentTime = os_time()
-        end
-
-        if hoverData.currentTime - hoverData.startTime < 1 then
-            if HoverUI.instance then HoverUI.instance:close() end
-
-            -- Set back the og user just to be sure that stuff doesn't break
-            --PlayerHandler.SetUser(plUsername)
-            return
-        else
-            ModData.request(DICE_SYSTEM_MOD_STRING)
-            --PlayerHandler.SetUser(plUsername)               -- TODO Not sure if this is gonna work
-            local handler = PlayerHandler:instantiate(plUsername)
-            HoverUI.Open(checkedPlayer, handler, getMouseX(), getMouseY())
-        end
-    end
 end
 
-local function ManageHoverUIActivation(player, context, worldobjects, test)
-    if HoverUI.isActive then
-        context:addOption("Disable Hover Menu", worldobjects, function()
-            HoverUI.isActive = false
-            Events.OnTick.Remove(CheckMouseOverPlayer)
-        end)
-    else
-        context:addOption("Enable Hover Menu", worldobjects, function()
-            HoverUI.isActive = true
-            Events.OnTick.Add(CheckMouseOverPlayer)
-        end)
-    end
-end
-
--- Start it up
-if HoverUI.isActive then
-    Events.OnTick.Add(CheckMouseOverPlayer)
-end
-
-
-Events.OnFillWorldObjectContextMenu.Add(ManageHoverUIActivation)
+Events.OnFillWorldObjectContextMenu.Add(FillHoverMenuOptions)

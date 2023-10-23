@@ -1,5 +1,5 @@
 -- TODO Some stuff is shared between PlayerUI and HoverUI.
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandler")
 
 
 --* Helper functions

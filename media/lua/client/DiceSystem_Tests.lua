@@ -1,13 +1,13 @@
 --!!! DEBUG ONLY
 
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandler")
 
 if not getActivatedMods():contains("TEST_FRAMEWORK") or not isDebugEnabled() then return end
 local TestFramework = require("TestFramework/TestFramework")
 local TestUtils = require("TestFramework/TestUtils")
 
 function DeleteGlobalModData()
-    --local PlayerHandler = require("DiceSystem_PlayerHandling")
+    --local PlayerHandler = require("DiceSystem_PlayerHandler")
     PlayerHandler.diceData = {}
     ModData.add(DICE_SYSTEM_MOD_STRING, {})
 end
@@ -35,13 +35,13 @@ TestFramework.registerTestModule("UI Tests", "Do initialization", function()
 
     function Tests.SetRandomProfession()
         -- TODO This is not really how the UI would work, so it's not really a correct test, but it'll have to do
-        --local PlayerHandler = require("DiceSystem_PlayerHandling")
+        --local PlayerHandler = require("DiceSystem_PlayerHandler")
         local randOcc = PLAYER_DICE_VALUES.OCCUPATIONS[ZombRand(1, #PLAYER_DICE_VALUES.OCCUPATIONS)]
         PlayerHandler.SetOccupation(randOcc)
     end
 
     function Tests.SetRandomSkills()
-        --local PlayerHandler = require("DiceSystem_PlayerHandling")
+        --local PlayerHandler = require("DiceSystem_PlayerHandler")
         repeat
             local loops = ZombRand(5)
             local fakeBtn = { internal = 'PLUS_SKILL', skill = 'Charm' }
@@ -106,7 +106,7 @@ end)
 
 TestFramework.registerTestModule("Functionality Tests", "Status Effects", function()
     local Tests = {}
-    --local PlayerHandler = require("DiceSystem_PlayerHandling")
+    --local PlayerHandler = require("DiceSystem_PlayerHandler")
 
     function Tests.SetRandomEffects()
         for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do

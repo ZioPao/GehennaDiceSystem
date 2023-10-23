@@ -34,7 +34,7 @@ end
 
 ----------------------------------
 
-local PlayerHandler = require("DiceSystem_PlayerHandling")
+local PlayerHandler = require("DiceSystem_PlayerHandler")
 local CommonUI = require("UI/DiceSystem_CommonUI")
 
 local DiceMenu = ISCollapsableWindow:derive("DiceMenu")
