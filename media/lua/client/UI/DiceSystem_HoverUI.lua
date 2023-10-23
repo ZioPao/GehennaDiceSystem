@@ -19,7 +19,7 @@ local armorIco = getTexture("media/ui/dnd_armor.png")
 
 HoverUI = ISCollapsableWindow:derive("HoverUI")
 HoverUI.nearPlayersStatusEffects = {}
-HoverUI.isActive = false
+HoverUI.isActive = true     -- Active by default
 
 -- TODO Status effects are overriden to the other people
 
@@ -194,9 +194,13 @@ local hoverData = {
 local function CheckMouseOverPlayer()
     -- TODO ACtive this from right click and enable hover thing
 
+    local mousePosX = getMouseXScaled()
+    local mousePosY = getMouseYScaled()
+
+    
 
     local plZ = getPlayer():getZ()
-    local xx, yy = ISCoordConversion.ToWorld(getMouseXScaled(), getMouseYScaled(), plZ)
+    local xx, yy = ISCoordConversion.ToWorld(mousePosX, mousePosY, plZ)
     local x = math.floor(xx)
     local y = math.floor(yy)
 
@@ -254,9 +258,9 @@ local function CheckMouseOverPlayer()
             ModData.request(DICE_SYSTEM_MOD_STRING)
             PlayerHandler.SetUser(plUsername)               -- TODO Not sure if this is gonna work
             local plNum = getNum(hoverData.pl)
-            local panelX = isoToScreenX(plNum, x + 1, y, plZ) -- TODO Check if we're at the limit of the screen
-            local panelY = isoToScreenY(plNum, x, y + 1, plZ)
-            HoverUI.Open(checkedPlayer, panelX, panelY)
+            --local panelX = isoToScreenX(plNum, x, y, plZ)
+            --local panelY = isoToScreenY(plNum, x, y, plZ)
+            HoverUI.Open(checkedPlayer, getMouseX(), getMouseY())
         end
     end
 end
@@ -274,5 +278,12 @@ local function ManageHoverUIActivation(player, context, worldobjects, test)
         end)
     end
 end
+
+-- Start it up
+if HoverUI.isActive then
+    Events.OnTick.Add(CheckMouseOverPlayer)
+ 
+end
+
 
 Events.OnFillWorldObjectContextMenu.Add(ManageHoverUIActivation)
