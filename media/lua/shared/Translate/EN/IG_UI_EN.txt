@@ -13,13 +13,14 @@ IG_UI_EN = {
     IGUI_Ocptn_WhiteCollar = "White Collar",
     IGUI_Ocptn_Clinician = "Clinician",
     IGUI_Ocptn_Academic = "Academic",
+    IGUI_Ocptn_Follower = "Follower",
 
     IGUI_StatusEffect = "Status Effect",
     IGUI_StsEfct_Stable = "Stable",
     IGUI_StsEfct_Wounded = "Wounded",
     IGUI_StsEfct_Bleeding = "Bleeding",
-    IGUI_StsEfct_Moderate = "Moderate",
-    IGUI_StsEfct_Severe = "Severe",
+    IGUI_StsEfct_OnFire = "On Fire",
+    IGUI_StsEfct_Charmed = "Charmed",
     IGUI_StsEfct_Prone = "Prone",
     IGUI_StsEfct_Unconscious = "Unconscious",
     

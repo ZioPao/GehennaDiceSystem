@@ -1,9 +1,8 @@
 DICE_SYSTEM_MOD_STRING = "GehennaDiceSystem"
 PLAYER_DICE_VALUES = {
-    STATUS_EFFECTS = { "Stable", "Wounded", "Bleeding", "Moderate", "Severe", "Prone", "Unconscious" },
+    STATUS_EFFECTS = { "Stable", "Wounded", "Bleeding", "Charmed", "OnFire", "Prone", "Unconscious" },
     OCCUPATIONS = { "Unemployed", "Artist", "WageSlave", "Soldier", "Frontiersmen", "LawEnforcement", "FirstResponders",
         "Criminal", "BlueCollar", "Engineer", "WhiteCollar", "Clinician", "Academic", "Follower" },
-
 
     SKILLS = {"Brutality", "Resolve", "Awareness", "Chance", "Endurance"},      -- Max 15 points
 
@@ -32,14 +31,16 @@ PLAYER_DICE_VALUES = {
         --Dryad           = { Resolve = 2, Endurance = 2}
     }
 }
+
+
 COLORS_DICE_TABLES = {
     -- Normal colors for status effects
     STATUS_EFFECTS     = {
         Stable = { r = 0, g = 0.68, b = 0.94 },
         Wounded = { r = 0.95, g = 0.35, b = 0.16 },
         Bleeding = { r = 0.66, g = 0.15, b = 0.18 },
-        Moderate = { r = 1, g = 1, b = 1 },
-        Severe = { r = 1, g = 1, b = 1 },
+        Charmed = { r = 1, g = 1, b = 1 },
+        OnFire = { r = 1, g = 1, b = 1 },
         Prone = { r = 0.04, g = 0.58, b = 0.27 },
         Unconscious = { r = 0.57, g = 0.15, b = 0.56 }
     },
@@ -49,12 +50,13 @@ COLORS_DICE_TABLES = {
         Stable = { r = 0.17, g = 0.94, b = 0.45 },     -- #2CF074
         Wounded = { r = 0.46, g = 0.58, b = 0.23 },    -- #75943A
         Bleeding = { r = 0.56, g = 0.15, b = 0.25 },   -- #8F263F
-        Moderate = { r = 1, g = 1, b = 1 },            -- only white
-        Severe = { r = 1, g = 1, b = 1 },              -- only white
+        Charmed = { r = 1, g = 1, b = 1 },            -- only white
+        OnFire = { r = 1, g = 1, b = 1 },              -- only white
         Prone = { r = 0.35, g = 0.49, b = 0.64 },      -- #5A7EA3
         Unconscious = { r = 0.96, g = 0.69, b = 0.81 } -- #F5B0CF
     }
 }
+
 
 --**************************************--
 

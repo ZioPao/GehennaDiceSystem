@@ -1,10 +1,4 @@
 
--- TODO Instead of checking if a player has the mouse over them, just right click. It's easier and less expensive.
-
--- TODO Admins shouldn't be hoverable
--- TODO add command /showstats "playername"
-
--- TODO Make it more condensed
 -- TODO If you are setting your stats and hover somebody that has already set their stats, your stats are gonna die :( 
 
 -- Caching stuff
@@ -18,6 +12,10 @@ local CommonUI = require("UI/DiceSystem_CommonUI")
 
 -----------------
 
+--- Constants
+-- Line at the start is necessary to let this game place the text in the correct position, at the center of the box
+local B_HEALTH_STR = "<CENTRE> <SIZE:large> <RGB:0,1,0> %d/%d"
+local B_ARMORCLASS_STR = "<CENTRE> <SIZE:large> <RGB:1,0,0> %d"
 
 ------------------
 
@@ -28,8 +26,8 @@ HoverUI.openMenus = {}
 ---@param pl IsoPlayer
 ---@param username string Just the username of the player, since we've already referenced it before
 function HoverUI.Open(pl, username)
-    local width = 300 * CommonUI.FONT_SCALE
-    local height = 250 * CommonUI.FONT_SCALE
+    local width = 250 * CommonUI.FONT_SCALE
+    local height = 220 * CommonUI.FONT_SCALE
 
     local plNum = getNum(pl)
     local plX = pl:getX()
@@ -85,10 +83,7 @@ end
 function HoverUI:createChildren()
     ISCollapsableWindow.createChildren(self)
 
-    print("Running create children")
     local yOffset = 10
-    local pl
-    --if isClient() then pl = getPlayerFromUsername(PlayerHandler.username) else pl = getPlayer() end
     local plDescriptor = self.pl:getDescriptor()
     local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
 
@@ -108,32 +103,38 @@ function HoverUI:createChildren()
 
     -----------------
 
-    local xOffset = 40
-    local frameHeight = self.width / 3 - xOffset
-    local frameWidth = self.width / 3 - xOffset
+    local xOffset = 10
+    self.frameSize = self.width / 3.5
 
     self.panelBottom = ISPanel:new(0, self.panelTop:getBottom(), self.width, self.height - self.panelTop:getHeight())
     self.panelBottom:setAlwaysOnTop(false)
     self.panelBottom:initialise()
     self:addChild(self.panelBottom)
 
-    CommonUI.AddPanel(self.panelBottom, "panelHealth", frameWidth, frameHeight, xOffset, self.panelBottom:getHeight() / 4)
-    CommonUI.AddPanel(self.panelBottom, "panelArmorClass", frameWidth, frameHeight, self.width - frameWidth - xOffset,
-        self.panelBottom:getHeight() / 4)
+    local xCenter = self.panelBottom:getWidth() / 2
+    local yPanels = self.panelBottom:getHeight() / 2 - self.frameSize / 2
+    local xHealthPanel = xCenter - self.frameSize - xOffset
+    local xArmorPanel = xCenter + xOffset
 
+    CommonUI.AddPanel(self.panelBottom, "panelHealth", self.frameSize, self.frameSize, xHealthPanel, yPanels)
+    CommonUI.AddPanel(self.panelBottom, "panelArmorClass", self.frameSize, self.frameSize, xArmorPanel, yPanels)
+
+
+    self.panelBottom.panelHealth.marginTop = 0
+    self.panelBottom.panelHealth.marginBottom = 0
+    self.panelBottom.panelHealth.marginLeft = 0
+    self.panelBottom.panelHealth.marginRight = 0
     self.panelBottom.panelHealth.background = true
     self.panelBottom.panelHealth.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
     self.panelBottom.panelHealth.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
-    self.panelBottom.panelHealth.marginTop = frameHeight / 5
-    self.panelBottom.panelHealth.marginLeft = frameWidth / 6
-    self.panelBottom.panelHealth.marginRight = frameWidth / 6
 
+    self.panelBottom.panelArmorClass.marginTop = 0
+    self.panelBottom.panelArmorClass.marginBottom = 0
+    self.panelBottom.panelArmorClass.marginLeft = 0
+    self.panelBottom.panelArmorClass.marginRight = 0
     self.panelBottom.panelArmorClass.background = true
     self.panelBottom.panelArmorClass.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
     self.panelBottom.panelArmorClass.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
-    self.panelBottom.panelArmorClass.marginTop = frameHeight / 5
-    self.panelBottom.panelArmorClass.marginLeft = frameWidth / 6
-    self.panelBottom.panelArmorClass.marginRight = frameWidth / 6
 end
 
 function HoverUI:update()
@@ -141,17 +142,14 @@ function HoverUI:update()
     CommonUI.UpdateStatusEffectsText(self.panelTop, self.pl:getUsername())
 end
 
-local bStrHealth = "<CENTRE> <SIZE:large> <RGB:0,1,0> %d/%d"
-local bStrArmorClass = "<CENTRE> <SIZE:large> <RGB:1,0,0> %d"
-
 function HoverUI:prerender()
     ISCollapsableWindow.prerender(self)
-    local yLabel = self.panelBottom.panelHealth:getY() - 35
+    local yLabel = self.panelBottom.panelHealth:getY() - getTextManager():MeasureStringY(UIFont.Large, "Health")
 
-    local xHealth = (self.width / 2 - getTextManager():MeasureStringX(UIFont.Large, "Health")) / 2.4
+    local xHealth = (self.panelBottom.panelHealth:getX() + self.panelBottom.panelHealth:getWidth() / 2 ) - getTextManager():MeasureStringX(UIFont.Large, "Health")/2
     self.panelBottom:drawText("Health", xHealth, yLabel, 1, 1, 1, 1, UIFont.Large)
 
-    local xArmorClass = (self.width - getTextManager():MeasureStringX(UIFont.Large, "Armor Class")) * 0.9
+    local xArmorClass = (self.panelBottom.panelArmorClass:getX() + self.panelBottom.panelArmorClass:getWidth() / 2 ) - getTextManager():MeasureStringX(UIFont.Large, "Armor Class")/2
     self.panelBottom:drawText("Armor Class", xArmorClass, yLabel, 1, 1, 1, 1, UIFont.Large)
 
 
@@ -162,18 +160,17 @@ function HoverUI:prerender()
         fontScale = fontScale + 0.5
     end
 
-    local iconSize = 48 * fontScale
+    local iconSize = self.frameSize * fontScale
     --print(fontScale)
 
-    self.panelBottom.panelHealth:drawTextureScaled(heartIco, 7, 5, iconSize, iconSize, 0.2, 1, 1, 1)
-    self.panelBottom.panelArmorClass:drawTextureScaled(armorIco, 7, 5, iconSize, iconSize, 0.2, 1, 1, 1)
+    self.panelBottom.panelHealth:drawTextureScaled(heartIco, 0, 0, iconSize, iconSize, 0.2, 1, 1, 1)
+    self.panelBottom.panelArmorClass:drawTextureScaled(armorIco, 0, 0, iconSize, iconSize, 0.2, 1, 1, 1)
 end
 
 function HoverUI:render()
     ISCollapsableWindow.render(self)
 
     if self.isOpening then
-        --print(self.backgroundColor.a)
         self.backgroundColor.a = self.backgroundColor.a + 0.1 -- Horrendous
         if self.backgroundColor.a >= 1 then
             self.isOpening = false
@@ -181,12 +178,15 @@ function HoverUI:render()
     end
 
     --* Health *--
-    self.panelBottom.panelHealth:setText(string.format(bStrHealth, self.playerHandler:getCurrentHealth(),
-        self.playerHandler:getMaxHealth()))
+    local healthStr = string.format(B_HEALTH_STR, self.playerHandler:getCurrentHealth(), self.playerHandler:getMaxHealth())
+    self.panelBottom.panelHealth.marginTop = self.panelBottom.panelHealth:getHeight()/2 - getTextManager():MeasureStringY(UIFont.Large, healthStr)/2
+    self.panelBottom.panelHealth:setText(healthStr)
     self.panelBottom.panelHealth.textDirty = true
 
     --* Armor Class *--
-    self.panelBottom.panelArmorClass:setText(string.format(bStrArmorClass, self.playerHandler:getArmorClass()))
+    local armorStr = string.format(B_ARMORCLASS_STR, self.playerHandler:getArmorClass())
+    self.panelBottom.panelArmorClass.marginTop = self.panelBottom.panelArmorClass:getHeight()/2 - getTextManager():MeasureStringY(UIFont.Large, armorStr)/2
+    self.panelBottom.panelArmorClass:setText(armorStr)
     self.panelBottom.panelArmorClass.textDirty = true
 end
 
