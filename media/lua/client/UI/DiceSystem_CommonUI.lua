@@ -6,11 +6,12 @@ local PlayerHandler = require("DiceSystem_PlayerHandler")
 
 ---Get a string for ISRichTextPanel containing a colored status effect string
 ---@param status string
+---@param translatedStatus string
 ---@return string
-local function GetColoredStatusEffect(status)
+local function GetColoredStatusEffect(status, translatedStatus)
     -- Pick from table colors
 
-    local translatedStatus = getText("IGUI_StsEfct_" .. status)
+    --local translatedStatus = getText("IGUI_StsEfct_" .. status)
 
     local statusColors = DiceSystem_Common.statusEffectsColors[status]
     local colorString = string.format(" <RGB:%s,%s,%s> ", statusColors.r, statusColors.g, statusColors.b)
@@ -21,6 +22,7 @@ end
 local DiceSystem_CommonUI = {}
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 DiceSystem_CommonUI.FONT_SCALE = FONT_HGT_SMALL / 16
+DiceSystem_CommonUI.amountActiveStatusEffects = {}
 
 if DiceSystem_CommonUI.FONT_SCALE < 1 then
     DiceSystem_CommonUI.FONT_SCALE = 1
@@ -56,56 +58,60 @@ function DiceSystem_CommonUI.AddStatusEffectsPanel(parent, height, currentOffset
 end
 
 local function CalculateStatusEffectsMargin(parentWidth, text)
-    return (parentWidth - getTextManager():MeasureStringX(UIFont.NewSmall, text))/2
+    return (parentWidth - getTextManager():MeasureStringX(UIFont.NewSmall, text)) / 2
 end
-
 
 ---Handles status effects in update
 ---@param parent any
 ---@param username string
 function DiceSystem_CommonUI.UpdateStatusEffectsText(parent, username)
-    local statusEffectsText = ""
-    local uncoloredStatusEffectsText = ""
     local activeStatusEffects = PlayerHandler.GetActiveStatusEffectsByUsername(username)
-    local reachedMaxMargin = false
-    local marginLeft = 0
+    local amountActiveStatusEffects = #activeStatusEffects
+    if DiceSystem_CommonUI.amountActiveStatusEffects[username] then
+        if DiceSystem_CommonUI.amountActiveStatusEffects[username] == amountActiveStatusEffects then return end
+    end
 
+    DiceSystem_CommonUI.amountActiveStatusEffects[username] = amountActiveStatusEffects
 
-    -- TODO Alignment after going on a new line is not graceful. Find a way to make it decent
+    local formattedStatusEffects = {}
+    local unformattedStatusEffects = {}
+    local line = 1
+
+    formattedStatusEffects[line] = ""
+    unformattedStatusEffects[line] = ""
 
     for i = 1, #activeStatusEffects do
         local v = activeStatusEffects[i]
-        local singleStatus = GetColoredStatusEffect(v)
+        local unformattedStatusText = getText("IGUI_StsEfct_" .. v)
+        local formattedStatusText = GetColoredStatusEffect(v, unformattedStatusText)
         if i == 1 then
             -- First string
-            statusEffectsText = statusEffectsText .. singleStatus
-            uncoloredStatusEffectsText = uncoloredStatusEffectsText .. getText("IGUI_StsEfct_"..v)
-            marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
-        elseif (i-1)%4 == 0 then        -- We're gonna use max 4 per line
+            formattedStatusEffects[line] = formattedStatusText
+            unformattedStatusEffects[line] = unformattedStatusText
+        elseif (i - 1) % 4 == 0 then -- We're gonna use max 4 per line
             -- Go to new line
-            if reachedMaxMargin == false then
-                reachedMaxMargin = true
-                marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
-                uncoloredStatusEffectsText = uncoloredStatusEffectsText .. " "getText("IGUI_StsEfct_"..v)
-                reachedMaxMargin = true
-            end
-            statusEffectsText = statusEffectsText .. " <LINE> " .. singleStatus
+            formattedStatusEffects[line] = formattedStatusEffects[line] .. " <LINE> "
+            line = line + 1
+            formattedStatusEffects[line] = formattedStatusText
+            unformattedStatusEffects[line] = unformattedStatusText
         else
             -- Normal case
-            statusEffectsText = statusEffectsText .. " <RGB:1,1,1> <SPACE> - <SPACE> " .. singleStatus
-            if reachedMaxMargin == false then
-                uncoloredStatusEffectsText = uncoloredStatusEffectsText .. " - " .. getText("IGUI_StsEfct_".. v)
-                marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
-            end
+            formattedStatusEffects[line] = formattedStatusEffects[line] ..
+            " <RGB:1,1,1> <SPACE> - <SPACE> " .. formattedStatusText
+            unformattedStatusEffects[line] = unformattedStatusEffects[line] .. " - " .. unformattedStatusText
         end
     end
 
-    -- Set correct margin
-    --print(uncoloredStatusEffectsText)
-    --print(getTextManager():MeasureStringX(UIFont.NewSmall, uncoloredStatusEffectsText))
-    --marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
-    parent.labelStatusEffectsList.marginLeft = marginLeft
-    parent.labelStatusEffectsList:setText(statusEffectsText)
+    local completeText = ""
+
+    -- Margin is managed directly into the text
+    for i = 1, line do
+        local xLine = CalculateStatusEffectsMargin(parent.width, unformattedStatusEffects[i])
+        formattedStatusEffects[i] = "<SETX:" .. xLine .. "> " .. formattedStatusEffects[i]
+        completeText = completeText .. formattedStatusEffects[i]
+    end
+
+    parent.labelStatusEffectsList:setText(completeText)
     parent.labelStatusEffectsList.textDirty = true
 end
 
