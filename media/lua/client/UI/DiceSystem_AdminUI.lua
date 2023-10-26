@@ -299,11 +299,13 @@ local _ISAdminPanelUICreate = ISAdminPanelUI.create
 function ISAdminPanelUI:create()
     _ISAdminPanelUICreate(self)
 
-    local lastButton = self.children[self.IDMax-1].internal == "CANCEL" and self.children[self.IDMax-2] or self.children[self.IDMax-1]
-    self.btnOpenAdminDiceMenu = ISButton:new(lastButton.x, lastButton.y + 5 + lastButton.height, self.sandboxOptionsBtn.width, self.sandboxOptionsBtn.height, getText("IGUI_DiceAdminMenu"), self, DiceMenuAdminViewer.OnOpenPanel)
+    local lastButton = self.children[self.IDMax - 1].internal == "CANCEL" and self.children[self.IDMax - 2] or
+    self.children[self.IDMax - 1]
+    self.btnOpenAdminDiceMenu = ISButton:new(lastButton.x, lastButton.y + 5 + lastButton.height,
+        self.sandboxOptionsBtn.width, self.sandboxOptionsBtn.height, getText("IGUI_DiceAdminMenu"), self,
+        DiceMenuAdminViewer.OnOpenPanel)
     self.btnOpenAdminDiceMenu:initialise()
     self.btnOpenAdminDiceMenu:instantiate()
     self.btnOpenAdminDiceMenu.borderColor = self.buttonBorderColor
     self:addChild(self.btnOpenAdminDiceMenu)
-
 end

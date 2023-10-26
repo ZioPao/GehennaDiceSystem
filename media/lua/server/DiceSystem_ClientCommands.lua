@@ -33,7 +33,7 @@ function ModDataCommands.ResetServerDiceData(_, args)
 
 	PlayersDiceData[args.username] = {}
 	ModData.add(DICE_SYSTEM_MOD_STRING, PlayersDiceData) -- Force update just to be sure that it's synced
-	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", { forceSync = false})
+	sendServerCommand(receivingPl, DICE_SYSTEM_MOD_STRING, "ResetClientDiceData", { forceSync = false })
 end
 
 ---Similiar to ResetServerDiceData, but we'll skip the destroying part. We just notify the client that their data has been changed elsewhere
@@ -126,7 +126,7 @@ function ModDataCommands.UpdateStatusEffect(_, args)
 	if userID then
 		sendServerCommand(DICE_SYSTEM_MOD_STRING, 'ReceiveUpdatedStatusEffects',
 			{ statusEffectsTable = PlayersDiceData[args.username].statusEffects, userID = userID })
-	--else
+		--else
 		--print("Couldn't find " .. args.username)
 	end
 

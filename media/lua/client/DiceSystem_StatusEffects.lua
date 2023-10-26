@@ -73,4 +73,3 @@ end
 function StatusEffectsHandler.GetUserOffset()
     return StatusEffectsHandler.userOffset
 end
-

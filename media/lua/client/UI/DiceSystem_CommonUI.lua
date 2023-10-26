@@ -57,7 +57,6 @@ end
 
 local function CalculateStatusEffectsMargin(parentWidth, text)
     return (parentWidth - getTextManager():MeasureStringX(UIFont.NewSmall, text))/2
-
 end
 
 
@@ -70,6 +69,10 @@ function DiceSystem_CommonUI.UpdateStatusEffectsText(parent, username)
     local activeStatusEffects = PlayerHandler.GetActiveStatusEffectsByUsername(username)
     local reachedMaxMargin = false
     local marginLeft = 0
+
+
+    -- TODO Alignment after going on a new line is not graceful. Find a way to make it decent
+
     for i = 1, #activeStatusEffects do
         local v = activeStatusEffects[i]
         local singleStatus = GetColoredStatusEffect(v)
@@ -78,20 +81,20 @@ function DiceSystem_CommonUI.UpdateStatusEffectsText(parent, username)
             statusEffectsText = statusEffectsText .. singleStatus
             uncoloredStatusEffectsText = uncoloredStatusEffectsText .. getText("IGUI_StsEfct_"..v)
             marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
-        elseif (i-1)%4 == 0 then        -- We're gonna use max 3 per line to let it be compatible with the hover ui too
+        elseif (i-1)%4 == 0 then        -- We're gonna use max 4 per line
             -- Go to new line
             if reachedMaxMargin == false then
                 reachedMaxMargin = true
                 marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
+                uncoloredStatusEffectsText = uncoloredStatusEffectsText .. " "getText("IGUI_StsEfct_"..v)
                 reachedMaxMargin = true
             end
-            statusEffectsText = statusEffectsText .. " <RGB:1,1,1> <SPACE> - <LINE> " .. singleStatus
-            uncoloredStatusEffectsText = uncoloredStatusEffectsText .. getText("IGUI_StsEfct_"..v)
+            statusEffectsText = statusEffectsText .. " <LINE> " .. singleStatus
         else
             -- Normal case
             statusEffectsText = statusEffectsText .. " <RGB:1,1,1> <SPACE> - <SPACE> " .. singleStatus
-            uncoloredStatusEffectsText = uncoloredStatusEffectsText .. " - " .. getText("IGUI_StsEfct_".. v)
             if reachedMaxMargin == false then
+                uncoloredStatusEffectsText = uncoloredStatusEffectsText .. " - " .. getText("IGUI_StsEfct_".. v)
                 marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
             end
         end

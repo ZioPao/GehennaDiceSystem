@@ -73,10 +73,10 @@ end
 function DiceMenu:setAdminMode(isAdminMode)
     self.isAdminMode = isAdminMode
 end
-function DiceMenu:getIsAdminMode()
-     return self.isAdminMode
-end
 
+function DiceMenu:getIsAdminMode()
+    return self.isAdminMode
+end
 
 --- Fill the skill panel. The various buttons will be enabled ONLY for the actual player.
 function DiceMenu:fillSkillPanel()
@@ -189,7 +189,6 @@ function DiceMenu:update()
 
         self.comboStatusEffects.disabled = (plUsername ~= self.playerHandler.username)
         CommonUI.UpdateStatusEffectsText(self, plUsername)
-
     end
 
     local armorClassPoints = self.playerHandler:getArmorClass()
@@ -200,7 +199,8 @@ function DiceMenu:update()
         local bonusSkillPoints = self.playerHandler:getBonusSkillPoints(skill)
         local skillPointsString = " <RIGHT> " .. string.format("%d", skillPoints)
         if bonusSkillPoints ~= 0 then
-            skillPointsString = skillPointsString .. string.format(" <RGB:0.94,0.82,0.09> <SPACE> + <SPACE> %d", bonusSkillPoints)
+            skillPointsString = skillPointsString ..
+            string.format(" <RGB:0.94,0.82,0.09> <SPACE> + <SPACE> %d", bonusSkillPoints)
         end
 
 
@@ -210,7 +210,8 @@ function DiceMenu:update()
         -- Handles buttons to assign skill points
         if not isInit or isAdmin then
             self["btnMinus" .. skill]:setEnable(skillPoints ~= 0)
-            self["btnPlus" .. skill]:setEnable(skillPoints ~= PLAYER_DICE_VALUES.MAX_PER_SKILL_ALLOCATED_POINTS and allocatedPoints ~= PLAYER_DICE_VALUES.MAX_ALLOCATED_POINTS)
+            self["btnPlus" .. skill]:setEnable(skillPoints ~= PLAYER_DICE_VALUES.MAX_PER_SKILL_ALLOCATED_POINTS and
+            allocatedPoints ~= PLAYER_DICE_VALUES.MAX_ALLOCATED_POINTS)
         end
     end
 
@@ -222,7 +223,8 @@ function DiceMenu:update()
 
     local currentHealth = self.playerHandler:getCurrentHealth()
     local maxHealth = self.playerHandler:getMaxHealth()
-    self.panelHealth:setText(getText("IGUI_PlayerUI_Health", self.playerHandler:getCurrentHealth(), self.playerHandler:getMaxHealth()))
+    self.panelHealth:setText(getText("IGUI_PlayerUI_Health", self.playerHandler:getCurrentHealth(),
+        self.playerHandler:getMaxHealth()))
     self.panelHealth.textDirty = true
     self.btnPlusHealth:setEnable(currentHealth < maxHealth)
     self.btnMinusHealth:setEnable(currentHealth > 0)
@@ -237,7 +239,7 @@ end
 
 function DiceMenu:calculateHeight(y)
     local fixedFrameHeight = 40
-    local finalheight = y + fixedFrameHeight*8 + 25
+    local finalheight = y + fixedFrameHeight * 8 + 25
     self:setHeight(finalheight)
 end
 
@@ -259,7 +261,7 @@ function DiceMenu:createChildren()
 
     --* Name Label *--
     CommonUI.AddCenteredTextLabel(self, "nameLabel", playerName, yOffset)
-    yOffset = yOffset + 25 + 10     -- TODO Janky
+    yOffset = yOffset + 25 + 10 -- TODO Janky
 
     --* Status Effects Panel *--
     local labelStatusEffectsHeight = 25 * (FONT_SCALE + 0.5)
@@ -267,12 +269,12 @@ function DiceMenu:createChildren()
     yOffset = yOffset + labelStatusEffectsHeight + 25
 
     local xFrameMargin = 10 * FONT_SCALE
-    local comboBoxHeight = 25       -- TODO This should scale?
-    local marginPanelTop = (frameHeight/4)
+    local comboBoxHeight = 25 -- TODO This should scale?
+    local marginPanelTop = (frameHeight / 4)
 
     --* Occupation *--
     local occupationString = getText("IGUI_Occupation") .. ": "
-    self.panelOccupation = ISRichTextPanel:new(0, yOffset, self.width/2, frameHeight)
+    self.panelOccupation = ISRichTextPanel:new(0, yOffset, self.width / 2, frameHeight)
     self.panelOccupation.marginLeft = xFrameMargin
     self.panelOccupation.marginTop = marginPanelTop
     self.panelOccupation.autosetheight = false
@@ -285,7 +287,9 @@ function DiceMenu:createChildren()
     self:addChild(self.panelOccupation)
     self.panelOccupation:paginate()
 
-    self.comboOccupation = DiceSystem_ComboBox:new(self.panelOccupation:getWidth()/2 - xFrameMargin, self.panelOccupation:getHeight()/5, self.width / 4, comboBoxHeight, self, self.onChangeOccupation, "OCCUPATIONS", self.playerHandler)
+    self.comboOccupation = DiceSystem_ComboBox:new(self.panelOccupation:getWidth() / 2 - xFrameMargin,
+        self.panelOccupation:getHeight() / 5, self.width / 4, comboBoxHeight, self, self.onChangeOccupation,
+        "OCCUPATIONS", self.playerHandler)
     self.comboOccupation.noSelectionText = ""
     self.comboOccupation:setEditable(true)
 
@@ -303,7 +307,7 @@ function DiceMenu:createChildren()
 
     --* Status Effects Selector *--
     local statusEffectString = getText("IGUI_StatusEffect") .. ": "
-    self.panelStatusEffects = ISRichTextPanel:new(self.width/2, yOffset, self.width/2, frameHeight)
+    self.panelStatusEffects = ISRichTextPanel:new(self.width / 2, yOffset, self.width / 2, frameHeight)
     self.panelStatusEffects.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.panelStatusEffects.marginLeft = xFrameMargin
     self.panelStatusEffects.marginTop = marginPanelTop
@@ -317,7 +321,9 @@ function DiceMenu:createChildren()
     self:addChild(self.panelStatusEffects)
     self.panelStatusEffects:paginate()
 
-    self.comboStatusEffects = DiceSystem_ComboBox:new(self.panelStatusEffects:getWidth()/2 - xFrameMargin, self.panelStatusEffects:getHeight()/5, self.width / 4, comboBoxHeight, self, self.onChangeStatusEffect, "STATUS_EFFECTS", self.playerHandler)
+    self.comboStatusEffects = DiceSystem_ComboBox:new(self.panelStatusEffects:getWidth() / 2 - xFrameMargin,
+        self.panelStatusEffects:getHeight() / 5, self.width / 4, comboBoxHeight, self, self.onChangeStatusEffect,
+        "STATUS_EFFECTS", self.playerHandler)
     self.comboStatusEffects.noSelectionText = ""
     self.comboStatusEffects:setEditable(true)
     for i = 1, #PLAYER_DICE_VALUES.STATUS_EFFECTS do
@@ -400,7 +406,7 @@ function DiceMenu:createChildren()
     self.panelMovement:addChild(self.btnMinusMovement)
 
     --RIGHT PLUS BUTTON
-    self.btnPlusMovement = ISButton:new(self.width / 1.333 , 0, self.width / 4, frameHeight, "+", self,
+    self.btnPlusMovement = ISButton:new(self.width / 1.333, 0, self.width / 4, frameHeight, "+", self,
         self.onOptionMouseDown)
     self.btnPlusMovement.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.btnPlusMovement.internal = "PLUS_MOVEMENT"
@@ -415,7 +421,8 @@ function DiceMenu:createChildren()
     local arePointsAllocated = false
     if not arePointsAllocated then
         local allocatedPoints = self.playerHandler:getAllocatedSkillPoints()
-        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") .. string.format(" %d/%d", allocatedPoints, PLAYER_DICE_VALUES.MAX_ALLOCATED_POINTS)
+        local pointsAllocatedString = getText("IGUI_SkillPointsAllocated") ..
+        string.format(" %d/%d", allocatedPoints, PLAYER_DICE_VALUES.MAX_ALLOCATED_POINTS)
 
         self.labelSkillPointsAllocated = ISLabel:new(
             (self.width - getTextManager():MeasureStringX(UIFont.Small, pointsAllocatedString)) / 2,
@@ -428,7 +435,7 @@ function DiceMenu:createChildren()
 
     yOffset = yOffset + frameHeight
 
-    self.panelSkills = ISPanel:new(0, yOffset, self.width, 0)       --Height doesn't really matter, but we will set in fillSkillPanel
+    self.panelSkills = ISPanel:new(0, yOffset, self.width, 0) --Height doesn't really matter, but we will set in fillSkillPanel
     self:addChild(self.panelSkills)
     self:fillSkillPanel()
 
@@ -446,17 +453,16 @@ function DiceMenu:createChildren()
     end
 
     self.btnClose = ISButton:new(self.width - 100 - 10, self.height - 35, 100, 25, getText("IGUI_Dice_Close"), self,
-    self.onOptionMouseDown)
+        self.onOptionMouseDown)
     self.btnClose.internal = "CLOSE"
     self.btnClose:initialise()
     self.btnClose:instantiate()
     self.btnClose:setEnable(true)
     self:addChild(self.btnClose)
-
 end
 
 function DiceMenu:onChangeStatusEffect()
-    local statusEffect = self.comboStatusEffects:getSelectedText():gsub("%s+", "")     -- We trim it because of stuff like On Fire. We need to get OnFire
+    local statusEffect = self.comboStatusEffects:getSelectedText():gsub("%s+", "") -- We trim it because of stuff like On Fire. We need to get OnFire
     self.playerHandler:toggleStatusEffectValue(statusEffect)
 end
 
@@ -497,7 +503,6 @@ end
 function DiceMenu:setVisible(visible)
     self.javaObject:setVisible(visible)
 end
-
 
 -------------------------------------
 

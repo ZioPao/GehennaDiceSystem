@@ -1,5 +1,4 @@
-
--- TODO If you are setting your stats and hover somebody that has already set their stats, your stats are gonna die :( 
+-- TODO If you are setting your stats and hover somebody that has already set their stats, your stats are gonna die :(
 
 -- Caching stuff
 local playerBase = __classmetatables[IsoPlayer.class].__index
@@ -45,7 +44,6 @@ function HoverUI.Open(pl, username)
     HoverUI.openMenus[username]:bringToTop()
 end
 
-
 function HoverUI.Close(username)
     HoverUI.openMenus[username]:close()
 end
@@ -88,7 +86,7 @@ function HoverUI:createChildren()
     local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
 
     -- TOP PANEL
-    self.panelTop = ISPanel:new(0, 15, self.width, self.height / 3)     -- 15 is the amount between the topbar and the rest. Thank you zomboid
+    self.panelTop = ISPanel:new(0, 15, self.width, self.height / 3) -- 15 is the amount between the topbar and the rest. Thank you zomboid
     self.panelTop:setAlwaysOnTop(false)
     self.panelTop:initialise()
     self:addChild(self.panelTop)
@@ -114,7 +112,8 @@ function HoverUI:createChildren()
     local xCenter = self.panelBottom:getWidth() / 2
     local yPanels = self.panelBottom:getHeight() / 2 - self.frameSize / 2
     local xHealthPanel = xCenter - self.frameSize - xOffset
-    local xArmorPanel = xCenter + xOffset + 1           -- For some fucking reason there's a missing pixel, I hate this game
+    local xArmorPanel = xCenter + xOffset +
+    1                                         -- For some fucking reason there's a missing pixel, I hate this game
 
     CommonUI.AddPanel(self.panelBottom, "panelHealth", self.frameSize, self.frameSize, xHealthPanel, yPanels)
     CommonUI.AddPanel(self.panelBottom, "panelArmorClass", self.frameSize, self.frameSize, xArmorPanel, yPanels)
@@ -148,11 +147,14 @@ function HoverUI:prerender()
     local healthText = getText("IGUI_MiniUI_Health")
     local armorClassText = getText("IGUI_MiniUI_ArmorClass")
 
-    local yLabel = self.panelBottom.panelHealth:getY() - getTextManager():MeasureStringY(UIFont.Large, healthText) - 1      -- Additional 1 offset
-    local xHealth = (self.panelBottom.panelHealth:getX() + self.panelBottom.panelHealth:getWidth() / 2 ) - getTextManager():MeasureStringX(UIFont.Large, healthText)/2
+    local yLabel = self.panelBottom.panelHealth:getY() - getTextManager():MeasureStringY(UIFont.Large, healthText) -
+    1                                                                                                                  -- Additional 1 offset
+    local xHealth = (self.panelBottom.panelHealth:getX() + self.panelBottom.panelHealth:getWidth() / 2) -
+    getTextManager():MeasureStringX(UIFont.Large, healthText) / 2
     self.panelBottom:drawText(healthText, xHealth, yLabel, 1, 1, 1, 1, UIFont.Large)
 
-    local xArmorClass = (self.panelBottom.panelArmorClass:getX() + self.panelBottom.panelArmorClass:getWidth() / 2 ) - getTextManager():MeasureStringX(UIFont.Large, armorClassText)/2
+    local xArmorClass = (self.panelBottom.panelArmorClass:getX() + self.panelBottom.panelArmorClass:getWidth() / 2) -
+    getTextManager():MeasureStringX(UIFont.Large, armorClassText) / 2
     self.panelBottom:drawText(armorClassText, xArmorClass, yLabel, 1, 1, 1, 1, UIFont.Large)
 
 
@@ -181,14 +183,17 @@ function HoverUI:render()
     end
 
     --* Health *--
-    local healthStr = string.format(B_HEALTH_STR, self.playerHandler:getCurrentHealth(), self.playerHandler:getMaxHealth())
-    self.panelBottom.panelHealth.marginTop = self.panelBottom.panelHealth:getHeight()/2 - getTextManager():MeasureStringY(UIFont.Large, healthStr)/2
+    local healthStr = string.format(B_HEALTH_STR, self.playerHandler:getCurrentHealth(),
+        self.playerHandler:getMaxHealth())
+    self.panelBottom.panelHealth.marginTop = self.panelBottom.panelHealth:getHeight() / 2 -
+    getTextManager():MeasureStringY(UIFont.Large, healthStr) / 2
     self.panelBottom.panelHealth:setText(healthStr)
     self.panelBottom.panelHealth.textDirty = true
 
     --* Armor Class *--
     local armorStr = string.format(B_ARMORCLASS_STR, self.playerHandler:getArmorClass())
-    self.panelBottom.panelArmorClass.marginTop = self.panelBottom.panelArmorClass:getHeight()/2 - getTextManager():MeasureStringY(UIFont.Large, armorStr)/2
+    self.panelBottom.panelArmorClass.marginTop = self.panelBottom.panelArmorClass:getHeight() / 2 -
+    getTextManager():MeasureStringY(UIFont.Large, armorStr) / 2
     self.panelBottom.panelArmorClass:setText(armorStr)
     self.panelBottom.panelArmorClass.textDirty = true
 end
@@ -215,7 +220,7 @@ local function FillHoverMenuOptions(player, context, worldobjects, test)
         for y = clickedSq:getY() - 1, clickedSq:getY() + 1 do
             local sq = getCell():getGridSquare(x, y, clickedSq:getZ())
             if sq then
-                for i=0,sq:getMovingObjects():size()-1 do
+                for i = 0, sq:getMovingObjects():size() - 1 do
                     local o = sq:getMovingObjects():get(i)
                     if instanceof(o, "IsoPlayer") and (not o:isInvisible() or isAdmin()) then
                         local username = o:getUsername()

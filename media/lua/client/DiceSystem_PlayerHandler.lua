@@ -109,7 +109,9 @@ Events.OnReceiveGlobalModData.Add(ReceiveGlobalModData)
 function PlayerHandler:instantiate(username)
 
     if PlayerHandler.handlers[username] then
-        -- TODO Request again from server moddata
+        -- TODO This is overkill, we should request ONLY the data we need from the server, not the whole table
+        --ModData.request(DICE_SYSTEM_MOD_STRING)
+        --DICE_CLIENT_MOD_DATA = ModData.get(DICE_SYSTEM_MOD_STRING)
         return PlayerHandler.handlers[username]
     end
 
@@ -492,8 +494,6 @@ function PlayerHandler:initModData(force)
 
             currentHealth = PLAYER_DICE_VALUES.DEFAULT_HEALTH,
             maxHealth = PLAYER_DICE_VALUES.DEFAULT_HEALTH,
-
-            armorClass = 0,     -- TODO Remove this
 
             currentMovement = PLAYER_DICE_VALUES.DEFAULT_MOVEMENT,
             maxMovement = PLAYER_DICE_VALUES.DEFAULT_MOVEMENT,
