@@ -85,40 +85,38 @@ end
 
 function HoverUI:createChildren()
     ISCollapsableWindow.createChildren(self)
-
-    local yOffset = 10
+	local yOffset = self:titleBarHeight() + 10
     local plDescriptor = self.pl:getDescriptor()
     local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
 
     -- TOP PANEL
-    self.panelTop = ISPanel:new(0, 15, self.width, self.height / 3) -- 15 is the amount between the topbar and the rest. Thank you zomboid
-    self.panelTop:setAlwaysOnTop(false)
-    self.panelTop:initialise()
-    self:addChild(self.panelTop)
+    -- self.panelTop = ISPanel:new(0, 15, self.width, self.height / 3) -- 15 is the amount between the topbar and the rest. Thank you zomboid
+    -- self.panelTop:setAlwaysOnTop(false)
+    -- self.panelTop:initialise()
+    -- self:addChild(self.panelTop)
 
     --* Name Label *--
-    CommonUI.AddCenteredTextLabel(self.panelTop, "nameLabel", playerName, yOffset)
+    CommonUI.AddCenteredTextLabel(self, "nameLabel", playerName, yOffset)
     yOffset = yOffset + 25
 
     --* Status Effects Panel *--
     local labelStatusEffectsHeight = 25 * (CommonUI.FONT_SCALE + 0.5)
-    CommonUI.AddStatusEffectsPanel(self.panelTop, labelStatusEffectsHeight, yOffset)
+    CommonUI.AddStatusEffectsPanel(self, labelStatusEffectsHeight, yOffset)
 
     -----------------
 
     local xOffset = 10
     self.frameSize = self.width / 3.5
 
-    self.panelBottom = ISPanel:new(0, self.panelTop:getBottom(), self.width, self.height - self.panelTop:getHeight())
+    self.panelBottom = ISPanel:new(0, self.height/2.5, self.width, self.height - self.height/2.5)
     self.panelBottom:setAlwaysOnTop(false)
     self.panelBottom:initialise()
     self:addChild(self.panelBottom)
 
     local xCenter = self.panelBottom:getWidth() / 2
-    local yPanels = self.panelBottom:getHeight() / 2 - self.frameSize / 2
+    local yPanels = ((self.panelBottom:getHeight() - self.frameSize) / 2) + 10  -- PADDING of 10
     local xHealthPanel = xCenter - self.frameSize - xOffset
-    local xArmorPanel = xCenter + xOffset +
-    1                                         -- For some fucking reason there's a missing pixel, I hate this game
+    local xArmorPanel = xCenter + xOffset + 1                                         -- For some fucking reason there's a missing pixel, I hate this game
 
     CommonUI.AddPanel(self.panelBottom, "panelHealth", self.frameSize, self.frameSize, xHealthPanel, yPanels)
     CommonUI.AddPanel(self.panelBottom, "panelArmorClass", self.frameSize, self.frameSize, xArmorPanel, yPanels)
@@ -143,7 +141,7 @@ end
 
 function HoverUI:update()
     ISCollapsableWindow.update(self)
-    CommonUI.UpdateStatusEffectsText(self.panelTop, self.pl:getUsername())
+    CommonUI.UpdateStatusEffectsText(self, self.pl:getUsername())
 end
 
 function HoverUI:prerender()
@@ -152,14 +150,11 @@ function HoverUI:prerender()
     local healthText = getText("IGUI_MiniUI_Health")
     local armorClassText = getText("IGUI_MiniUI_ArmorClass")
 
-    local yLabel = self.panelBottom.panelHealth:getY() - getTextManager():MeasureStringY(UIFont.Large, healthText) -
-    1                                                                                                                  -- Additional 1 offset
-    local xHealth = (self.panelBottom.panelHealth:getX() + self.panelBottom.panelHealth:getWidth() / 2) -
-    getTextManager():MeasureStringX(UIFont.Large, healthText) / 2
+    local yLabel = self.panelBottom.panelHealth:getY() - getTextManager():MeasureStringY(UIFont.Large, healthText)                                                                                                                -- Additional 1 offset
+    local xHealth = (self.panelBottom.panelHealth:getX() + self.panelBottom.panelHealth:getWidth() / 2) - getTextManager():MeasureStringX(UIFont.Large, healthText) / 2
     self.panelBottom:drawText(healthText, xHealth, yLabel, 1, 1, 1, 1, UIFont.Large)
 
-    local xArmorClass = (self.panelBottom.panelArmorClass:getX() + self.panelBottom.panelArmorClass:getWidth() / 2) -
-    getTextManager():MeasureStringX(UIFont.Large, armorClassText) / 2
+    local xArmorClass = (self.panelBottom.panelArmorClass:getX() + self.panelBottom.panelArmorClass:getWidth() / 2) - getTextManager():MeasureStringX(UIFont.Large, armorClassText) / 2
     self.panelBottom:drawText(armorClassText, xArmorClass, yLabel, 1, 1, 1, 1, UIFont.Large)
 
     local iconSize = self.frameSize
@@ -197,7 +192,7 @@ end
 
 function HoverUI:close()
     HoverUI.openMenus[self.pl:getUsername()] = nil
-    local tableIndex = self.pl:getUsername() .. tostring(self.panelTop)
+    local tableIndex = self.pl:getUsername() .. tostring(self)
     CommonUI.RemoveCachedStatusEffectsText(tableIndex)
     ISCollapsableWindow.close(self)
 end
