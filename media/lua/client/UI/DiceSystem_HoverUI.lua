@@ -200,38 +200,67 @@ end
 local function FillHoverMenuOptions(player, context, worldobjects, test)
     local addedSubMenu = false
     local subMenu
-    print("Running fillhovermenu")
+    --print("Running fillhovermenu")
 
-    -- Got it directly from the base game, man this sucks ass
-    for i,v in ipairs(worldobjects) do
-        if v:getSquare() then
-            -- help detecting a player by checking nearby squares
-            for x=v:getSquare():getX()-1,v:getSquare():getX()+1 do
-                for y=v:getSquare():getY()-1,v:getSquare():getY()+1 do
-                    local sq = getCell():getGridSquare(x,y,v:getSquare():getZ())
-                    if sq then
-                        for i=0,sq:getMovingObjects():size()-1 do
-                            local o = sq:getMovingObjects():get(i)
-                            if instanceof(o, "IsoPlayer") and not o:isInvisible() then
-                                local username = o:getUsername()
-                                if addedSubMenu == false then
-                                    local optionHoverMenu = context:addOption("Dice Mini Menu", worldobjects, nil)
-                                    subMenu = ISContextMenu:getNew(context)
-                                    context:addSubMenu(optionHoverMenu, subMenu)
-                                end
-                                if HoverUI.openMenus[username] == nil then
-                                    subMenu:addOption("Open Menu for " .. username, o, HoverUI.Open, username)
-                                else
-                                    subMenu:addOption("Close Menu for " .. username, username, HoverUI.Close)
-                                end
-                                return
-                            end
+
+    local obj = worldobjects[1]
+    local clickedSq = obj:getSquare()
+
+    if clickedSq == nil then return end
+
+    for x = clickedSq:getX() - 1, clickedSq:getX() + 1 do
+        for y = clickedSq:getY() - 1, clickedSq:getY() + 1 do
+            local sq = getCell():getGridSquare(x, y, clickedSq:getZ())
+            if sq then
+                for i=0,sq:getMovingObjects():size()-1 do
+                    local o = sq:getMovingObjects():get(i)
+                    if instanceof(o, "IsoPlayer") and (not o:isInvisible() or isAdmin()) then
+                        local username = o:getUsername()
+                        if addedSubMenu == false then
+                            local optionHoverMenu = context:addOption("Dice Mini Menu", worldobjects, nil)
+                            subMenu = ISContextMenu:getNew(context)
+                            context:addSubMenu(optionHoverMenu, subMenu)
+                            addedSubMenu = true
+                        end
+                        if HoverUI.openMenus[username] == nil then
+                            subMenu:addOption("Open Menu for " .. username, o, HoverUI.Open, username)
+                        else
+                            subMenu:addOption("Close Menu for " .. username, username, HoverUI.Close)
                         end
                     end
                 end
             end
         end
     end
+    -- Got it directly from the base game, man this sucks ass
+    -- for i,v in ipairs(worldobjects) do
+    --     if v:getSquare() then
+    --         -- help detecting a player by checking nearby squares
+    --         for x=v:getSquare():getX()-1,v:getSquare():getX()+1 do
+    --             for y=v:getSquare():getY()-1,v:getSquare():getY()+1 do
+    --                 local sq = getCell():getGridSquare(x,y,v:getSquare():getZ())
+    --                 if sq then
+    --                     for i=0,sq:getMovingObjects():size()-1 do
+    --                         local o = sq:getMovingObjects():get(i)
+    --                         if instanceof(o, "IsoPlayer") and not o:isInvisible() then
+    --                             local username = o:getUsername()
+    --                             if addedSubMenu == false then
+    --                                 local optionHoverMenu = context:addOption("Dice Mini Menu", worldobjects, nil)
+    --                                 subMenu = ISContextMenu:getNew(context)
+    --                                 context:addSubMenu(optionHoverMenu, subMenu)
+    --                             end
+    --                             if HoverUI.openMenus[username] == nil then
+    --                                 subMenu:addOption("Open Menu for " .. username, o, HoverUI.Open, username)
+    --                             else
+    --                                 subMenu:addOption("Close Menu for " .. username, username, HoverUI.Close)
+    --                             end
+    --                         end
+    --                     end
+    --                 end
+    --             end
+    --         end
+    --     end
+    -- end
 end
 
 Events.OnFillWorldObjectContextMenu.Add(FillHoverMenuOptions)
