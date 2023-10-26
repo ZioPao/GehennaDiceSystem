@@ -227,23 +227,23 @@ function DiceMenu:update()
 
     -- TODO Swap armor bonus for AC
 
-    self.panelArmorClass:setText(getText("IGUI_ArmorClass", armorClassPoints))
+    self.panelArmorClass:setText(getText("IGUI_PlayerUI_ArmorClass", armorClassPoints))
     self.panelArmorClass.textDirty = true
 
 
-    self.panelMovementBonus:setText(getText("IGUI_MovementBonus", self.playerHandler:getMovementBonus()))
+    self.panelMovementBonus:setText(getText("IGUI_PlayerUI_MovementBonus", self.playerHandler:getMovementBonus()))
     self.panelMovementBonus.textDirty = true
 
     local currentHealth = self.playerHandler:getCurrentHealth()
     local maxHealth = self.playerHandler:getMaxHealth()
-    self.panelHealth:setText(getText("IGUI_Health", self.playerHandler:getCurrentHealth(), self.playerHandler:getMaxHealth()))
+    self.panelHealth:setText(getText("IGUI_PlayerUI_Health", self.playerHandler:getCurrentHealth(), self.playerHandler:getMaxHealth()))
     self.panelHealth.textDirty = true
     self.btnPlusHealth:setEnable(currentHealth < maxHealth)
     self.btnMinusHealth:setEnable(currentHealth > 0)
 
     local totMovement = self.playerHandler:getMaxMovement() + self.playerHandler:getMovementBonus()
     local currMovement = self.playerHandler:getCurrentMovement()
-    self.panelMovement:setText(getText("IGUI_Movement", currMovement, totMovement))
+    self.panelMovement:setText(getText("IGUI_PlayerUI_Movement", currMovement, totMovement))
     self.panelMovement.textDirty = true
     self.btnPlusMovement:setEnable(currMovement < totMovement)
     self.btnMinusMovement:setEnable(currMovement > 0)
@@ -470,7 +470,7 @@ function DiceMenu:createChildren()
 end
 
 function DiceMenu:onChangeStatusEffect()
-    local statusEffect = self.comboStatusEffects:getSelectedText()
+    local statusEffect = self.comboStatusEffects:getSelectedText():gsub("%s+", "")     -- We trim it because of stuff like On Fire. We need to get OnFire
     self.playerHandler:toggleStatusEffectValue(statusEffect)
 end
 

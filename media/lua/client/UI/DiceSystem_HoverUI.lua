@@ -144,13 +144,16 @@ end
 
 function HoverUI:prerender()
     ISCollapsableWindow.prerender(self)
-    local yLabel = self.panelBottom.panelHealth:getY() - getTextManager():MeasureStringY(UIFont.Large, "Health")
 
-    local xHealth = (self.panelBottom.panelHealth:getX() + self.panelBottom.panelHealth:getWidth() / 2 ) - getTextManager():MeasureStringX(UIFont.Large, "Health")/2
-    self.panelBottom:drawText("Health", xHealth, yLabel, 1, 1, 1, 1, UIFont.Large)
+    local healthText = getText("IGUI_MiniUI_Health")
+    local armorClassText = getText("IGUI_MiniUI_ArmorClass")
 
-    local xArmorClass = (self.panelBottom.panelArmorClass:getX() + self.panelBottom.panelArmorClass:getWidth() / 2 ) - getTextManager():MeasureStringX(UIFont.Large, "Armor Class")/2
-    self.panelBottom:drawText("Armor Class", xArmorClass, yLabel, 1, 1, 1, 1, UIFont.Large)
+    local yLabel = self.panelBottom.panelHealth:getY() - getTextManager():MeasureStringY(UIFont.Large, healthText) - 1      -- Additional 1 offset
+    local xHealth = (self.panelBottom.panelHealth:getX() + self.panelBottom.panelHealth:getWidth() / 2 ) - getTextManager():MeasureStringX(UIFont.Large, healthText)/2
+    self.panelBottom:drawText(healthText, xHealth, yLabel, 1, 1, 1, 1, UIFont.Large)
+
+    local xArmorClass = (self.panelBottom.panelArmorClass:getX() + self.panelBottom.panelArmorClass:getWidth() / 2 ) - getTextManager():MeasureStringX(UIFont.Large, armorClassText)/2
+    self.panelBottom:drawText(armorClassText, xArmorClass, yLabel, 1, 1, 1, 1, UIFont.Large)
 
 
     --FIXME incredibly janky workaround
