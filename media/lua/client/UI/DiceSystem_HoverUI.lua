@@ -162,16 +162,8 @@ function HoverUI:prerender()
     getTextManager():MeasureStringX(UIFont.Large, armorClassText) / 2
     self.panelBottom:drawText(armorClassText, xArmorClass, yLabel, 1, 1, 1, 1, UIFont.Large)
 
+    local iconSize = self.frameSize
 
-    --FIXME incredibly janky workaround
-    local fontScale = CommonUI.FONT_SCALE
-
-    if fontScale > 1 then
-        fontScale = fontScale + 0.5
-    end
-
-    local iconSize = self.frameSize * fontScale
-    --print(fontScale)
 
     self.panelBottom.panelHealth:drawTextureScaled(heartIco, 0, 0, iconSize, iconSize, 0.2, 1, 1, 1)
     self.panelBottom.panelArmorClass:drawTextureScaled(armorIco, 0, 0, iconSize, iconSize, 0.2, 1, 1, 1)

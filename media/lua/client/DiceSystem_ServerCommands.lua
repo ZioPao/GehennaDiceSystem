@@ -6,7 +6,7 @@ local ModDataServerCommands = {}
 ---Run on a client after successfully resetting or changing their data. Will close their dice panel automatically
 ---@param args table forceSync=boolean
 function ModDataServerCommands.ResetClientDiceData(args)
-    print("Resetting local data")
+    print("DiceSystem: Resetting local data")
 
     DiceMenu.ClosePanel()
     -- Even if it's not updated, I don't care

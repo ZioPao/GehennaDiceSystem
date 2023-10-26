@@ -1,6 +1,4 @@
--- TODO Some stuff is shared between PlayerUI and HoverUI.
 local PlayerHandler = require("DiceSystem_PlayerHandler")
-
 
 --* Helper functions
 
@@ -18,14 +16,14 @@ local function GetColoredStatusEffect(status, translatedStatus)
     return colorString .. translatedStatus
 end
 
+local function CalculateStatusEffectsMargin(parentWidth, text)
+    return (parentWidth - getTextManager():MeasureStringX(UIFont.NewSmall, text)) / 2
+end
 
 local DiceCommonUI = {}
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 DiceCommonUI.FONT_SCALE = FONT_HGT_SMALL / 16
 DiceCommonUI.cachedStatusEffects = {}
-
-
-
 
 if DiceCommonUI.FONT_SCALE < 1 then
     DiceCommonUI.FONT_SCALE = 1
@@ -59,22 +57,6 @@ function DiceCommonUI.AddStatusEffectsPanel(parent, height, currentOffset)
     parent.labelStatusEffectsList.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     parent.labelStatusEffectsList:paginate()
 end
-
-
---* Mostly status effects stuff
-
-
-
-
-local function CalculateStatusEffectsMargin(parentWidth, text)
-    return (parentWidth - getTextManager():MeasureStringX(UIFont.NewSmall, text)) / 2
-end
-
-
-
-
-
-
 
 ---Handles status effects in update
 ---@param parent any
@@ -115,7 +97,7 @@ function DiceCommonUI.UpdateStatusEffectsText(parent, username)
         else
             -- Normal case
             formattedStatusEffects[line] = formattedStatusEffects[line] ..
-            " <RGB:1,1,1> <SPACE> - <SPACE> " .. formattedStatusText
+                " <RGB:1,1,1> <SPACE> - <SPACE> " .. formattedStatusText
             unformattedStatusEffects[line] = unformattedStatusEffects[line] .. " - " .. unformattedStatusText
         end
     end
@@ -136,11 +118,12 @@ function DiceCommonUI.UpdateStatusEffectsText(parent, username)
         size = amountActiveStatusEffects,
         text = completeText
     }
-
 end
 
+---Removes a cached status effects table used for UIs
+---@param index string
 function DiceCommonUI.RemoveCachedStatusEffectsText(index)
-    print("Removing cached text")
+    --print("Removing cached text")
     DiceCommonUI.cachedStatusEffects[index] = nil
 end
 

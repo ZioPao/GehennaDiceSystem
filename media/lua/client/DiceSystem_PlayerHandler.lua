@@ -49,15 +49,15 @@ end
 --* Global mod data *--
 
 function OnConnected()
-    print("Requested global mod data")
+    --print("Requested global mod data")
     ModData.request(DICE_SYSTEM_MOD_STRING)
     DICE_CLIENT_MOD_DATA = ModData.get(DICE_SYSTEM_MOD_STRING)
 
     if DICE_CLIENT_MOD_DATA == nil then
         DICE_CLIENT_MOD_DATA = {}
-    else
-        print("Found DICE_SYSTEM global mod data, sent it to client")
-        print(DICE_CLIENT_MOD_DATA)
+    --else
+        --print("Found DICE_SYSTEM global mod data, sent it to client")
+        --print(DICE_CLIENT_MOD_DATA)
     end
 end
 
