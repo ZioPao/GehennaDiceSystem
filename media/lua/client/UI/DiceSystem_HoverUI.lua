@@ -26,8 +26,8 @@ HoverUI.openMenus = {}
 ---@param pl IsoPlayer
 ---@param username string Just the username of the player, since we've already referenced it before
 function HoverUI.Open(pl, username)
-    local width = 250 * CommonUI.FONT_SCALE
-    local height = 220 * CommonUI.FONT_SCALE
+    local width = 300 * CommonUI.FONT_SCALE
+    local height = 200 * CommonUI.FONT_SCALE
 
     local plNum = getNum(pl)
     local plX = pl:getX()
@@ -88,7 +88,7 @@ function HoverUI:createChildren()
     local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
 
     -- TOP PANEL
-    self.panelTop = ISPanel:new(0, 20, self.width, self.height / 3)
+    self.panelTop = ISPanel:new(0, 15, self.width, self.height / 3)     -- 15 is the amount between the topbar and the rest. Thank you zomboid
     self.panelTop:setAlwaysOnTop(false)
     self.panelTop:initialise()
     self:addChild(self.panelTop)
@@ -114,7 +114,7 @@ function HoverUI:createChildren()
     local xCenter = self.panelBottom:getWidth() / 2
     local yPanels = self.panelBottom:getHeight() / 2 - self.frameSize / 2
     local xHealthPanel = xCenter - self.frameSize - xOffset
-    local xArmorPanel = xCenter + xOffset
+    local xArmorPanel = xCenter + xOffset + 1           -- For some fucking reason there's a missing pixel, I hate this game
 
     CommonUI.AddPanel(self.panelBottom, "panelHealth", self.frameSize, self.frameSize, xHealthPanel, yPanels)
     CommonUI.AddPanel(self.panelBottom, "panelArmorClass", self.frameSize, self.frameSize, xArmorPanel, yPanels)

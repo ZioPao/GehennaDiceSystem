@@ -78,8 +78,6 @@ function DiceMenu:getIsAdminMode()
 end
 
 
-
-
 --- Fill the skill panel. The various buttons will be enabled ONLY for the actual player.
 function DiceMenu:fillSkillPanel()
     local yOffset = 0
@@ -195,24 +193,16 @@ function DiceMenu:update()
     end
 
     local armorClassPoints = self.playerHandler:getArmorClass()
-    --print(armorClassPoints)
-    -- Show skill points
+
     for i = 1, #PLAYER_DICE_VALUES.SKILLS do
         local skill = PLAYER_DICE_VALUES.SKILLS[i]
         local skillPoints = self.playerHandler:getSkillPoints(skill)
         local bonusSkillPoints = self.playerHandler:getBonusSkillPoints(skill)
         local skillPointsString = " <RIGHT> " .. string.format("%d", skillPoints)
-
-        --local skillPointsString
         if bonusSkillPoints ~= 0 then
             skillPointsString = skillPointsString .. string.format(" <RGB:0.94,0.82,0.09> <SPACE> + <SPACE> %d", bonusSkillPoints)
         end
 
-        -- if skill == "Resolve" and armorClassPoints ~= 0 then
-        --     skillPointsString = skillPointsString .. string.format(" <RGB:1,0,0> <SPACE> + <SPACE> %d", armorClassPoints)
-        -- end
-
-        --print(skillPointsString)
 
         self["labelSkillPoints" .. skill]:setText(skillPointsString)
         self["labelSkillPoints" .. skill].textDirty = true
@@ -224,12 +214,8 @@ function DiceMenu:update()
         end
     end
 
-
-    -- TODO Swap armor bonus for AC
-
     self.panelArmorClass:setText(getText("IGUI_PlayerUI_ArmorClass", armorClassPoints))
     self.panelArmorClass.textDirty = true
-
 
     self.panelMovementBonus:setText(getText("IGUI_PlayerUI_MovementBonus", self.playerHandler:getMovementBonus()))
     self.panelMovementBonus.textDirty = true

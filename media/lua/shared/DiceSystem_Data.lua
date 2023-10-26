@@ -40,7 +40,7 @@ COLORS_DICE_TABLES = {
         Wounded = { r = 0.95, g = 0.35, b = 0.16 },
         Bleeding = { r = 0.66, g = 0.15, b = 0.18 },
         Charmed = { r = 1, g = 1, b = 1 },
-        OnFire = { r = 1, g = 1, b = 1 },
+        OnFire = { r = 1, g = 0.2, b = 0 },
         Prone = { r = 0.04, g = 0.58, b = 0.27 },
         Unconscious = { r = 0.57, g = 0.15, b = 0.56 }
     },

@@ -9,9 +9,12 @@ local PlayerHandler = require("DiceSystem_PlayerHandler")
 ---@return string
 local function GetColoredStatusEffect(status)
     -- Pick from table colors
+
+    local translatedStatus = getText("IGUI_StsEfct_" .. status)
+
     local statusColors = DiceSystem_Common.statusEffectsColors[status]
     local colorString = string.format(" <RGB:%s,%s,%s> ", statusColors.r, statusColors.g, statusColors.b)
-    return colorString .. status
+    return colorString .. translatedStatus
 end
 
 
@@ -43,8 +46,8 @@ function DiceSystem_CommonUI.AddStatusEffectsPanel(parent, height, currentOffset
     parent:addChild(parent.labelStatusEffectsList)
 
     parent.labelStatusEffectsList.marginTop = 0
-    parent.labelStatusEffectsList.marginLeft = parent.width / 6
-    parent.labelStatusEffectsList.marginRight = parent.width / 6
+    parent.labelStatusEffectsList.marginLeft = 0
+    parent.labelStatusEffectsList.marginRight = 0
     parent.labelStatusEffectsList.autosetheight = false
     parent.labelStatusEffectsList.background = false
     parent.labelStatusEffectsList.backgroundColor = { r = 0, g = 0, b = 0, a = 0 }
@@ -52,31 +55,56 @@ function DiceSystem_CommonUI.AddStatusEffectsPanel(parent, height, currentOffset
     parent.labelStatusEffectsList:paginate()
 end
 
+local function CalculateStatusEffectsMargin(parentWidth, text)
+    return (parentWidth - getTextManager():MeasureStringX(UIFont.NewSmall, text))/2
+
+end
+
+
 ---Handles status effects in update
 ---@param parent any
 ---@param username string
 function DiceSystem_CommonUI.UpdateStatusEffectsText(parent, username)
     local statusEffectsText = ""
+    local uncoloredStatusEffectsText = ""
     local activeStatusEffects = PlayerHandler.GetActiveStatusEffectsByUsername(username)
-
+    local reachedMaxMargin = false
+    local marginLeft = 0
     for i = 1, #activeStatusEffects do
         local v = activeStatusEffects[i]
         local singleStatus = GetColoredStatusEffect(v)
-
-        if statusEffectsText == "" then
-            statusEffectsText = " <CENTRE> " .. singleStatus
+        if i == 1 then
+            -- First string
+            statusEffectsText = statusEffectsText .. singleStatus
+            uncoloredStatusEffectsText = uncoloredStatusEffectsText .. getText("IGUI_StsEfct_"..v)
+            marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
+        elseif (i-1)%4 == 0 then        -- We're gonna use max 3 per line to let it be compatible with the hover ui too
+            -- Go to new line
+            if reachedMaxMargin == false then
+                reachedMaxMargin = true
+                marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
+                reachedMaxMargin = true
+            end
+            statusEffectsText = statusEffectsText .. " <RGB:1,1,1> <SPACE> - <LINE> " .. singleStatus
+            uncoloredStatusEffectsText = uncoloredStatusEffectsText .. getText("IGUI_StsEfct_"..v)
         else
-            statusEffectsText = statusEffectsText .. " <SPACE> - <SPACE> " .. singleStatus
+            -- Normal case
+            statusEffectsText = statusEffectsText .. " <RGB:1,1,1> <SPACE> - <SPACE> " .. singleStatus
+            uncoloredStatusEffectsText = uncoloredStatusEffectsText .. " - " .. getText("IGUI_StsEfct_".. v)
+            if reachedMaxMargin == false then
+                marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
+            end
         end
     end
+
+    -- Set correct margin
+    --print(uncoloredStatusEffectsText)
+    --print(getTextManager():MeasureStringX(UIFont.NewSmall, uncoloredStatusEffectsText))
+    --marginLeft = CalculateStatusEffectsMargin(parent.width, uncoloredStatusEffectsText)
+    parent.labelStatusEffectsList.marginLeft = marginLeft
     parent.labelStatusEffectsList:setText(statusEffectsText)
     parent.labelStatusEffectsList.textDirty = true
 end
-
--- Show Armor Class
--- function DiceSystem_CommonUI.Add
--- end
-
 
 function DiceSystem_CommonUI.AddPanel(parent, name, width, height, offsetX, offsetY)
     if offsetX == nil then offsetX = 0 end
