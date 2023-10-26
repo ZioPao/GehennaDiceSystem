@@ -90,10 +90,6 @@ function HoverUI:createChildren()
     local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor) -- .. " " .. DiceSystem_Common.GetSurnameWithoutBio(plDescriptor)
 
     -- TOP PANEL
-    -- self.panelTop = ISPanel:new(0, 15, self.width, self.height / 3) -- 15 is the amount between the topbar and the rest. Thank you zomboid
-    -- self.panelTop:setAlwaysOnTop(false)
-    -- self.panelTop:initialise()
-    -- self:addChild(self.panelTop)
 
     --* Name Label *--
     CommonUI.AddCenteredTextLabel(self, "nameLabel", playerName, yOffset)

@@ -44,7 +44,7 @@ end
 
 -- Status Effects Panel
 function DiceCommonUI.AddStatusEffectsPanel(parent, height, currentOffset)
-    parent.labelStatusEffectsList = ISRichTextPanel:new(0, currentOffset, parent.width, height) -- TODO Check if this is ok
+    parent.labelStatusEffectsList = ISRichTextPanel:new(0, currentOffset, parent.width, height)
     parent.labelStatusEffectsList:initialise()
     parent:addChild(parent.labelStatusEffectsList)
 
