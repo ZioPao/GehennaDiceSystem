@@ -19,13 +19,16 @@ local function GetColoredStatusEffect(status, translatedStatus)
 end
 
 
-local DiceSystem_CommonUI = {}
+local DiceCommonUI = {}
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
-DiceSystem_CommonUI.FONT_SCALE = FONT_HGT_SMALL / 16
-DiceSystem_CommonUI.amountActiveStatusEffects = {}
+DiceCommonUI.FONT_SCALE = FONT_HGT_SMALL / 16
+DiceCommonUI.cachedStatusEffects = {}
 
-if DiceSystem_CommonUI.FONT_SCALE < 1 then
-    DiceSystem_CommonUI.FONT_SCALE = 1
+
+
+
+if DiceCommonUI.FONT_SCALE < 1 then
+    DiceCommonUI.FONT_SCALE = 1
 end
 
 
@@ -33,7 +36,7 @@ end
 ---@param parent ISPanel
 ---@param text String
 ---@param currentOffset number
-function DiceSystem_CommonUI.AddCenteredTextLabel(parent, name, text, currentOffset)
+function DiceCommonUI.AddCenteredTextLabel(parent, name, text, currentOffset)
     parent[name] = ISLabel:new((parent.width - getTextManager():MeasureStringX(UIFont.Large, text)) / 2, currentOffset,
         25, text, 1, 1, 1, 1, UIFont.Large, true)
     parent[name]:initialise()
@@ -42,7 +45,7 @@ function DiceSystem_CommonUI.AddCenteredTextLabel(parent, name, text, currentOff
 end
 
 -- Status Effects Panel
-function DiceSystem_CommonUI.AddStatusEffectsPanel(parent, height, currentOffset)
+function DiceCommonUI.AddStatusEffectsPanel(parent, height, currentOffset)
     parent.labelStatusEffectsList = ISRichTextPanel:new(0, currentOffset, parent.width, height) -- TODO Check if this is ok
     parent.labelStatusEffectsList:initialise()
     parent:addChild(parent.labelStatusEffectsList)
@@ -57,21 +60,36 @@ function DiceSystem_CommonUI.AddStatusEffectsPanel(parent, height, currentOffset
     parent.labelStatusEffectsList:paginate()
 end
 
+
+--* Mostly status effects stuff
+
+
+
+
 local function CalculateStatusEffectsMargin(parentWidth, text)
     return (parentWidth - getTextManager():MeasureStringX(UIFont.NewSmall, text)) / 2
 end
 
+
+
+
+
+
+
 ---Handles status effects in update
 ---@param parent any
 ---@param username string
-function DiceSystem_CommonUI.UpdateStatusEffectsText(parent, username)
+function DiceCommonUI.UpdateStatusEffectsText(parent, username)
     local activeStatusEffects = PlayerHandler.GetActiveStatusEffectsByUsername(username)
     local amountActiveStatusEffects = #activeStatusEffects
-    if DiceSystem_CommonUI.amountActiveStatusEffects[username] then
-        if DiceSystem_CommonUI.amountActiveStatusEffects[username] == amountActiveStatusEffects then return end
-    end
 
-    DiceSystem_CommonUI.amountActiveStatusEffects[username] = amountActiveStatusEffects
+    local indexTab = username .. tostring(parent)
+    if DiceCommonUI.cachedStatusEffects[indexTab] and DiceCommonUI.cachedStatusEffects[indexTab].size and DiceCommonUI.cachedStatusEffects[indexTab].size == amountActiveStatusEffects then
+        --print("Updating from cache")
+        parent.labelStatusEffectsList:setText(DiceCommonUI.cachedStatusEffects[indexTab].text)
+        parent.labelStatusEffectsList.textDirty = true
+        return
+    end
 
     local formattedStatusEffects = {}
     local unformattedStatusEffects = {}
@@ -113,9 +131,20 @@ function DiceSystem_CommonUI.UpdateStatusEffectsText(parent, username)
 
     parent.labelStatusEffectsList:setText(completeText)
     parent.labelStatusEffectsList.textDirty = true
+
+    DiceCommonUI.cachedStatusEffects[indexTab] = {
+        size = amountActiveStatusEffects,
+        text = completeText
+    }
+
 end
 
-function DiceSystem_CommonUI.AddPanel(parent, name, width, height, offsetX, offsetY)
+function DiceCommonUI.RemoveCachedStatusEffectsText(index)
+    print("Removing cached text")
+    DiceCommonUI.cachedStatusEffects[index] = nil
+end
+
+function DiceCommonUI.AddPanel(parent, name, width, height, offsetX, offsetY)
     if offsetX == nil then offsetX = 0 end
     if offsetY == nil then offsetY = 0 end
 
@@ -127,4 +156,4 @@ function DiceSystem_CommonUI.AddPanel(parent, name, width, height, offsetX, offs
     parent[name]:paginate()
 end
 
-return DiceSystem_CommonUI
+return DiceCommonUI

@@ -205,6 +205,8 @@ end
 
 function HoverUI:close()
     HoverUI.openMenus[self.pl:getUsername()] = nil
+    local tableIndex = self.pl:getUsername() .. tostring(self.panelTop)
+    CommonUI.RemoveCachedStatusEffectsText(tableIndex)
     ISCollapsableWindow.close(self)
 end
 

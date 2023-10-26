@@ -63,6 +63,8 @@ function DiceMenu:new(x, y, width, height, playerHandler)
     o.moveWithMouse = true
 
     o.playerHandler = playerHandler
+    o.plUsername = getPlayer():getUsername() -- TODO optimize this
+
 
     DiceMenu.instance = o
     return o
@@ -163,7 +165,6 @@ function DiceMenu:update()
 
     local isInit = self.playerHandler:isPlayerInitialized()
     local allocatedPoints = self.playerHandler:getAllocatedSkillPoints()
-    local plUsername = getPlayer():getUsername() -- TODO optimize this
     local isAdmin = self:getIsAdminMode()
 
     -- Show allocated points during init
@@ -187,8 +188,8 @@ function DiceMenu:update()
         self.comboOccupation.disabled = true
         self.labelSkillPointsAllocated:setName("")
 
-        self.comboStatusEffects.disabled = (plUsername ~= self.playerHandler.username)
-        CommonUI.UpdateStatusEffectsText(self, plUsername)
+        self.comboStatusEffects.disabled = (self.plUsername ~= self.playerHandler.username)
+        CommonUI.UpdateStatusEffectsText(self, self.plUsername)
     end
 
     local armorClassPoints = self.playerHandler:getArmorClass()
@@ -508,6 +509,8 @@ end
 
 function DiceMenu:close()
     self:removeFromUIManager()
+    local tableIndex = self.plUsername .. tostring(self)
+    CommonUI.RemoveCachedStatusEffectsText(tableIndex)
     ISCollapsableWindow.close(self)
 end
 
