@@ -40,11 +40,15 @@ function HoverUI.Open(pl, username)
     ModData.request(DICE_SYSTEM_MOD_STRING)
     local handler = PlayerHandler:instantiate(username)
     if handler:isPlayerInitialized() then
+
+        -- Re request
+        local userID = pl:getOnlineID()
+        sendClientCommand(DICE_SYSTEM_MOD_STRING, 'RequestUpdatedStatusEffects',
+            { username = username, userID = userID })
+
         HoverUI.openMenus[username] = HoverUI:new(x, y, width, height, pl, handler)
         HoverUI.openMenus[username]:initialise()
         HoverUI.openMenus[username]:bringToTop()
-    else
-        -- TODO Notify the player somehow
     end
 
 end
@@ -217,10 +221,13 @@ local function FillHoverMenuOptions(player, context, worldobjects, test)
                             subMenu = ISContextMenu:getNew(context)
                             context:addSubMenu(optionHoverMenu, subMenu)
                         end
+
+                        local plDescriptor = o:getDescriptor()
+                        local playerName = DiceSystem_Common.GetForenameWithoutTabs(plDescriptor)
                         if HoverUI.openMenus[username] == nil then
-                            subMenu:addOption("Open Menu for " .. username, o, HoverUI.Open, username)
+                            subMenu:addOption("Open Menu for " .. playerName, o, HoverUI.Open, username)
                         else
-                            subMenu:addOption("Close Menu for " .. username, username, HoverUI.Close)
+                            subMenu:addOption("Close Menu for " .. playerName, username, HoverUI.Close)
                         end
                     end
                 end
@@ -229,4 +236,4 @@ local function FillHoverMenuOptions(player, context, worldobjects, test)
     end
 end
 
-Events.OnFillWorldObjectContextMenu.Add(FillHoverMenuOptions)
+Events.OnPreFillWorldObjectContextMenu.Add(FillHoverMenuOptions)

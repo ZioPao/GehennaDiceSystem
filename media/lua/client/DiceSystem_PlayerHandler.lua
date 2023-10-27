@@ -565,6 +565,9 @@ end
 Events.OnGameStart.Add(function()
     local handler = PlayerHandler:instantiate(getPlayer():getUsername())
     handler:initModData(false)
+
 end)
+
+
 
 return PlayerHandler
