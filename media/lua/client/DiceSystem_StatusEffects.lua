@@ -1,4 +1,7 @@
 -- Caching stuff
+
+-- TODO Status effects of already logged in players do not show up
+
 local UPDATE_DELAY = SandboxVars.GehennaDiceSystem.DelayUpdateStatusEffects
 
 -----------------
